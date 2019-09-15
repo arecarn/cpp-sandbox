@@ -1,0 +1,10 @@
+﻿---
+BasedOnStyle: WebKit
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+BreakBeforeBraces: Allman
+PenaltyReturnTypeOnItsOwnLine: '0'
+Cpp11BracedListStyle: 'true'
+...
