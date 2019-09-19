@@ -3,7 +3,7 @@ project(cpp-libs)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -17,7 +17,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
 
 include(clangTidy)
 include(clangFormat)
-FILE(GLOB_RECURSE
+file(GLOB_RECURSE
     CXX_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
     "${PROJECT_SOURCE_DIR}/src/*.[ch]"
@@ -27,4 +27,10 @@ addClangFormatTargets(FILES "${CXX_SOURCE_FILES}")
 include(getGoogleTest)
 getGoogleTest()
 
-add_subdirectory(array)
+enable_testing()
+
+macro(create_test target)
+    add_test(NAME ${target} COMMAND ${target})
+endmacro()
+
+add_subdirectory(test/array)
