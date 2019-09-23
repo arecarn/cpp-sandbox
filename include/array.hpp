@@ -13,6 +13,9 @@ struct array {
         return data[i]; // NOLINT
     }
 
+    size_t constexpr size() {
+        return n;
+    }
 
     constexpr T* begin() {
         return &data[0];
