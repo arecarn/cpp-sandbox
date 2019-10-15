@@ -34,3 +34,4 @@ macro(create_test target)
 endmacro()
 
 add_subdirectory(test/array)
+add_subdirectory(test/ringbuffer)

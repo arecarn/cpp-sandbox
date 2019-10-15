@@ -2,6 +2,7 @@
 
 template <typename T, size_t n>
 struct array {
+    // TODO(rcarney) need to add extra type parameters
     using value_type = T;
 
     value_type data[n];
