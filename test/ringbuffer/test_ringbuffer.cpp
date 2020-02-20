@@ -71,3 +71,17 @@ TEST(ringbuffer, push_wrap) // NOLINT
     rb.pop();
     ASSERT_TRUE(rb.empty());
 }
+
+TEST(ringbuffer, for_loop) // NOLINT
+{
+    ringbuffer<int, 3> rb;
+    rb.push(1);
+    rb.push(2);
+    rb.push(3);
+
+    auto i = 1;
+    for (auto r : rb) {
+        ASSERT_EQ(i, r);
+        i++;
+    }
+}
