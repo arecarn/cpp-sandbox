@@ -1,19 +1,27 @@
+#include "gtest/gtest.h"
+
 class Value {
     public:
-        Value& operator=(const Value&);
-        Value(const Value&);
+        Value& operator=(const Value& rhs) = default;
+        Value& operator=(Value&& rhs) = default;
+        Value(const Value& x) = default;
+        Value(Value&& x) = default;
+        Value() = default;
         ~Value() = default;
 
-        const int * const integer() const;
-        const float * const single() const;
+        explicit Value(float x);
+        explicit Value(int x);
 
-        void set_integer(int n);
-        void set_single(float n);
+        const int * const int_type() const;
+        const float * const float_type() const;
+
+        void set_int_type(int ii);
+        void set_float_type(float ff);
 
     private:
         enum class Tag {
-            integer,
-            single
+            int_type,
+            float_type
         };
         Tag type;
 
@@ -23,43 +31,44 @@ class Value {
         };
 };
 
-const int * const  Value::integer() const
+
+Value::Value(float x) { // NOLINT
+    type = Tag::float_type;
+    f = x; // NOLINT
+}
+
+Value::Value(int x) { // NOLINT
+    type = Tag::int_type;
+    i = x; // NOLINT
+}
+
+const int * const  Value::int_type() const
 {
-    if (type != Tag::integer) {
+    if (type != Tag::int_type) {
         return nullptr;
     }
-    return &i;
+    return &i; // NOLINT
 }
 
-const float * const Value::single() const
+const float * const Value::float_type() const
 {
-    if (type != Tag::single) {
+    if (type != Tag::float_type) {
         return nullptr;
     }
-    return &f;
+    return &f; // NOLINT
 }
 
-void Value::set_integer(int ii) {
-    type = Tag::integer;
-    i = ii;
+void Value::set_int_type(int ii) {
+    type = Tag::int_type;
+    i = ii; // NOLINT
 }
 
-void Value::set_single(float ff) {
-    type = Tag::single;
-    f = ff;
+void Value::set_float_type(float ff) {
+    type = Tag::float_type;
+    f = ff; // NOLINT
 }
 
-Value& Value::operator=(const Value& e)   // necessary because of the string variant
+TEST(basic, pizza) // NOLINT
 {
-    switch (e.type) {
-    case Tag::number:
-        i = e.i;
-        break;
-    case Tag::single:
-        f = e.f;
-        break;
-    }
-
-    type = e.type;
-    return *this;
+    Value v{5};
 }

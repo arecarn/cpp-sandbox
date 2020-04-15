@@ -35,3 +35,4 @@ endmacro()
 
 add_subdirectory(test/array)
 add_subdirectory(test/ringbuffer)
+add_subdirectory(test/tagged_union)
