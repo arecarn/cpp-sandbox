@@ -9,13 +9,35 @@ if(CMAKE_VERSION VERSION_GREATER 3.6)
 
     if(CLANG_TIDY_EXE)
 
-        set(CMAKE_CXX_CLANG_TIDY
-            "${CLANG_TIDY_EXE}"
-            "-header-filter=.*"
-            "-checks=*,\
-            -fuchsia*,\
-            -llvm-header-guard,\
-            "
+        string(CONCAT CMAKE_CXX_CLANG_TIDY
+            "${CLANG_TIDY_EXE};"
+            "-header-filter=.*;"
+            "-checks=*, "
+            "-fuchsia-*, "
+            "-abseil-*, "
+            "-android-*, "
+            "-boost-*, "
+            "-bugprone-*, "
+            "-cert-*, "
+            "-darwin-*, "
+            "-fuchsia-*, "
+            "-google-*, "
+            "-hicpp-*, "
+            "-linuxkernel-*, "
+            "-llvm-*, "
+            "-llvmlibc-*, "
+            "-mpi-*, "
+            "-objc-*, "
+            "-openmp-*, "
+            "-performance-*, "
+            "-zircon-*, "
+            "-llvm-header-guard, "
+            "portability-*, "
+            "readability-*, "
+            "misc-*, "
+            "modernize-*, "
+            "clang-analyzer-*, "
+            "cppcoreguidelines-* "
             )
         if(CLANG_TIDY_FIX)
             list(APPEND CMAKE_CXX_CLANG_TIDY "-fix")

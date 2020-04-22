@@ -19,8 +19,8 @@ include(clangTidy)
 include(clangFormat)
 file(GLOB_RECURSE
     CXX_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
-    "${PROJECT_SOURCE_DIR}/src/*.[ch]"
+    "${PROJECT_SOURCE_DIR}/cpp-lib/*.[ch]pp"
+    "${PROJECT_SOURCE_DIR}/cpp-lib/*.[ch]"
 )
 addClangFormatTargets(FILES "${CXX_SOURCE_FILES}")
 
@@ -33,6 +33,4 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-add_subdirectory(test/array)
-add_subdirectory(test/ringbuffer)
-add_subdirectory(test/tagged_union)
+add_subdirectory(cpp-lib)
