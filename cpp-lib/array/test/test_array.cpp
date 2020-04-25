@@ -4,7 +4,7 @@
 
 TEST(array, static) // NOLINT
 {
-    const array<int, 3> array = {0, 1, 2};
+    const array<int, 3> array {0, 1, 2};
 
     int j = 0;
     for (auto i : array)

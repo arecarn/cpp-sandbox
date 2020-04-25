@@ -1,17 +1,20 @@
 #include <cstddef>
 
 template <typename T, size_t n>
-struct array {
+class array {
+    public:
     // TODO(rcarney) need to add extra type parameters
     using value_type = T;
 
-    value_type data[n];
-
     constexpr T& operator[](const size_t i) {
-        return data[i];
+        return m_data[i];
     }
     constexpr const T& operator[](const size_t i) const {
-        return data[i]; // NOLINT
+        return m_data[i]; // NOLINT
+    }
+
+    T* data() {
+        return &m_data[0];
     }
 
     size_t constexpr size() {
@@ -19,18 +22,20 @@ struct array {
     }
 
     constexpr T* begin() {
-        return &data[0];
+        return &m_data[0];
     }
     constexpr const T* begin() const {
-        return &data[0];
+        return &m_data[0];
     }
 
     constexpr T* end() {
-        return &data[n];
+        return &m_data[n];
     }
     constexpr const T* end() const {
-        return &data[n];
+        return &m_data[n];
     }
+
+    T m_data[n];
 };
 
 
