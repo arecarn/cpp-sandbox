@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(cpp-libs)
+project(cpp-sandbox)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -19,8 +19,8 @@ include(clangTidy)
 include(clangFormat)
 file(GLOB_RECURSE
     CXX_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/cpp-lib/*.[ch]pp"
-    "${PROJECT_SOURCE_DIR}/cpp-lib/*.[ch]"
+    "${PROJECT_SOURCE_DIR}/components/*.[ch]pp"
+    "${PROJECT_SOURCE_DIR}/components/*.[ch]"
 )
 addClangFormatTargets(FILES "${CXX_SOURCE_FILES}")
 
@@ -33,4 +33,4 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-add_subdirectory(cpp-lib)
+add_subdirectory(components)
