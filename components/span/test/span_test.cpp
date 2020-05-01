@@ -1,5 +1,5 @@
-#include "span.hpp"
 #include "array.hpp"
+#include "span.hpp"
 
 #include <gtest/gtest.h>
 
@@ -11,7 +11,6 @@ TEST(span, static) // NOLINT
     span<int> c_array_span{c_array};
 
     span<int> array_span{array};
-
 
     int j = 0;
     for (auto i : c_array_span)

@@ -1,0 +1,4 @@
+#ifndef STATE_MACHINE
+#define STATE_MACHINE
+
+#endif // STATE_MACHINE

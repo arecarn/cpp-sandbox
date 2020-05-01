@@ -1,7 +1,6 @@
 #include "ringbuffer.hpp"
 #include "gtest/gtest.h"
 
-
 TEST(ringbuffer, push) // NOLINT
 {
     ringbuffer<int, 3> rb;
