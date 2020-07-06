@@ -155,14 +155,14 @@ struct Tran
 // Initializer for Compound States
 
 template <typename T>
-struct Init
+struct InitalStateSetup
 {
     typedef typename T::Host Host;
-    Init(Host& h)
+    InitalStateSetup(Host& h)
         : host_(h)
     {
     }
-    ~Init()
+    ~InitalStateSetup()
     {
         T::entry(host_);
         T::init(host_);

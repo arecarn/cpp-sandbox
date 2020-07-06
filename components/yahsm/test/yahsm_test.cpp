@@ -28,13 +28,16 @@
 
 class TestHSM;
 
-typedef CompState<TestHSM, 0> Top;
-typedef CompState<TestHSM, 1, Top> S0;
-typedef CompState<TestHSM, 2, S0> S1;
-typedef LeafState<TestHSM, 3, S1> S11;
-typedef CompState<TestHSM, 4, S0> S2;
-typedef CompState<TestHSM, 5, S2> S21;
-typedef LeafState<TestHSM, 6, S21> S211;
+// clang-format off
+//                    <    hsm,     id,   parent state>
+using Top  = CompState<TestHSM,      0        /*None*/>;
+using S0   = CompState<TestHSM,      1,            Top>;
+using S1   = CompState<TestHSM,      2,             S0>;
+using S11  = LeafState<TestHSM,      3,             S1>;
+using S2   = CompState<TestHSM,      4,             S0>;
+using S21  = CompState<TestHSM,      5,             S2>;
+using S211 = LeafState<TestHSM,      6,            S21>;
+// clang-format on
 
 enum Signal
 {
@@ -48,14 +51,12 @@ enum Signal
     H_SIG
 };
 
-class TestHSM;
-
-#define HSMINIT(State, InitState)       \
-    template <>                         \
-    inline void State::init(TestHSM& h) \
-    {                                   \
-        Init<InitState> i(h);           \
-        printf(#State "-INIT;");        \
+#define HSMINIT(State, InitState)         \
+    template <>                           \
+    inline void State::init(TestHSM& h)   \
+    {                                     \
+        InitalStateSetup<InitState> i(h); \
+        printf(#State "-INIT;");          \
     }
 
 HSMINIT(Top, S0)
@@ -67,22 +68,33 @@ HSMINIT(S21, S211)
 class TestHSM
 {
 public:
-    TestHSM() { Top::init(*this); }
-    ~TestHSM() {}
+    TestHSM()
+    {
+        // enter initial state
+        Top::init(*this);
+    }
+
     void next(const TopState<TestHSM>& state)
     {
         state_ = &state;
     }
-    Signal getSig() const { return sig_; }
+
+    Signal getSig() const
+    {
+        return sig_;
+    }
+
     void dispatch(Signal sig)
     {
         sig_ = sig;
         state_->handler(*this);
     }
+
     void foo(int i)
     {
         foo_ = i;
     }
+
     int foo() const
     {
         return foo_;
