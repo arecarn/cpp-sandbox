@@ -40,4 +40,4 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
-add_subdirectory(components)
+add_subdirectory(src)
