@@ -1,4 +1,11 @@
 cmake_minimum_required(VERSION 3.10.2)
+
+# use ccache if it's available
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+endif()
+
 project(cpp-sandbox)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
