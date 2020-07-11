@@ -12,9 +12,9 @@ public:
     // Construct with C array
     template <typename ArrayT, size_t t_size>
     constexpr explicit span(ArrayT (&array)[t_size])
-        : m_begin{array} // NOLINT
-        , // NOLINT(cppcoreguidelines-pro-bounds-pointer-decay, cppcoreguidelines-pro-bounds-array-to-pointer-decay)
-        m_end{array + t_size} // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-bounds-pointer-decay, cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+        : m_begin{array}
+        ,
+        m_end{array + t_size}
     {
     }
 
@@ -22,22 +22,22 @@ public:
     template <typename TArray>
     constexpr explicit span(TArray& array)
         : m_begin{array.data()}
-        , m_end{array.data() + array.size()} // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        , m_end{array.data() + array.size()}
     {
     }
 
     constexpr T& operator[](const size_t i)
     {
-        return m_begin[i]; // NOLINT(
+        return m_begin[i];
     }
     constexpr const T& operator[](const size_t i) const
     {
-        return m_begin[i]; // NOLINT
+        return m_begin[i];
     }
 
     size_t constexpr size()
     {
-        return m_end - m_begin; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        return m_end - m_begin;
     }
 
     constexpr T* begin()

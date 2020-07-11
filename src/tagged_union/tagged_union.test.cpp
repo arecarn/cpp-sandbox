@@ -1,7 +1,8 @@
 #include "tagged_union.hpp"
 #include "gtest/gtest.h"
 
-TEST(basic, pizza) // NOLINT
+TEST(basic, pizza)
 {
-    Value v{5};
+    constexpr int N = 5;
+    Value v{N};
 }

@@ -3,10 +3,11 @@
 
 #include <gtest/gtest.h>
 
-TEST(span, static) // NOLINT
+TEST(span, static)
 {
     array<int, 3> array = {0, 1, 2};
-    int c_array[5] = {0, 1, 2, 3, 4};
+    constexpr int C_Array_Size = 5;
+    int c_array[C_Array_Size] = {0, 1, 2, 3, 4};
 
     span<int> c_array_span{c_array};
 
@@ -27,10 +28,10 @@ TEST(span, static) // NOLINT
     }
 }
 
-TEST(span, size) // NOLINT
+TEST(span, size)
 {
-    const int array_size = 100;
-    array<int, array_size> array = {};
+    constexpr int Array_Size = 100;
+    array<int, Array_Size> array = {};
     span<int> array_span(array);
-    ASSERT_EQ(array_span.size(), array_size);
+    ASSERT_EQ(array_span.size(), Array_Size);
 }

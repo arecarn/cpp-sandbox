@@ -3,12 +3,16 @@
 add_library(
     state_machine
     STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/state_machine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/state_machine.cpp
+)
+target_link_libraries(state_machine
+    tagged_union
+    ringbuffer
 )
 target_include_directories(
     state_machine
     PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Test

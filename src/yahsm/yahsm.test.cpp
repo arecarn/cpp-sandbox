@@ -29,26 +29,26 @@
 class TestHSM;
 
 // clang-format off
-//                    <    hsm,     id,   parent state>
-using Top  = CompState<TestHSM,      0        /*None*/>;
-using S0   = CompState<TestHSM,      1,            Top>;
-using S1   = CompState<TestHSM,      2,             S0>;
-using S11  = LeafState<TestHSM,      3,             S1>;
-using S2   = CompState<TestHSM,      4,             S0>;
-using S21  = CompState<TestHSM,      5,             S2>;
-using S211 = LeafState<TestHSM,      6,            S21>;
+//                    <hsm,    id, parent state>
+using Top  = CompState<TestHSM, 0  /*None*/>; // NOLINT(readability-magic-numbers)
+using S0   = CompState<TestHSM, 1, Top>;      // NOLINT(readability-magic-numbers)
+using S1   = CompState<TestHSM, 2, S0>;       // NOLINT(readability-magic-numbers)
+using S11  = LeafState<TestHSM, 3, S1>;       // NOLINT(readability-magic-numbers)
+using S2   = CompState<TestHSM, 4, S0>;       // NOLINT(readability-magic-numbers)
+using S21  = CompState<TestHSM, 5, S2>;       // NOLINT(readability-magic-numbers)
+using S211 = LeafState<TestHSM, 6, S21>;      // NOLINT(readability-magic-numbers)
 // clang-format on
 
-enum Signal
+enum class Signal
 {
-    A_SIG,
-    B_SIG,
-    C_SIG,
-    D_SIG,
-    E_SIG,
-    F_SIG,
-    G_SIG,
-    H_SIG
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H
 };
 
 #define HSMINIT(State, InitState)         \
@@ -76,45 +76,45 @@ public:
 
     void next(const TopState<TestHSM>& state)
     {
-        state_ = &state;
+        m_state = &state;
     }
 
-    Signal getSig() const
+    [[nodiscard]] Signal getSig() const
     {
-        return sig_;
+        return m_sig;
     }
 
     void dispatch(Signal sig)
     {
-        sig_ = sig;
-        state_->handler(*this);
+        m_sig = sig;
+        m_state->handler(*this);
     }
 
     void foo(int i)
     {
-        foo_ = i;
+        m_foo = i;
     }
 
-    int foo() const
+    [[nodiscard]] int foo() const
     {
-        return foo_;
+        return m_foo;
     }
 
 private:
-    const TopState<TestHSM>* state_;
-    Signal sig_;
-    int foo_;
+    const TopState<TestHSM>* m_state;
+    Signal m_sig;
+    int m_foo;
 };
 
 bool testDispatch(char c)
 {
-    static TestHSM test;
+    static TestHSM s_test;
     if (c < 'a' || 'h' < c)
     {
         return false;
     }
     printf("\nSignal<-%c: ", c);
-    test.dispatch((Signal)(c - 'a'));
+    s_test.dispatch((Signal)(c - 'a'));
     printf("\n");
     return true;
 }
@@ -128,7 +128,7 @@ HSMHANDLER(S0)
 {
     switch (h.getSig())
     {
-    case E_SIG:
+    case Signal::E:
     {
         Tran<X, This, S211> t(h);
         printf("s0-E;");
@@ -144,31 +144,31 @@ HSMHANDLER(S1)
 {
     switch (h.getSig())
     {
-    case A_SIG:
+    case Signal::A:
     {
         Tran<X, This, S1> t(h);
         printf("s1-A;");
         return;
     }
-    case B_SIG:
+    case Signal::B:
     {
         Tran<X, This, S11> t(h);
         printf("s1-B;");
         return;
     }
-    case C_SIG:
+    case Signal::C:
     {
         Tran<X, This, S2> t(h);
         printf("s1-C;");
         return;
     }
-    case D_SIG:
+    case Signal::D:
     {
         Tran<X, This, S0> t(h);
         printf("s1-D;");
         return;
     }
-    case F_SIG:
+    case Signal::F:
     {
         Tran<X, This, S211> t(h);
         printf("s1-F;");
@@ -184,13 +184,13 @@ HSMHANDLER(S11)
 {
     switch (h.getSig())
     {
-    case G_SIG:
+    case Signal::G:
     {
         Tran<X, This, S211> t(h);
         printf("s11-G;");
         return;
     }
-    case H_SIG:
+    case Signal::H:
         if (h.foo())
         {
             printf("s11-H");
@@ -208,13 +208,13 @@ HSMHANDLER(S2)
 {
     switch (h.getSig())
     {
-    case C_SIG:
+    case Signal::C:
     {
         Tran<X, This, S1> t(h);
         printf("s2-C");
         return;
     }
-    case F_SIG:
+    case Signal::F:
     {
         Tran<X, This, S11> t(h);
         printf("s2-F");
@@ -230,13 +230,13 @@ HSMHANDLER(S21)
 {
     switch (h.getSig())
     {
-    case B_SIG:
+    case Signal::B:
     {
         Tran<X, This, S211> t(h);
         printf("s21-B;");
         return;
     }
-    case H_SIG:
+    case Signal::H:
         if (!h.foo())
         {
             Tran<X, This, S21> t(h);
@@ -255,13 +255,13 @@ HSMHANDLER(S211)
 {
     switch (h.getSig())
     {
-    case D_SIG:
+    case Signal::D:
     {
         Tran<X, This, S21> t(h);
         printf("s211-D;");
         return;
     }
-    case G_SIG:
+    case Signal::G:
     {
         Tran<X, This, S0> t(h);
         printf("s211-G;");
@@ -301,7 +301,7 @@ HSMEXIT(S2)
 HSMEXIT(S21)
 HSMEXIT(S211)
 
-TEST(basic, pizza) // NOLINT
+TEST(basic, pizza)
 {
     testDispatch('a');
     testDispatch('b');

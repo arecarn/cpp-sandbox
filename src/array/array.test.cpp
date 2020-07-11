@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(array, static) // NOLINT
+TEST(array, static)
 {
     const array<int, 3> array{0, 1, 2};
 
@@ -21,7 +21,7 @@ TEST(array, static) // NOLINT
     }
 }
 
-TEST(array, size) // NOLINT
+TEST(array, size)
 {
     const int array_size = 100;
     array<int, array_size> array = {};

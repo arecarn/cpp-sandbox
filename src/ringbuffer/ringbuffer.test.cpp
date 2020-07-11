@@ -1,7 +1,7 @@
 #include "ringbuffer.hpp"
 #include "gtest/gtest.h"
 
-TEST(ringbuffer, push) // NOLINT
+TEST(ringbuffer, push)
 {
     ringbuffer<int, 3> rb;
 
@@ -25,7 +25,7 @@ TEST(ringbuffer, push) // NOLINT
     ASSERT_EQ(rb.size(), 3);
 }
 
-TEST(ringbuffer, pop) // NOLINT
+TEST(ringbuffer, pop)
 {
     ringbuffer<int, 3> rb;
     rb.push(1);
@@ -45,7 +45,7 @@ TEST(ringbuffer, pop) // NOLINT
     ASSERT_EQ(rb.size(), 0);
 }
 
-TEST(ringbuffer, push_wrap) // NOLINT
+TEST(ringbuffer, push_wrap)
 {
     ringbuffer<int, 3> rb;
     rb.push(1);

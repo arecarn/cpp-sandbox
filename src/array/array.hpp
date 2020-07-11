@@ -16,7 +16,7 @@ public:
     }
     constexpr const T& operator[](const size_t i) const
     {
-        return m_data[i]; // NOLINT
+        return m_data[i];
     }
 
     T* data()

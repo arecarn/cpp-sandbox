@@ -15,7 +15,7 @@ public:
         {
             return false;
         }
-        m_data[m_write_index] = x; // NOLINT do not use array subscript
+        m_data[m_write_index] = x;
         ++m_write_index;
         if (m_write_index == N)
         {
@@ -43,7 +43,7 @@ public:
     T& operator[](const size_t i)
     {
         size_t j = (m_read_index + i) % N;
-        return m_data[j]; // NOLINT do not use array subscript
+        return m_data[j];
     }
 
     size_t size()
