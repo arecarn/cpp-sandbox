@@ -23,8 +23,8 @@ include(clangTidy)
 include(clangFormat)
 file(GLOB_RECURSE
     CXX_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/components/*.[ch]pp"
-    "${PROJECT_SOURCE_DIR}/components/*.[ch]"
+    "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
+    "${PROJECT_SOURCE_DIR}/src/*.[ch]"
 )
 addClangFormatTargets(FILES "${CXX_SOURCE_FILES}")
 
