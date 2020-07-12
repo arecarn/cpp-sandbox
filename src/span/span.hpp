@@ -13,8 +13,7 @@ public:
     template <typename ArrayT, size_t t_size>
     constexpr explicit span(ArrayT (&array)[t_size])
         : m_begin{array}
-        ,
-        m_end{array + t_size}
+        , m_end{array + t_size}
     {
     }
 

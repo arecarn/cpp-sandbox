@@ -79,8 +79,7 @@ public:
         m_state = &state;
     }
 
-    [[nodiscard]] Signal getSig() const
-    {
+    [[nodiscard]] Signal getSig() const {
         return m_sig;
     }
 
@@ -95,13 +94,11 @@ public:
         m_foo = i;
     }
 
-    [[nodiscard]] int foo() const
-    {
+    [[nodiscard]] int foo() const {
         return m_foo;
     }
 
-private:
-    const TopState<TestHSM>* m_state;
+    private : const TopState<TestHSM>* m_state;
     Signal m_sig;
     int m_foo;
 };
