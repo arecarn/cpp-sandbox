@@ -125,14 +125,14 @@ HSMHANDLER(S0)
 {
     switch (h.getSig())
     {
-    case Signal::E:
-    {
-        Tran<X, This, S211> t(h);
-        printf("s0-E;");
-        return;
-    }
-    default:
-        break;
+        case Signal::E:
+        {
+            Tran<X, This, S211> t(h);
+            printf("s0-E;");
+            return;
+        }
+        default:
+            break;
     }
     return Base::handle(h, x);
 }
@@ -141,38 +141,38 @@ HSMHANDLER(S1)
 {
     switch (h.getSig())
     {
-    case Signal::A:
-    {
-        Tran<X, This, S1> t(h);
-        printf("s1-A;");
-        return;
-    }
-    case Signal::B:
-    {
-        Tran<X, This, S11> t(h);
-        printf("s1-B;");
-        return;
-    }
-    case Signal::C:
-    {
-        Tran<X, This, S2> t(h);
-        printf("s1-C;");
-        return;
-    }
-    case Signal::D:
-    {
-        Tran<X, This, S0> t(h);
-        printf("s1-D;");
-        return;
-    }
-    case Signal::F:
-    {
-        Tran<X, This, S211> t(h);
-        printf("s1-F;");
-        return;
-    }
-    default:
-        break;
+        case Signal::A:
+        {
+            Tran<X, This, S1> t(h);
+            printf("s1-A;");
+            return;
+        }
+        case Signal::B:
+        {
+            Tran<X, This, S11> t(h);
+            printf("s1-B;");
+            return;
+        }
+        case Signal::C:
+        {
+            Tran<X, This, S2> t(h);
+            printf("s1-C;");
+            return;
+        }
+        case Signal::D:
+        {
+            Tran<X, This, S0> t(h);
+            printf("s1-D;");
+            return;
+        }
+        case Signal::F:
+        {
+            Tran<X, This, S211> t(h);
+            printf("s1-F;");
+            return;
+        }
+        default:
+            break;
     }
     return Base::handle(h, x);
 }
@@ -181,22 +181,22 @@ HSMHANDLER(S11)
 {
     switch (h.getSig())
     {
-    case Signal::G:
-    {
-        Tran<X, This, S211> t(h);
-        printf("s11-G;");
-        return;
-    }
-    case Signal::H:
-        if (h.foo())
+        case Signal::G:
         {
-            printf("s11-H");
-            h.foo(0);
+            Tran<X, This, S211> t(h);
+            printf("s11-G;");
             return;
         }
-        break;
-    default:
-        break;
+        case Signal::H:
+            if (h.foo())
+            {
+                printf("s11-H");
+                h.foo(0);
+                return;
+            }
+            break;
+        default:
+            break;
     }
     return Base::handle(h, x);
 }
@@ -205,20 +205,20 @@ HSMHANDLER(S2)
 {
     switch (h.getSig())
     {
-    case Signal::C:
-    {
-        Tran<X, This, S1> t(h);
-        printf("s2-C");
-        return;
-    }
-    case Signal::F:
-    {
-        Tran<X, This, S11> t(h);
-        printf("s2-F");
-        return;
-    }
-    default:
-        break;
+        case Signal::C:
+        {
+            Tran<X, This, S1> t(h);
+            printf("s2-C");
+            return;
+        }
+        case Signal::F:
+        {
+            Tran<X, This, S11> t(h);
+            printf("s2-F");
+            return;
+        }
+        default:
+            break;
     }
     return Base::handle(h, x);
 }
@@ -227,23 +227,23 @@ HSMHANDLER(S21)
 {
     switch (h.getSig())
     {
-    case Signal::B:
-    {
-        Tran<X, This, S211> t(h);
-        printf("s21-B;");
-        return;
-    }
-    case Signal::H:
-        if (!h.foo())
+        case Signal::B:
         {
-            Tran<X, This, S21> t(h);
-            printf("s21-H;");
-            h.foo(1);
+            Tran<X, This, S211> t(h);
+            printf("s21-B;");
             return;
         }
-        break;
-    default:
-        break;
+        case Signal::H:
+            if (!h.foo())
+            {
+                Tran<X, This, S21> t(h);
+                printf("s21-H;");
+                h.foo(1);
+                return;
+            }
+            break;
+        default:
+            break;
     }
     return Base::handle(h, x);
 }
@@ -252,20 +252,20 @@ HSMHANDLER(S211)
 {
     switch (h.getSig())
     {
-    case Signal::D:
-    {
-        Tran<X, This, S21> t(h);
-        printf("s211-D;");
-        return;
-    }
-    case Signal::G:
-    {
-        Tran<X, This, S0> t(h);
-        printf("s211-G;");
-        return;
-    }
-    default:
-        break;
+        case Signal::D:
+        {
+            Tran<X, This, S21> t(h);
+            printf("s211-D;");
+            return;
+        }
+        case Signal::G:
+        {
+            Tran<X, This, S0> t(h);
+            printf("s211-G;");
+            return;
+        }
+        default:
+            break;
     }
     return Base::handle(h, x);
 }

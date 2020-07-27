@@ -20,12 +20,12 @@ void State::handle(const Value& event)
 {
     switch (event.tag())
     {
-    case Value::Int:
-        handle_int(*event.as_int());
-        break;
+        case Value::Int:
+            handle_int(*event.as_int());
+            break;
 
-    case Value::Float:
-        handle_float(*event.as_float());
-        break;
+        case Value::Float:
+            handle_float(*event.as_float());
+            break;
     }
 }
