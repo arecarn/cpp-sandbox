@@ -24,7 +24,7 @@ public:
         return &m_data[0];
     }
 
-    size_t constexpr size()
+    static size_t constexpr size()
     {
         return n;
     }
