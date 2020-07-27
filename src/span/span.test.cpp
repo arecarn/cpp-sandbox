@@ -7,7 +7,7 @@ TEST(span, static)
 {
     array<int, 3> array = {0, 1, 2};
     constexpr int C_Array_Size = 5;
-    int c_array[C_Array_Size] = {0, 1, 2, 3, 4};
+    int c_array[C_Array_Size] = {0, 1, 2, 3, 4}; // NOLINT(modernize-avoid-c-arrays)
 
     span<int> c_array_span{c_array};
 
