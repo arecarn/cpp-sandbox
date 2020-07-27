@@ -50,11 +50,24 @@ struct max_size<T>
     static const std::size_t value = sizeof(T);
 };
 
+// max_alignment<Ts...>::value
+template <typename T, typename... Ts>
+struct max_alignment
+{
+    static const std::size_t value = max(alignof(T), max_alignment<Ts...>::value);
+};
+
+template <typename T>
+struct max_alignment<T>
+{
+    static const std::size_t value = alignof(T);
+};
+
 template <typename... Ts>
 class PodVariant
 {
     std::size_t curr_type;
-    char data[max_size<Ts...>::value];
+    alignas(max_alignment<Ts...>::value) char data[max_size<Ts...>::value];
 
 public:
     PodVariant()
