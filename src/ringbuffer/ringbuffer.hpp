@@ -9,6 +9,9 @@ class ringbuffer
 public:
     using value_type = T;
 
+    ringbuffer() = default;
+    ~ringbuffer() = default;
+
     bool push(const T x)
     {
         if (m_size == N)
@@ -46,22 +49,23 @@ public:
         return m_data[j];
     }
 
-    size_t size()
+    size_t size() const
     {
         return m_size;
     }
 
-    bool empty()
+    bool empty() const
     {
         return m_size == 0;
     }
 
-    constexpr size_t capacity()
+    static constexpr size_t capacity()
     {
-        return N;
+        return m_capacity;
     }
 
 private:
+    static constexpr size_t m_capacity{N};
     value_type m_data[N]{};
     static constexpr size_t m_max_index{N - 1};
     size_t m_write_index{0};
