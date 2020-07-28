@@ -1,0 +1,3 @@
+# Configure all text files for automatic end-of-line conversion. If Git decides
+# that the content is text, its line endings are converted to LF on checkin.
+* text=auto
