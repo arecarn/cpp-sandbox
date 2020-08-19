@@ -114,13 +114,39 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cmake --build $(BUILD_PREFIX) $(JOB_FLAG) -t $@ -- ${args}; \
 
-ctest:
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cd $(BUILD_PREFIX); \
-	ctest ${args};
-
 # All the Makefiles read themselves get matched if a target exists for them, so
 # they will get matched by a Match anything target %:. This target is here
 # to prevent the %: Match-anything target from matching, and do nothing.
 Makefile:
 	;
+
+.PHONY: ctest
+ctest:
+	export CTEST_OUTPUT_ON_FAILURE=1; \
+	cd $(BUILD_PREFIX); \
+	ctest ${args};
+
+.PHONY: docker-setup
+docker-setup:
+	docker build --tag c-and-cpp-env . \
+	&& \
+	docker run \
+	--name c-and-cpp-env \
+	--volume ${PWD}:/home/app \
+	--tty \
+	--interactive \
+	--detach \
+	--rm \
+	c-and-cpp-env
+
+.PHONY: docker-attach
+docker-attach:
+	docker attach  c-and-cpp-env
+
+.PHONY: docker-kill
+docker-kill:
+	docker kill c-and-cpp-env
+
+.PHONY: docker-exec
+docker-exec:
+	docker exec c-and-cpp-env ${args}
