@@ -112,13 +112,12 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 %: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
 	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cmake --build $(BUILD_PREFIX) $(JOB_FLAG) -t $@ -- ${a}; \
+	cmake --build $(BUILD_PREFIX) $(JOB_FLAG) -t $@ -- ${args}; \
 
-cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
+ctest:
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cd $(BUILD_PREFIX); \
-	${a};
-
+	ctest ${args};
 
 # All the Makefiles read themselves get matched if a target exists for them, so
 # they will get matched by a Match anything target %:. This target is here
