@@ -5,7 +5,7 @@ if(CMAKE_VERSION VERSION_GREATER 3.6)
         CLANG_TIDY_EXE
         NAMES clang-tidy-11 clang-tidy-10 clang-tidy
         DOC "Path to clang-tidy executable"
-        )
+    )
 
     if(CLANG_TIDY_EXE)
         set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")

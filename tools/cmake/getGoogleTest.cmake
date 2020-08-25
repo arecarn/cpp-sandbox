@@ -2,7 +2,13 @@ function(getGoogleTest)
     set(options)
     set(oneValueArgs GIT_TAG INSTALL_DIR)
     set(multiValueArgs)
-    cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+    cmake_parse_arguments(
+        ARGS
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN}
+    )
 
     # Set defaults for unprovided arguments
     if(NOT ARG_GIT_TAG)
@@ -20,10 +26,18 @@ function(getGoogleTest)
     set(LIB_NAME_GMOCK gmock)
     set(LIB_NAME_GMOCK_MAIN gmock_main)
 
-    set(LIB_LOCATION_GTEST ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GTEST}${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set(LIB_LOCATION_GTEST_MAIN ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GTEST_MAIN}${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set(LIB_LOCATION_GMOCK ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GMOCK}${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set(LIB_LOCATION_GMOCK_MAIN ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GMOCK_MAIN}${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(LIB_LOCATION_GTEST
+        ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GTEST}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+    set(LIB_LOCATION_GTEST_MAIN
+        ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GTEST_MAIN}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+    set(LIB_LOCATION_GMOCK
+        ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GMOCK}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
+    set(LIB_LOCATION_GMOCK_MAIN
+        ${ARG_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIB_NAME_GMOCK_MAIN}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    )
 
     set(EXTERNAL_PROJ_NAME external_proj_${PROJECT_NAME})
     include(ExternalProject)
@@ -44,33 +58,41 @@ function(getGoogleTest)
 
     add_library(${LIB_NAME_GTEST} UNKNOWN IMPORTED)
     add_dependencies(${LIB_NAME_GTEST} ${EXTERNAL_PROJ_NAME})
-    set_target_properties(gtest PROPERTIES
-        IMPORTED_LOCATION ${LIB_LOCATION_GTEST}
-        INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
-        IMPORTED_LINK_INTERFACE_LIBRARIES Threads::Threads
+    set_target_properties(
+        gtest
+        PROPERTIES
+            IMPORTED_LOCATION ${LIB_LOCATION_GTEST}
+            INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
+            IMPORTED_LINK_INTERFACE_LIBRARIES Threads::Threads
     )
 
     add_library(${LIB_NAME_GTEST_MAIN} UNKNOWN IMPORTED)
     add_dependencies(${LIB_NAME_GTEST_MAIN} ${EXTERNAL_PROJ_NAME})
-    set_target_properties(${LIB_NAME_GTEST_MAIN} PROPERTIES
-        IMPORTED_LOCATION ${LIB_LOCATION_GTEST_MAIN}
-        INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
-        IMPORTED_LINK_INTERFACE_LIBRARIES "Threads::Threads;gtest"
+    set_target_properties(
+        ${LIB_NAME_GTEST_MAIN}
+        PROPERTIES
+            IMPORTED_LOCATION ${LIB_LOCATION_GTEST_MAIN}
+            INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
+            IMPORTED_LINK_INTERFACE_LIBRARIES "Threads::Threads;gtest"
     )
 
     add_library(${LIB_NAME_GMOCK} UNKNOWN IMPORTED)
     add_dependencies(${LIB_NAME_GMOCK} ${EXTERNAL_PROJ_NAME})
-    set_target_properties(${LIB_NAME_GMOCK} PROPERTIES
-        IMPORTED_LOCATION ${LIB_LOCATION_GMOCK}
-        INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
-        IMPORTED_LINK_INTERFACE_LIBRARIES Threads::Threads
+    set_target_properties(
+        ${LIB_NAME_GMOCK}
+        PROPERTIES
+            IMPORTED_LOCATION ${LIB_LOCATION_GMOCK}
+            INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
+            IMPORTED_LINK_INTERFACE_LIBRARIES Threads::Threads
     )
 
     add_library(${LIB_NAME_GMOCK_MAIN} UNKNOWN IMPORTED)
     add_dependencies(${LIB_NAME_GMOCK_MAIN} ${EXTERNAL_PROJ_NAME})
-    set_target_properties(${LIB_NAME_GMOCK_MAIN} PROPERTIES
-        IMPORTED_LOCATION ${LIB_LOCATION_GMOCK_MAIN}
-        INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
-        IMPORTED_LINK_INTERFACE_LIBRARIES "Threads::Threads;gmock"
+    set_target_properties(
+        ${LIB_NAME_GMOCK_MAIN}
+        PROPERTIES
+            IMPORTED_LOCATION ${LIB_LOCATION_GMOCK_MAIN}
+            INTERFACE_INCLUDE_DIRECTORIES ${LIB_INCLUDE_DIR}
+            IMPORTED_LINK_INTERFACE_LIBRARIES "Threads::Threads;gmock"
     )
 endfunction()
