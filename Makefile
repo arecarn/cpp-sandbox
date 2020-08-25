@@ -143,27 +143,49 @@ ctest:
 	cd $(BUILD_PREFIX); \
 	ctest ${a};
 
-.PHONY: docker-setup
-docker-setup:
-	docker build --tag c-and-cpp-env . \
-	&& \
+
+DOCKER_IMAGE_NAME ?= c-and-cpp-env
+
+.PHONY: docker-build
+docker-build:
+	docker build --tag $(DOCKER_IMAGE_NAME) .
+
+
+
+UID=$(shell id -u)
+GID=$(shell id -g)
+
+.PHONY: docker-run
+docker-run:
 	docker run \
-	--name c-and-cpp-env \
-	--volume ${PWD}:/home/app \
+	--user ${UID}:${GID} \
+	--name $(DOCKER_IMAGE_NAME) \
+	--volume ${PWD}:${PWD} \
+	--workdir=${PWD} \
 	--tty \
 	--interactive \
 	--detach \
 	--rm \
-	c-and-cpp-env
+	--volume="/etc/group:/etc/group:ro" \
+	--volume="/etc/passwd:/etc/passwd:ro" \
+	--volume="/etc/shadow:/etc/shadow:ro" \
+	--env="DISPLAY" \
+	--net=host \
+	$(DOCKER_IMAGE_NAME) \
+	useradd -m -u ${UID} -g ${GID} ${USER}
+
+
+.PHONY: docker-setup
+docker-setup: docker-build docker-run
 
 .PHONY: docker-attach
 docker-attach:
-	docker attach  c-and-cpp-env
+	docker attach $(DOCKER_IMAGE_NAME)
 
-.PHONY: docker-kill
-docker-kill:
-	docker kill c-and-cpp-env
+.PHONY: docker-stop
+docker-stop:
+	docker stop $(DOCKER_IMAGE_NAME)
 
 .PHONY: docker-exec
 docker-exec:
-	docker exec c-and-cpp-env ${a}
+	docker exec $(DOCKER_IMAGE_NAME) /bin/sh -c "${a}"
