@@ -6,3 +6,6 @@ compile_commands.json
 
 # created by ctest
 Testing/
+
+# Created by clangd
+.clangd
