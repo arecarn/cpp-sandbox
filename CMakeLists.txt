@@ -32,7 +32,6 @@ file(
 )
 addGersmiFormatTargets(FILES "${CMAKE_SOURCE_FILES}")
 
-
 include(getGoogleTest)
 getGoogleTest()
 
@@ -42,6 +41,7 @@ macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
 
+
 add_subdirectory(src/array)
 add_subdirectory(src/pong)
 add_subdirectory(src/ringbuffer)
@@ -50,3 +50,4 @@ add_subdirectory(src/state_machine)
 add_subdirectory(src/tagged_union)
 add_subdirectory(src/pod_variant)
 add_subdirectory(src/yahsm)
+add_subdirectory(src/questions)
