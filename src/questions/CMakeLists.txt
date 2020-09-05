@@ -54,3 +54,14 @@ target_link_libraries(palindrome_permutation.test
     gtest_main
 )
 create_test(palindrome_permutation.test)
+
+
+# One Away
+################################################################################
+add_executable(one_away.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/one_away.test.cpp
+)
+target_link_libraries(one_away.test
+    gtest_main
+)
+create_test(one_away.test)
