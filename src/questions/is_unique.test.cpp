@@ -16,7 +16,7 @@ struct ArraySolution : Solution
 {
     bool is_unique(std::string str) override
     {
-        constexpr size_t Char_Values = 256;
+        constexpr size_t Char_Values = 128; // assuming ascii
         int char_seen[Char_Values] = {0};
 
         for (const auto& c : str)

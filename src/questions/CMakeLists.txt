@@ -19,3 +19,13 @@ target_link_libraries(reverse_c_string.test
     gtest_main
 )
 create_test(reverse_c_string.test)
+
+# Remove Duplicate Chars
+################################################################################
+add_executable(check_permutation.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/check_permutation.test.cpp
+)
+target_link_libraries(check_permutation.test
+    gtest_main
+)
+create_test(check_permutation.test)
