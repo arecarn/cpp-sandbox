@@ -8,14 +8,14 @@
 // Input:  "Mr John Smith    "
 // Output: "Mr%20John%20Smith"
 
-#include <gtest/gtest.h>
-#include <vector>
-#include <iostream>
 #include <cassert>
+#include <gtest/gtest.h>
+#include <iostream>
+#include <vector>
 
 void urlify(char* str, int len)
 {
-    int index = len-1;
+    int index = len - 1;
     int back_index = index;
     // walk backwards and find the first non-space
     while (str[index] == ' ' && index >= 0)
@@ -27,7 +27,7 @@ void urlify(char* str, int len)
     // when a space is encountered copy a %20 instead of a space
     while (index >= 0)
     {
-        if(str[index] == ' ')
+        if (str[index] == ' ')
         {
             str[back_index] = '0';
             back_index--;
@@ -43,7 +43,6 @@ void urlify(char* str, int len)
         }
         index--;
     }
-
 }
 
 struct TestCase

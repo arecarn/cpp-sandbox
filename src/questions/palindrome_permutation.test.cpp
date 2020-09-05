@@ -7,13 +7,13 @@
 // Output: True (permutations: "taco cat", "atco eta", etc.)
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 bool palindrome_permutation(std::string s)
 {
-    auto b = s.size()-1;
+    auto b = s.size() - 1;
     decltype(b) f = 0;
 
     while (f < b)

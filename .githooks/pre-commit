@@ -1,1 +1,3 @@
 #!/bin/sh
+
+make format_check
