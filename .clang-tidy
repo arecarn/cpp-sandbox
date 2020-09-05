@@ -38,6 +38,7 @@ Checks: >
   -performance-move-const-arg,
   -readability-named-parameter,
   -modernize-use-trailing-return-type,
+  -modernize-avoid-c-arrays,
   -readability-redundant-declaration
 
 WarningsAsErrors: >
