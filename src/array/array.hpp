@@ -3,8 +3,8 @@
 
 #include <cstddef>
 
-template <typename T, size_t n>
-class array
+template <typename T, size_t N>
+class Array
 {
 public:
     // TODO(rcarney) need to add extra type parameters
@@ -26,7 +26,7 @@ public:
 
     static size_t constexpr size()
     {
-        return n;
+        return N;
     }
 
     constexpr T* begin()
@@ -40,25 +40,25 @@ public:
 
     constexpr T* end()
     {
-        return &m_data[n];
+        return &m_data[N];
     }
     constexpr const T* end() const
     {
-        return &m_data[n];
+        return &m_data[N];
     }
 
-    T m_data[n];
+    T m_data[N];
 };
 
 template <size_t I, typename T, size_t N>
-constexpr T& get(array<T, N>& a)
+constexpr T& get(Array<T, N>& a)
 {
     static_assert(I < N, "I must be less than N");
     return a[I];
 }
 
 template <size_t I, typename T, size_t N>
-constexpr const T& get(const array<T, N>& a)
+constexpr const T& get(const Array<T, N>& a)
 {
     static_assert(I < N, "I must be less than N");
     return a[I];

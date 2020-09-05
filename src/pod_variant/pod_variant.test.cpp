@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-static int g_jjjj;
-
 struct Dub
 {
     double x;
@@ -33,5 +31,4 @@ TEST(test, test) // NOLINT
               << "\n";
     std::cout << "<<<<" << alignof(Test) << ">>>>"
               << "\n";
-    ASSERT_TRUE(false);
 };

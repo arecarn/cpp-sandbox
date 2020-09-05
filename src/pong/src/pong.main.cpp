@@ -1,6 +1,9 @@
-#include "components.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <components.hpp>
+
+#include <bitset>
+#include <vector>
 
 namespace Config
 {
@@ -10,14 +13,39 @@ constexpr unsigned int Window_Width{800};
 constexpr unsigned int Window_Height{600};
 } // namespace
 
+class Paddle
+{
+public:
+    Paddle()
+        : m_dimenstions{Config::Paddle_Height, Config::Paddle_Width}
+        , m_shape{m_dimenstions}
+    {
+        m_shape.setFillColor(sf::Color::White);
+    }
+
+    void update()
+    {
+    }
+
+    void draw(sf::RenderWindow& window)
+    {
+        window.draw(m_shape);
+    }
+
+private:
+    sf::Vector2<float> m_position;
+    sf::Vector2f m_dimenstions;
+    sf::RectangleShape m_shape;
+};
+
 int main()
 {
+
     sf::VideoMode video_mode{Config::Window_Width, Config::Window_Height};
     sf::RenderWindow window{video_mode, "Pong"};
+    std::vector<int> v;
 
-    sf::Vector2f dimenstions{Config::Paddle_Height, Config::Paddle_Width};
-    sf::RectangleShape shape(dimenstions);
-    shape.setFillColor(sf::Color::White);
+    Paddle paddle{};
 
     while (window.isOpen())
     {
@@ -31,7 +59,7 @@ int main()
         }
 
         window.clear();
-        window.draw(shape);
+        paddle.draw(window);
         window.display();
     }
 

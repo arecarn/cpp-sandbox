@@ -4,31 +4,32 @@
 #include <algorithm>
 #include <cstdint>
 #include <stdexcept>
+#include <vector>
 
 // get_type<i, Ts...>::type -> Ts[i] (Compile error of i >= length(Ts))
-template <std::size_t i, typename T, typename... Ts>
-struct get_type
+template <std::size_t I, typename T, typename... Ts>
+struct GetType
 {
-    typedef typename get_type<i - 1, Ts...>::type type;
+    using type = typename GetType<I - 1, Ts...>::type;
 };
 
 template <typename T, typename... Ts>
-struct get_type<0, T, Ts...>
+struct GetType<0, T, Ts...>
 {
-    typedef T type;
+    using type = T;
 };
 
-// Ts[index_type<A, Ts...>::value] == A (Compilation error if A not in Ts)
+// Ts[index_type<A, Ts...>::Value] == A (Compilation error if A not in Ts)
 template <typename A, typename T, typename... Ts>
-struct index_type
+struct IndexType
 {
-    static const std::size_t value = index_type<A, Ts...>::value + 1;
+    static const std::size_t Value = IndexType<A, Ts...>::Value + 1;
 };
 
 template <typename A, typename... Ts>
-struct index_type<A, A, Ts...>
+struct IndexType<A, A, Ts...>
 {
-    static const std::size_t value = 0;
+    static const std::size_t Value = 0;
 };
 
 template <typename T>
@@ -37,68 +38,63 @@ constexpr T max(const T& a, const T& b)
     return a > b ? a : b;
 }
 
-// max_size<Ts...>::value
+// max_size<Ts...>::Value
 template <typename T, typename... Ts>
-struct max_size
+struct MaxSize
 {
-    static const std::size_t value = max(sizeof(T), max_size<Ts...>::value);
+    static const std::size_t Value = max(sizeof(T), MaxSize<Ts...>::Value);
 };
 
 template <typename T>
-struct max_size<T>
+struct MaxSize<T>
 {
-    static const std::size_t value = sizeof(T);
+    static const std::size_t Value = sizeof(T);
 };
 
-// max_alignment<Ts...>::value
+// max_alignment<Ts...>::Value
 template <typename T, typename... Ts>
-struct max_alignment
+struct MaxAlignment
 {
-    static const std::size_t value = max(alignof(T), max_alignment<Ts...>::value);
+    static const std::size_t Value = max(alignof(T), MaxAlignment<Ts...>::Value);
 };
 
 template <typename T>
-struct max_alignment<T>
+struct MaxAlignment<T>
 {
-    static const std::size_t value = alignof(T);
+    static const std::size_t Value = alignof(T);
 };
 
 template <typename... Ts>
 class PodVariant
 {
-    std::size_t curr_type;
-    alignas(max_alignment<Ts...>::value) char data[max_size<Ts...>::value];
+    std::size_t m_curr_type{};
+    alignas(MaxAlignment<Ts...>::Value) char m_data[MaxSize<Ts...>::Value]{}; //NOLINT
 
 public:
-    PodVariant()
-        : curr_type()
-        , data()
-    {
-    }
+    PodVariant() = default;
 
     template <typename T>
     PodVariant(const T& x)
-        : curr_type(index_type<T, Ts...>::value)
+        : m_curr_type(IndexType<T, Ts...>::Value)
     {
-        auto ptr = reinterpret_cast<const char*>(&x);
-        std::copy(ptr, ptr + sizeof(T), this->data);
+        const auto* ptr = reinterpret_cast<const char*>(&x);
+        std::copy(ptr, ptr + sizeof(T), this->m_data);
     }
 
     template <typename T>
     const T& operator=(const T& x)
     {
-        this->curr_type = index_type<T, Ts...>::value;
-        auto ptr = reinterpret_cast<const char*>(&x);
-        std::copy(ptr, ptr + sizeof(T), this->data);
+        this->m_curr_type = IndexType<T, Ts...>::Value;
+        const auto* const ptr = reinterpret_cast<const char*>(&x);
+        std::copy(ptr, ptr + sizeof(T), this->m_data);
         return x;
     }
 
     template <typename T>
     bool is()
     {
-        return this->curr_type == index_type<T, Ts...>::value;
+        return this->m_curr_type == IndexType<T, Ts...>::Value;
     }
-
     template <typename T>
     T& as()
     {
@@ -106,17 +102,19 @@ public:
         {
             throw std::runtime_error("Requested type is not contained");
         }
-        return *reinterpret_cast<T*>(this->data);
+        return *reinterpret_cast<T*>(this->m_data);
     }
 
     template <typename T>
     bool into(T& x)
     {
+        std::vector<int> v;
+
         if (!this->is<T>())
         {
             return false;
         }
-        x = *reinterpret_cast<T*>(this->data);
+        x = *reinterpret_cast<T*>(this->m_data);
         return true;
     }
 };

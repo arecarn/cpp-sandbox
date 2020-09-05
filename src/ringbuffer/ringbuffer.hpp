@@ -61,13 +61,13 @@ public:
 
     static constexpr size_t capacity()
     {
-        return m_capacity;
+        return Capacity;
     }
 
 private:
-    static constexpr size_t m_capacity{N};
+    static constexpr size_t Capacity{N};
+    static constexpr size_t Max_Index{N - 1};
     value_type m_data[N]{};
-    static constexpr size_t m_max_index{N - 1};
     size_t m_write_index{0};
     size_t m_read_index{0};
     size_t m_size{0};

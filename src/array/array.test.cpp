@@ -4,7 +4,7 @@
 
 TEST(array, static)
 {
-    const array<int, 3> array{0, 1, 2};
+    const Array<int, 3> array{0, 1, 2};
 
     int j = 0;
     for (auto i : array)
@@ -24,6 +24,6 @@ TEST(array, static)
 TEST(array, size)
 {
     const int array_size = 100;
-    array<int, array_size> array = {};
+    Array<int, array_size> array = {};
     ASSERT_EQ(array.size(), array_size);
 }
