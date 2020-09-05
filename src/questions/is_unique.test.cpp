@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 struct Solution
 {
     virtual bool is_unique(std::string str) = 0;
@@ -49,7 +48,8 @@ struct SetSolution : Solution
     }
 };
 
-struct TestCase {
+struct TestCase
+{
     std::string str;
     bool result;
 };
@@ -65,10 +65,10 @@ std::vector<TestCase> g_test_cases = {
 
 void test(Solution&& s)
 {
-    for(const auto& c : g_test_cases)
+    for (const auto& c : g_test_cases)
     {
         std::cerr << "Testing String: \"" << c.str << "\"\n";
-        if(c.result)
+        if (c.result)
         {
             ASSERT_TRUE(s.is_unique(c.str));
         }

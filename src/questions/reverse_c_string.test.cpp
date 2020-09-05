@@ -4,19 +4,19 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-
 void reverse_c_string(char* str)
 {
     char* start = str;
     char* end = str;
 
     // find end of str
-    while(*end != '\0') {
+    while (*end != '\0')
+    {
         end++;
     }
     end--;
 
-    while(start < end)
+    while (start < end)
     {
         char temp = *start;
         *start = *end;
@@ -25,7 +25,6 @@ void reverse_c_string(char* str)
         end--;
     }
 }
-
 
 struct TestCase
 {
@@ -50,4 +49,3 @@ TEST(reverse_c_string, test)
         ASSERT_STREQ(c.str, c.result);
     }
 };
-

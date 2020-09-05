@@ -1,5 +1,6 @@
 project(questions)
 
+
 # Is Unique
 ################################################################################
 add_executable(is_unique.test
@@ -9,6 +10,7 @@ target_link_libraries(is_unique.test
     gtest_main
 )
 create_test(is_unique.test)
+
 
 # Reverse C String
 ################################################################################
@@ -20,7 +22,8 @@ target_link_libraries(reverse_c_string.test
 )
 create_test(reverse_c_string.test)
 
-# Remove Duplicate Chars
+
+# Check Permutation
 ################################################################################
 add_executable(check_permutation.test
     ${CMAKE_CURRENT_SOURCE_DIR}/check_permutation.test.cpp
@@ -29,3 +32,25 @@ target_link_libraries(check_permutation.test
     gtest_main
 )
 create_test(check_permutation.test)
+
+
+# URLify
+################################################################################
+add_executable(urlify.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/urlify.test.cpp
+)
+target_link_libraries(urlify.test
+    gtest_main
+)
+create_test(urlify.test)
+
+
+# Palindrome Permutation
+################################################################################
+add_executable(palindrome_permutation.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/palindrome_permutation.test.cpp
+)
+target_link_libraries(palindrome_permutation.test
+    gtest_main
+)
+create_test(palindrome_permutation.test)
