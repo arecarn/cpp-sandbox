@@ -18,30 +18,32 @@ include(clangTidy)
 
 include(clangFormat)
 file(
-    GLOB_RECURSE CXX_SOURCE_FILES
+    GLOB_RECURSE C_AND_CPP_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
     "${PROJECT_SOURCE_DIR}/src/*.[ch]"
 )
-addClangFormatTargets(FILES "${CXX_SOURCE_FILES}")
+addclangformattargets(FILES "${C_AND_CPP_SOURCE_FILES}")
 
 include(gersemi)
 file(
     GLOB_RECURSE CMAKE_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/CMakelists.txt"
+    "${PROJECT_SOURCE_DIR}/CMakeLists.txt"
     "${PROJECT_SOURCE_DIR}/src/*.cmake"
     "${PROJECT_SOURCE_DIR}/tools/*.cmake"
 )
-addGersmiFormatTargets(FILES "${CMAKE_SOURCE_FILES}")
+addgersmiformattargets(FILES "${CMAKE_SOURCE_FILES}")
+
+add_custom_target(format DEPENDS format_cpp format_cmake)
+add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
 
 include(getGoogleTest)
-getGoogleTest()
+getgoogletest()
 
 enable_testing()
 
 macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
-
 
 add_subdirectory(src/array)
 add_subdirectory(src/pong)

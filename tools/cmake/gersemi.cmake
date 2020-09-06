@@ -16,12 +16,13 @@ function(addGersmiFormatTargets)
         add_custom_target(
             format_cmake
             COMMAND ${GERSEMI} -i ${ARGS_FILES}
-            COMMENT "Auto formatting of all CMake source files"
+            COMMENT "Auto formatting CMake source files"
         )
+
         add_custom_target(
             format_check_cmake
             COMMAND ${GERSEMI} -c ${ARGS_FILES}
-            COMMENT "Checking CMake format compliance"
+            COMMENT "Checking formatting of CMake source files"
         )
     endif()
 endfunction()
