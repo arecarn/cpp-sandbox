@@ -28,7 +28,8 @@ include(gersemi)
 file(
     GLOB_RECURSE CMAKE_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/CMakelists.txt"
-    "${PROJECT_SOURCE_DIR}/*.cmake"
+    "${PROJECT_SOURCE_DIR}/src/*.cmake"
+    "${PROJECT_SOURCE_DIR}/tools/*.cmake"
 )
 addGersmiFormatTargets(FILES "${CMAKE_SOURCE_FILES}")
 

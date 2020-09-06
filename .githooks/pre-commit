@@ -1,3 +1,4 @@
 #!/bin/sh
 
-make format_check
+make format_check format_check_cmake
+
