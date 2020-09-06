@@ -42,13 +42,17 @@ function(getGoogleTest)
     set(EXTERNAL_PROJ_NAME external_proj_${PROJECT_NAME})
     include(ExternalProject)
 
-    ExternalProject_Add(
+    externalproject_add(
         ${EXTERNAL_PROJ_NAME}
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG ${ARG_GIT_TAG}
         INSTALL_DIR "${ARG_INSTALL_DIR}"
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-        BUILD_BYPRODUCTS ${LIB_LOCATION_GTEST} ${LIB_LOCATION_GTEST_MAIN} ${LIB_LOCATION_GMOCK} ${LIB_LOCATION_GMOCK_MAIN}
+        BUILD_BYPRODUCTS
+            ${LIB_LOCATION_GTEST}
+            ${LIB_LOCATION_GTEST_MAIN}
+            ${LIB_LOCATION_GMOCK}
+            ${LIB_LOCATION_GMOCK_MAIN}
     )
 
     find_package(Threads REQUIRED)
