@@ -1,4 +1,4 @@
-function(addClangFormatTargets)
+function(clang_format_add_format_cpp_targets)
     set(options)
     set(oneValueArgs)
     set(multiValueArgs FILES)
@@ -16,7 +16,7 @@ function(addClangFormatTargets)
         add_custom_target(
             format_cpp
             COMMAND ${CLANG_FORMAT} -i -style=file ${ARGS_FILES}
-            COMMENT "Auto formatting of all source files"
+            COMMENT "Formatting C and C++ source files"
         )
 
         add_custom_target(
@@ -32,7 +32,7 @@ function(addClangFormatTargets)
             COMMAND
                 ! grep -c "replacement "
                 ${CMAKE_BINARY_DIR}/check_format_file.txt > /dev/null
-            COMMENT "Checking format compliance"
+            COMMENT "Checking formatting of C and C++ source files"
         )
     endif()
 endfunction()

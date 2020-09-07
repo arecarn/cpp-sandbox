@@ -1,4 +1,4 @@
-function(addGersmiFormatTargets)
+function(gersemi_add_format_cmake_targets)
     set(options)
     set(oneValueArgs)
     set(multiValueArgs FILES)
@@ -16,7 +16,7 @@ function(addGersmiFormatTargets)
         add_custom_target(
             format_cmake
             COMMAND ${GERSEMI} -i ${ARGS_FILES}
-            COMMENT "Auto formatting CMake source files"
+            COMMENT "Formatting CMake source files"
         )
 
         add_custom_target(

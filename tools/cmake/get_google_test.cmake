@@ -1,4 +1,4 @@
-function(getGoogleTest)
+function(get_google_test)
     set(options)
     set(oneValueArgs GIT_TAG INSTALL_DIR)
     set(multiValueArgs)

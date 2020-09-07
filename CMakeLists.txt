@@ -14,15 +14,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 
 include(ccache)
 include(cppcheck)
-include(clangTidy)
+include(clang_tidy)
 
-include(clangFormat)
+include(clang_format)
 file(
     GLOB_RECURSE C_AND_CPP_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
     "${PROJECT_SOURCE_DIR}/src/*.[ch]"
 )
-addclangformattargets(FILES "${C_AND_CPP_SOURCE_FILES}")
+clang_format_add_format_cpp_targets(FILES "${C_AND_CPP_SOURCE_FILES}")
 
 include(gersemi)
 file(
@@ -31,13 +31,13 @@ file(
     "${PROJECT_SOURCE_DIR}/src/*.cmake"
     "${PROJECT_SOURCE_DIR}/tools/*.cmake"
 )
-addgersmiformattargets(FILES "${CMAKE_SOURCE_FILES}")
+gersemi_add_format_cmake_targets(FILES "${CMAKE_SOURCE_FILES}")
 
-add_custom_target(format DEPENDS format_cpp format_cmake)
+add_custom_target(format ALL DEPENDS format_cpp format_cmake)
 add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
 
-include(getGoogleTest)
-getgoogletest()
+include(get_google_test)
+get_google_test()
 
 enable_testing()
 
