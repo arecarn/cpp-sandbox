@@ -60,3 +60,13 @@ add_executable(
 )
 target_link_libraries(string_compression.test gtest_main)
 create_test(string_compression.test)
+
+################################################################################
+# Rotate Matrix
+################################################################################
+add_executable(
+    rotate_matrix.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/rotate_matrix.test.cpp
+)
+target_link_libraries(rotate_matrix.test gtest_main)
+create_test(rotate_matrix.test)
