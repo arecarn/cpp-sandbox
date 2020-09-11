@@ -59,31 +59,31 @@ uint32_t g_case_a_expected[2][2] = {
 
 uint32_t g_case_b[3][3] = {
     {1, 2, 3},
-    {4, 5, 6}, // NOLINT
-    {7, 8, 9}, // NOLINT
+    {4, 5, 6},
+    {7, 8, 9},
 };
 
 uint32_t g_case_b_expected[3][3] = {
-    {7, 4, 1}, // NOLINT
-    {8, 5, 2}, // NOLINT
-    {9, 6, 3}, // NOLINT
+    {7, 4, 1},
+    {8, 5, 2},
+    {9, 6, 3},
 };
 
 uint32_t g_case_c[4][4] = {
-    {1,   2,   3,   4},   // NOLINT
-    {5,   6,   7,   8},   // NOLINT
-    {9,   10,  11,  12},  // NOLINT
-    {13,  14,  15,  16},  // NOLINT
+    {1,   2,   3,   4},
+    {5,   6,   7,   8},
+    {9,   10,  11,  12},
+    {13,  14,  15,  16},
 };
 
 uint32_t g_case_c_expected[4][4] = {
-    {13,  9,   5,  1},  // NOLINT
-    {14,  10,  6,  2},  // NOLINT
-    {15,  11,  7,  3},  // NOLINT
-    {16,  12,  8,  4},  // NOLINT
+    {13,  9,   5,  1},
+    {14,  10,  6,  2},
+    {15,  11,  7,  3},
+    {16,  12,  8,  4},
 };
 // clang-format off
-//
+
 template <size_t N>
 void print_matrix(std::uint32_t (&matrix)[N][N])
 {

@@ -43,7 +43,8 @@ Checks: >
 
 WarningsAsErrors: >
   *,
-  -modernize-avoid-c-arrays
+  -modernize-avoid-c-arrays,
+  -readability-magic-numbers
 
 CheckOptions:
   - {key: readability-identifier-naming.NamespaceCase, value: CamelCase}
