@@ -11,7 +11,7 @@ function(clang_format_add_format_cpp_targets)
     )
 
     # Adding clang-format check and formatter if found
-    find_program(CLANG_FORMAT "clang-format")
+    find_program(CLANG_FORMAT clang-format)
     if(CLANG_FORMAT)
         add_custom_target(
             format_cpp

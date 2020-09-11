@@ -7,18 +7,18 @@
 
 namespace Config
 {
-constexpr float Paddle_Height{25.0F};
-constexpr float Paddle_Width{100.0F};
-constexpr unsigned int Window_Width{800};
-constexpr unsigned int Window_Height{600};
+constexpr float Paddle_Height {25.0F};
+constexpr float Paddle_Width {100.0F};
+constexpr unsigned int Window_Width {800};
+constexpr unsigned int Window_Height {600};
 } // namespace
 
 class Paddle
 {
 public:
     Paddle()
-        : m_dimenstions{Config::Paddle_Height, Config::Paddle_Width}
-        , m_shape{m_dimenstions}
+        : m_dimenstions {Config::Paddle_Height, Config::Paddle_Width}
+        , m_shape {m_dimenstions}
     {
         m_shape.setFillColor(sf::Color::White);
     }
@@ -41,15 +41,15 @@ private:
 int main()
 {
 
-    sf::VideoMode video_mode{Config::Window_Width, Config::Window_Height};
-    sf::RenderWindow window{video_mode, "Pong"};
+    sf::VideoMode video_mode {Config::Window_Width, Config::Window_Height};
+    sf::RenderWindow window {video_mode, "Pong"};
     std::vector<int> v;
 
-    Paddle paddle{};
+    Paddle paddle {};
 
     while (window.isOpen())
     {
-        sf::Event event{};
+        sf::Event event {};
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)

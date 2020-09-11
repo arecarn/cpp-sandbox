@@ -65,12 +65,12 @@ public:
     }
 
 private:
-    static constexpr size_t Capacity{N};
-    static constexpr size_t Max_Index{N - 1};
-    value_type m_data[N]{};
-    size_t m_write_index{0};
-    size_t m_read_index{0};
-    size_t m_size{0};
+    static constexpr size_t Capacity {N};
+    static constexpr size_t Max_Index {N - 1};
+    value_type m_data[N] {};
+    size_t m_write_index {0};
+    size_t m_read_index {0};
+    size_t m_size {0};
 };
 
 #endif // RINGBUFFER_HPP

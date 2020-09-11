@@ -4,5 +4,5 @@
 TEST(basic, pizza)
 {
     constexpr int N = 5;
-    Value v{N};
+    Value v {N};
 }

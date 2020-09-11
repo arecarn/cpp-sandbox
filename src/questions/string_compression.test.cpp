@@ -13,7 +13,7 @@ std::string string_compression(std::string str)
     int i = 0;
     while (i < str.size())
     {
-        int j{1};
+        int j {1};
         compressed_str.push_back(str[i]);
         while (i + j < str.size() && str[i] == str[i + j])
         {

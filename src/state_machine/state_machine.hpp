@@ -11,8 +11,8 @@ public:
     virtual uint32_t id() = 0;
     virtual void step() = 0;
     void handle(const Value& event);
-    virtual void entry() {}
-    virtual void exit() {}
+    virtual void entry() { }
+    virtual void exit() { }
 
 private:
     virtual void handle_int(const int& i) = 0;
@@ -26,7 +26,7 @@ public:
     void step();
 
 private:
-    static constexpr uint32_t Event_Queue_Size{10};
+    static constexpr uint32_t Event_Queue_Size {10};
     ringbuffer<Value, Event_Queue_Size> m_events;
     State* m_state = nullptr;
 };

@@ -68,8 +68,8 @@ struct CompState : B
     template <typename X>
     void handle(H& h, const X& x) const { Base::handle(h, x); }
     static void init(H&); // no implementation
-    static void entry(H&) {}
-    static void exit(H&) {}
+    static void entry(H&) { }
+    static void exit(H&) { }
 };
 
 template <typename H>
@@ -78,10 +78,10 @@ struct CompState<H, 0, TopState<H>> : TopState<H>
     typedef TopState<H> Base;
     typedef CompState<H, 0, Base> This;
     template <typename X>
-    void handle(H&, const X&) const {}
+    void handle(H&, const X&) const { }
     static void init(H&); // no implementation
-    static void entry(H&) {}
-    static void exit(H&) {}
+    static void entry(H&) { }
+    static void exit(H&) { }
 };
 
 template <typename H, unsigned id, typename B = CompState<H, 0, TopState<H>>>
@@ -95,8 +95,8 @@ struct LeafState : B
     virtual void handler(H& h) const { handle(h, *this); }
     virtual unsigned getId() const { return id; }
     static void init(H& h) { h.next(obj); } // don't specialize this
-    static void entry(H&) {}
-    static void exit(H&) {}
+    static void entry(H&) { }
+    static void exit(H&) { }
     static const LeafState obj; // only the leaf states have instances
 };
 
@@ -127,13 +127,13 @@ struct Tran
     // method would require to specialize the inner
     // template without specializing the outer one,
     // which is forbidden.
-    static void exitActions(Host&, Bool<true>) {}
+    static void exitActions(Host&, Bool<true>) { }
     static void exitActions(Host& h, Bool<false>)
     {
         C::exit(h);
         Tran<CurrentBase, S, T>::exitActions(h, Bool<exitStop>());
     }
-    static void entryActions(Host&, Bool<true>) {}
+    static void entryActions(Host&, Bool<true>) { }
     static void entryActions(Host& h, Bool<false>)
     {
         Tran<CurrentBase, S, T>::entryActions(h, Bool<entryStop>());

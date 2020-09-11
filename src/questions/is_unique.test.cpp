@@ -81,6 +81,6 @@ void test(Solution&& s)
 
 TEST(is_unique, test)
 {
-    test(SetSolution{});
-    test(ArraySolution{});
+    test(SetSolution {});
+    test(ArraySolution {});
 }
