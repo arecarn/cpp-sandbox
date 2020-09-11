@@ -85,7 +85,7 @@ uint32_t g_case_c_expected[4][4] = {
 // clang-format off
 
 template <size_t N>
-void print_matrix(std::uint32_t (&matrix)[N][N])
+void print_matrix(const std::uint32_t (&matrix)[N][N])
 {
     std::cerr << __func__ << std::endl;
     for (size_t i = 0; i < N; ++i)
@@ -106,7 +106,7 @@ void test_matrix(std::uint32_t (&matrix)[N][N], const std::uint32_t (&expected)[
     std::cerr << "Expected:\n";
     print_matrix(matrix);
     std::cerr << "Got:\n";
-    print_matrix(matrix);
+    print_matrix(expected);
     ASSERT_TRUE(
         0 == std::memcmp(
             matrix,

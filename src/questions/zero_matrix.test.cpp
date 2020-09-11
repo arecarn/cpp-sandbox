@@ -1,36 +1,50 @@
-// Zero Matrix: Write an algorithm such that if an element in an MxN matrix is 0, its entire row and
-// column are set to 0.
+// Zero Matrix: Write an algorithm such that if an element in an MxN matrix is
+// 0, its entire row and column are set to 0.
 
 #include <cstring>
 #include <gtest/gtest.h>
 #include <iostream>
+#include <unordered_set>
 
 template <size_t N>
 void zero_matrix(std::uint32_t (&matrix)[N][N])
 {
+    std::unordered_set<int> zero_rows;
+    std::unordered_set<int> zero_cols;
+
     for (int row = 0; row < N; ++row)
     {
         for (int col = 0; col < N; ++col)
         {
             if (matrix[row][col] == 0)
             {
-                continue;
+                zero_cols.insert(col);
+                zero_rows.insert(row);
             }
-            // check left
-            const bool zero_left = col > 0 && matrix[row][col - 1] == 0;
-            // check above
-            const bool zero_above = row > 0 && matrix[row - 1][col] == 0;
-            // check right
-            const bool zero_right = col < N - 1 && matrix[row][col + 1] == 0;
-            // check below
-            const bool zero_below = row < N - 1 && matrix[row + 1][col] == 0;
+        }
+    }
 
-            if (zero_left || zero_above || zero_right || zero_below)
+    for (int row = 0; row < N; ++row)
+    {
+        for (int col = 0; col < N; ++col)
+        {
+            if (zero_cols.find(col) != zero_cols.end()
+                || zero_rows.find(row) != zero_rows.end())
             {
                 matrix[row][col] = 0;
             }
         }
     }
+
+    auto x = [](auto s) {
+        for (auto i : s)
+        {
+            std::cerr << i << ", ";
+        }
+        std::cerr << "\n";
+    };
+    x(zero_cols);
+    x(zero_rows);
 }
 
 // clang-format off
@@ -41,7 +55,7 @@ uint32_t g_case_a[2][2] = {
 
 uint32_t g_case_a_expected[2][2] = {
     {0, 0},
-    {0, 0},
+    {0, 4},
 };
 
 uint32_t g_case_b[3][3] = {
@@ -51,9 +65,9 @@ uint32_t g_case_b[3][3] = {
 };
 
 uint32_t g_case_b_expected[3][3] = {
-    {7, 0, 1},
+    {1, 0, 3},
     {0, 0, 0},
-    {9, 0, 3},
+    {7, 0, 9},
 };
 
 uint32_t g_case_c[4][4] = {
@@ -64,15 +78,15 @@ uint32_t g_case_c[4][4] = {
 };
 
 uint32_t g_case_c_expected[4][4] = {
-    {0,  0,   0,  0},
-    {0,  10,  6,  0},
-    {0,  0,   0,  0},
-    {0,  12,  8,  0},
+    {0,  0,   0,   0},
+    {0,  6,   7,   0},
+    {0,  0,   0,   0},
+    {0,  14,  15,  0},
 };
 // clang-format off
 
 template <size_t N>
-void print_matrix(std::uint32_t (&matrix)[N][N])
+void print_matrix(const std::uint32_t (&matrix)[N][N])
 {
     std::cerr << __func__ << std::endl;
     for (size_t i = 0; i < N; ++i)
@@ -93,7 +107,7 @@ void test_matrix(std::uint32_t (&matrix)[N][N], const std::uint32_t (&expected)[
     std::cerr << "Expected:\n";
     print_matrix(matrix);
     std::cerr << "Got:\n";
-    print_matrix(matrix);
+    print_matrix(expected);
     ASSERT_TRUE(
         0 == std::memcmp(
             matrix,
