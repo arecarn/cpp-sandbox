@@ -30,13 +30,13 @@ class TestHSM;
 
 // clang-format off
 //                    <hsm,    id, parent state>
-using Top  = CompState<TestHSM, 0  /*None*/>; // NOLINT(readability-magic-numbers)
-using S0   = CompState<TestHSM, 1, Top>;      // NOLINT(readability-magic-numbers)
-using S1   = CompState<TestHSM, 2, S0>;       // NOLINT(readability-magic-numbers)
-using S11  = LeafState<TestHSM, 3, S1>;       // NOLINT(readability-magic-numbers)
-using S2   = CompState<TestHSM, 4, S0>;       // NOLINT(readability-magic-numbers)
-using S21  = CompState<TestHSM, 5, S2>;       // NOLINT(readability-magic-numbers)
-using S211 = LeafState<TestHSM, 6, S21>;      // NOLINT(readability-magic-numbers)
+using Top  = CompState<TestHSM, 0  /*None*/>;
+using S0   = CompState<TestHSM, 1, Top>;
+using S1   = CompState<TestHSM, 2, S0>;
+using S11  = LeafState<TestHSM, 3, S1>;
+using S2   = CompState<TestHSM, 4, S0>;
+using S21  = CompState<TestHSM, 5, S2>;
+using S211 = LeafState<TestHSM, 6, S21>;
 // clang-format on
 
 enum class Signal
