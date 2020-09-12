@@ -79,7 +79,7 @@ public:
         m_state = &state;
     }
 
-    [[nodiscard]] Signal getSig() const
+    [[nodiscard]] Signal get_sig() const
     {
         return m_sig;
     }
@@ -106,7 +106,7 @@ private:
     int m_foo;
 };
 
-bool testDispatch(char c)
+bool test_dispatch(char c)
 {
     static TestHSM s_test;
     if (c < 'a' || 'h' < c)
@@ -126,7 +126,7 @@ bool testDispatch(char c)
 
 HSMHANDLER(S0)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::E:
         {
@@ -142,7 +142,7 @@ HSMHANDLER(S0)
 
 HSMHANDLER(S1)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::A:
         {
@@ -182,7 +182,7 @@ HSMHANDLER(S1)
 
 HSMHANDLER(S11)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::G:
         {
@@ -206,7 +206,7 @@ HSMHANDLER(S11)
 
 HSMHANDLER(S2)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::C:
         {
@@ -228,7 +228,7 @@ HSMHANDLER(S2)
 
 HSMHANDLER(S21)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::B:
         {
@@ -253,7 +253,7 @@ HSMHANDLER(S21)
 
 HSMHANDLER(S211)
 {
-    switch (h.getSig())
+    switch (h.get_sig())
     {
         case Signal::D:
         {
@@ -303,25 +303,25 @@ HSMEXIT(S211)
 
 TEST(basic, pizza)
 {
-    testDispatch('a');
-    testDispatch('b');
-    testDispatch('d');
-    testDispatch('e');
-    testDispatch('i');
-    testDispatch('f');
-    testDispatch('i');
-    testDispatch('i');
-    testDispatch('f');
-    testDispatch('a');
-    testDispatch('b');
-    testDispatch('d');
-    testDispatch('d');
-    testDispatch('e');
-    testDispatch('g');
-    testDispatch('h');
-    testDispatch('h');
-    testDispatch('c');
-    testDispatch('g');
-    testDispatch('c');
-    testDispatch('c');
+    test_dispatch('a');
+    test_dispatch('b');
+    test_dispatch('d');
+    test_dispatch('e');
+    test_dispatch('i');
+    test_dispatch('f');
+    test_dispatch('i');
+    test_dispatch('i');
+    test_dispatch('f');
+    test_dispatch('a');
+    test_dispatch('b');
+    test_dispatch('d');
+    test_dispatch('d');
+    test_dispatch('e');
+    test_dispatch('g');
+    test_dispatch('h');
+    test_dispatch('h');
+    test_dispatch('c');
+    test_dispatch('g');
+    test_dispatch('c');
+    test_dispatch('c');
 }
