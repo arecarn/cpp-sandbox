@@ -1,1 +1,2 @@
 add_subdirectory(arrays_and_strings)
+add_subdirectory(linked_lists)
