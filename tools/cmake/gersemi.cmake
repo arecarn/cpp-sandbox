@@ -1,3 +1,13 @@
+find_program(
+    GERSEMI
+    NAMES gersemi
+    DOC "Path to gersemi CMake formatting executable"
+)
+
+if(NOT GERSEMI)
+    message(WARNING "gersemi not found! format_cmake* targets will do nothing!")
+endif()
+
 function(gersemi_add_format_cmake_targets)
     set(options)
     set(oneValueArgs)
@@ -9,9 +19,6 @@ function(gersemi_add_format_cmake_targets)
         "${multiValueArgs}"
         ${ARGN}
     )
-
-    # Adding clang-format check and formatter if found
-    find_program(GERSEMI "gersemi")
     if(GERSEMI)
         add_custom_target(
             format_cmake
@@ -24,5 +31,8 @@ function(gersemi_add_format_cmake_targets)
             COMMAND ${GERSEMI} -c ${ARGS_FILES}
             COMMENT "Checking formatting of CMake source files"
         )
+    else()
+        add_custom_target(format_cmake)
+        add_custom_target(format_check_cmake)
     endif()
 endfunction()
