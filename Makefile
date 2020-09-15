@@ -18,15 +18,15 @@ BUILD_PREFIX ?= $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)
 BUILD_TOOL ?= ninja
 ifneq "$(BUILD_TOOL)" "ninja"
     ifneq "$(BUILD_TOOL)" "make"
-        $(error Bad BUILD_TOOL value "$(BUILD_TOOL)" please use "ninaj" or "make")
+        $(error Bad BUILD_TOOL value "$(BUILD_TOOL)" please use "ninja" or "make")
     endif
 endif
 
 CMAKE_GENERATOR ?= Ninja
 BUILD_FILE ?= build.ninja
 ifeq "$(BUILD_TOOL)" "make"
-    BUILD_FILE ?= Makefile
-    CMAKE_GENERATOR ?= "Unix Makefiles"
+    BUILD_FILE = Makefile
+    CMAKE_GENERATOR = "Unix Makefiles"
 endif
 
 # Get number of jobs Make is being called with. This only works with '-j' and not --jobs'
