@@ -21,7 +21,7 @@ RUN apt install -y \
         python3-pip \
         tar \
         unzip\
-        libsfml-dev\ 
+        libsfml-dev\
         python3.8
 
 RUN apt install -y \
