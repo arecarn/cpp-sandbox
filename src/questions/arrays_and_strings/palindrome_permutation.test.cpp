@@ -11,21 +11,29 @@
 #include <string>
 #include <vector>
 
-bool palindrome_permutation(std::string s)
+bool palindrome_permutation(const std::string& str)
 {
-    auto b = s.size() - 1;
-    decltype(b) f = 0;
+    std::unordered_map<char, int> count {};
 
-    while (f < b)
+    auto is_char = [](char c) {
+        return (c > 'a' && c < 'z') || (c > 'A' && c < 'Z');
+    };
+
+    auto is_even = [](int i) {
+        return i % 2 == 0;
+    };
+
+    bool result = true;
+    for (const auto& c : str)
     {
-        if (s[f] != s[b])
+        if (is_char(c))
         {
-            return false;
+            count[c]++;
+            result = is_even(count[c]);
         }
-        f++;
-        b--;
     }
-    return true;
+
+    return result;
 }
 
 struct TestCase
@@ -36,10 +44,10 @@ struct TestCase
 
 std::vector<TestCase> g_test_vector = {
     {"abc", false},
-    {"dad", true},
-    {"racecar", true},
-    {"todderasesareddot", true},
-    {"anna", true},
+    {"add", true},
+    {"rce caar", true},
+    {"toddraseseareddot", true},
+    {"ana n", true},
     {"bannana", false},
     {"shool", false},
 };
