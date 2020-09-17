@@ -36,41 +36,31 @@ bool one_away(std::string s1, std::string s2)
             return true;
         }
     }
-    else if (s1.size() == s2.size() - 1)
+    else
     {
-        // check if s1 needs a character added
-        // check if s2 needs a character removed
-        int diff_count = 0;
-        for (int i = 0; i < s2.size(); i++)
-        {
-            if (s2[i] != s1[i + diff_count])
+        // check if one needs a character removed or if two needs a character added
+        auto one_needs_rm_or_two_needs_add = [](std::string one, std::string two) {
+            if (one.size() + 1 == two.size())
             {
-                diff_count++;
+                int diff_count = 0;
+                for (int i = 0; i < two.size(); i++)
+                {
+                    if (two[i] != one[i + diff_count])
+                    {
+                        diff_count++;
+                    }
+                    if (diff_count > 1)
+                    {
+                        break;
+                    }
+                    return true;
+                }
             }
-            if (diff_count > 1)
-            {
-                break;
-            }
-            return true;
-        }
-    }
-    else if (s1.size() == s2.size() + 1)
-    {
-        // check if s1 needs a character removed
-        // check if s2 needs a character added
-        int diff_count = 0;
-        for (int i = 0; i < s1.size(); i++)
-        {
-            if (s1[i] != s2[i + diff_count])
-            {
-                diff_count++;
-            }
-            if (diff_count > 1)
-            {
-                break;
-            }
-            return true;
-        }
+            return false;
+        };
+
+        return one_needs_rm_or_two_needs_add(s1, s2)
+            || one_needs_rm_or_two_needs_add(s2, s1);
     }
     return false;
 }
