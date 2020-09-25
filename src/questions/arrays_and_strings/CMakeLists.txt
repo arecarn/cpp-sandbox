@@ -88,3 +88,10 @@ add_executable(
 )
 target_link_libraries(string_rotation.test gtest_main)
 create_test(string_rotation.test)
+
+################################################################################
+# atoi
+################################################################################
+add_executable(atoi.test ${CMAKE_CURRENT_SOURCE_DIR}/atoi.test.cpp)
+target_link_libraries(atoi.test gtest_main)
+create_test(atoi.test)
