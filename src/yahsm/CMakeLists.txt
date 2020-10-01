@@ -2,6 +2,7 @@
 ################################################################################
 add_library(yahsm INTERFACE)
 target_include_directories(yahsm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(yahsm)
 
 # Test
 ################################################################################

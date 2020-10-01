@@ -13,6 +13,7 @@ public:
     void handle(const Value& event);
     virtual void entry() { }
     virtual void exit() { }
+    virtual ~State() = default;
 
 private:
     virtual void handle_int(const int& i) = 0;

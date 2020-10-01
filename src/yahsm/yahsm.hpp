@@ -55,6 +55,7 @@ struct TopState
     typedef void Base;
     virtual void handler(Host&) const = 0;
     virtual unsigned getId() const = 0;
+    virtual ~TopState() = default;
 };
 
 template <typename H, unsigned id, typename B>

@@ -40,6 +40,8 @@ gersemi_add_format_cmake_targets(FILES "${CMAKE_SOURCE_FILES}")
 add_custom_target(format ALL DEPENDS format_cpp format_cmake)
 add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
 
+include(compiler_warnings)
+
 include(get_google_test)
 get_google_test()
 

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <stdexcept>
-#include <vector>
 
 // get_type<i, Ts...>::type -> Ts[i] (Compile error of i >= length(Ts))
 template <std::size_t I, typename T, typename... Ts>
@@ -108,8 +107,6 @@ public:
     template <typename T>
     bool into(T& x)
     {
-        std::vector<int> v;
-
         if (!this->is<T>())
         {
             return false;

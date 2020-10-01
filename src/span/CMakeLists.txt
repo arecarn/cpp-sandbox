@@ -2,6 +2,7 @@
 ################################################################################
 add_library(span INTERFACE)
 target_include_directories(span INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(span)
 
 # Test
 ################################################################################

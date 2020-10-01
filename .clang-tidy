@@ -40,7 +40,6 @@ Checks: >
   -performance-move-const-arg,
   -readability-magic-numbers,
   -readability-redundant-declaration,
-
 WarningsAsErrors: >
   *,
 

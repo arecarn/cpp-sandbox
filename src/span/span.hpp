@@ -36,7 +36,7 @@ public:
 
     size_t constexpr size()
     {
-        return m_end - m_begin;
+        return static_cast<size_t>(m_end - m_begin);
     }
 
     constexpr T* begin()

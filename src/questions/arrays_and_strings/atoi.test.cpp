@@ -129,6 +129,7 @@ int to_int(std::string str)
             case State::Convert:
                 if (is_num(str[i]))
                 {
+
                     int num = sign == -1 ? -to_int(str[i])
                                          : to_int(str[i]);
                     int new_result = result * 10 + num;

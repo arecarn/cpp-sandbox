@@ -20,15 +20,14 @@ char g_x[X_Size];
 
 TEST(test, test) // NOLINT
 {
-    static int bbbb;
     PodVariant<char, Dub> u {'a'};
     ASSERT_EQ(u.as<char>(), 'a');
-    std::cout << "<<<<" << alignof(u) << ">>>>"
+    std::cout << "<<<<" << alignof(PodVariant<char, Dub>) << ">>>>"
               << "\n";
-    std::cout << "<<<<" << alignof('a') << ">>>>"
+    std::cout << "<<<<" << alignof(char) << ">>>>"
               << "\n";
     std::cout << "<<<<" << alignof(long double) << ">>>>"
               << "\n";
     std::cout << "<<<<" << alignof(Test) << ">>>>"
               << "\n";
-};
+}

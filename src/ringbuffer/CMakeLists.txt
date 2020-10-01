@@ -2,6 +2,7 @@
 ################################################################################
 add_library(ringbuffer INTERFACE)
 target_include_directories(ringbuffer INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(ringbuffer)
 
 # Test
 ################################################################################

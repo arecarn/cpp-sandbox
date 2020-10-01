@@ -114,7 +114,7 @@ bool test_dispatch(char c)
         return false;
     }
     printf("\nSignal<-%c: ", c);
-    s_test.dispatch((Signal)(c - 'a'));
+    s_test.dispatch(static_cast<Signal>(c - 'a'));
     printf("\n");
     return true;
 }

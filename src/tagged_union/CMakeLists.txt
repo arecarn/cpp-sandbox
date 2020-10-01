@@ -2,6 +2,7 @@
 ################################################################################
 add_library(tagged_union STATIC ${CMAKE_CURRENT_SOURCE_DIR}/tagged_union.cpp)
 target_include_directories(tagged_union PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(tagged_union)
 
 # Test
 ################################################################################
