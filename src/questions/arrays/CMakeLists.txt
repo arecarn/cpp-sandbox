@@ -18,4 +18,15 @@ add_executable(
 )
 target_link_libraries(zero_matrix.test gtest_main)
 target_set_default_compiler_warnings(zero_matrix.test)
+
+################################################################################
+# Zero Matrix
+################################################################################
+add_executable(
+    zero_matrix.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/zero_matrix.test.cpp
+)
+target_link_libraries(zero_matrix.test gtest_main)
+target_set_default_compiler_warnings(zero_matrix.test)
+create_test(zero_matrix.test)
 create_test(zero_matrix.test)
