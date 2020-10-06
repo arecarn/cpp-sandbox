@@ -1,6 +1,13 @@
 // Check Permutation: Given two strings, write a method to decide if one is a
 // permutation of the other.
-
+//
+//  Solution Notes:
+//  * need to know if case is important or not
+//  * need to know if white space is significant
+//  * need to know type of characters ASCII, UTF-8
+//  * Another possible solution is sorting copies and comparing the two sorted
+//    strings
+//
 #include <gtest/gtest.h>
 #include <iostream>
 #include <unordered_map>
@@ -8,6 +15,7 @@
 
 bool check_permutation(const std::string& s1, const std::string& s2)
 {
+    // TODO switch to using a int[128] array
     std::unordered_map<char, int> check;
 
     if (s1.size() != s2.size())

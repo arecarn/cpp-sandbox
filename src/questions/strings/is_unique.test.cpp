@@ -1,6 +1,12 @@
 // Is Unique: Implement an algorithm to determine if a string has all unique
 // characters. What if you cannot use additional data structures?
+//
+// Solution Notes:
+// * need to specify character set expected
+// * specify some type of behavior if character in set is invalid
+// * When assuming ASCII a array is just as handy as a std::set
 
+#include <exception>
 #include <gtest/gtest.h>
 #include <set>
 #include <string>
@@ -15,16 +21,20 @@ struct ArraySolution : Solution
 {
     bool is_unique(std::string str) override
     {
-        constexpr size_t Char_Values = 128; // assuming ascii
-        int char_seen[Char_Values] = {0};
+        constexpr size_t Char_Values = 128; // assuming ASCII
+        bool char_seen[Char_Values] = {false};
 
         for (const auto& c : str)
         {
-            if (char_seen[c] > 0)
+            if (c > Char_Values)
+            {
+                throw std::out_of_range("character is not ASCII");
+            }
+            if (char_seen[c])
             {
                 return false;
             }
-            char_seen[c]++;
+            char_seen[c] = true;
         }
         return true;
     }
@@ -34,10 +44,15 @@ struct SetSolution : Solution
 {
     bool is_unique(std::string str) override
     {
+        constexpr size_t Char_Values = 128; // assuming ASCII
         std::set<char> char_seen;
 
         for (const auto& c : str)
         {
+            if (c > Char_Values)
+            {
+                throw std::out_of_range("character is not ASCII");
+            }
             [[maybe_unused]] auto [_, inserted] = char_seen.insert(c);
             if (!inserted)
             {
