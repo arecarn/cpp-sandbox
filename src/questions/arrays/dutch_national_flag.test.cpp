@@ -1,41 +1,43 @@
+// Write a program that takes an vector v and an index i into v, and rearranges
+// the elements such that all elements less than v[i] (the “pivot”) appear first,
+// followed by elements equal to the pivot, followed by elements greater than
+// the pivot.
+
 #include <array>
 #include <gtest/gtest.h>
 #include <iostream>
 
+// Hold the following invariant:
+// v[0 : less_end] < pivot
+// v[less_end + 1 : unknown_begin - 1] == pivot
+// v[unknown_begin : greater_begin - 1] == ?
+// v[greater_begin : v.size()] > pivot
 template <typename T>
-void dutch_national_flag(std::vector<T>& arr, size_t pivot_index)
+void dutch_national_flag(std::vector<T>& v, size_t pivot_index)
 {
-    const auto pivot = arr[pivot_index];
-    auto b = arr.begin();
-    auto e = arr.end() - 1;
+    auto pivot = v[pivot_index];
+    size_t less_end = 0;
+    size_t unknown_begin = 0;
+    size_t greater_begin = v.size();
 
-    auto f = [](auto b, auto e, T pivot) -> auto
+    while (unknown_begin < greater_begin)
     {
-        while (b < e)
+        if (v[unknown_begin] < pivot)
         {
-            if (*b > pivot)
-            {
-
-                if (*e <= pivot)
-                {
-                    std::swap(*b, *e);
-                }
-                e--;
-            }
-            else
-            {
-                b++;
-            }
+            std::swap(v[unknown_begin], v[less_end]);
+            ++less_end;
+            ++unknown_begin;
         }
-
-        if (*b == pivot)
+        else if (v[unknown_begin] > pivot)
         {
-            return b;
+            --greater_begin;
+            std::swap(v[unknown_begin], v[greater_begin]);
         }
-        return e;
-    };
-    auto p = f(b, e, pivot);
-    f(b, p, pivot - 1);
+        else // v[unknown_begin] == pivot
+        {
+            ++unknown_begin;
+        }
+    }
 }
 
 TEST(dutch_national_flag, one)
@@ -52,7 +54,7 @@ TEST(dutch_national_flag, two)
     constexpr size_t Pivot {2};
     std::vector<int> input {0, 1, 2, 0, 2, 1, 1};
     dutch_national_flag(input, Pivot);
-    const std::vector<int> expected {0, 1, 1, 0, 1, 2, 2};
+    const std::vector<int> expected {0, 1, 0, 1, 1, 2, 2};
     ASSERT_EQ(input, expected);
 }
 
@@ -61,6 +63,6 @@ TEST(dutch_national_flag, zero)
     constexpr size_t Pivot {0};
     std::vector<int> input {0, 1, 2, 0, 2, 1, 1};
     dutch_national_flag(input, Pivot);
-    const std::vector<int> expected {0, 0, 2, 1, 2, 1, 1};
+    const std::vector<int> expected {0, 0, 2, 2, 1, 1, 1};
     ASSERT_EQ(input, expected);
 }
