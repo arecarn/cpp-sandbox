@@ -1,16 +1,17 @@
 # get the normalized current directory
 THIS_DIR := $(shell pwd)
 
+BUILD_TYPES := Debug Release luasan tsan
 # Default to a Debug build. If you want to enable debugging flags, run
-# "make BUILD_TYPE=Release"
-BUILD_TYPE ?= Debug
-ifneq "$(BUILD_TYPE)" "Debug"
-    ifneq "$(BUILD_TYPE)" "Release"
-        $(error Bad BUILD_TYPE value "$(BUILD_TYPE)" please use "Debug" or "Release")
-    endif
+# "make BT=Release"
+BT ?= Debug
+ifneq ($(filter $(BT),$(BUILD_TYPES)),)
+    $(info $(BT) exists in $(BUILD_TYPES))
+else
+    $(error $(BT) is not a valid BT value it should be one of the following: $(BUILD_TYPES))
 endif
-BUILD_TYPE_LOWER := $(shell echo $(BUILD_TYPE) | tr A-Z a-z)
 
+BUILD_TYPE_LOWER := $(shell echo $(BT) | tr A-Z a-z)
 
 # Figure out where to build the software. Use BUILD_PREFIX if it was passed in.
 BUILD_PREFIX ?= $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)
@@ -36,7 +37,7 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_P
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
 
 # Default to a Debug build. If you want to enable debugging flags, run
-# "make BUILD_TYPE=Release"
+# "make BT=Release"
 CLANG_TIDY_FIX ?= OFF
 ifneq "$(CLANG_TIDY_FIX)" "ON"
     ifneq "$(CLANG_TIDY_FIX)" "OFF"
@@ -45,17 +46,38 @@ ifneq "$(CLANG_TIDY_FIX)" "ON"
 endif
 
 ifeq "$(CMAKE_OPTIONS)" ""
-    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BT)
 else
    # force cmake to be re-run if we change the cmake options
    $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
 endif
+
+
 
 .PHONY: all
 all: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
 	export CTEST_OUTPUT_ON_FAILURE=1; \
 	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a}; \
+
+define build_type_template =
+$(1):
+	@set -o xtrace; \
+	make BT=$(1)
+	make BT=$(1) test
+endef
+
+$(foreach bt, $(BUILD_TYPES), \
+    $(eval \
+        $(call build_type_template,$(bt)) \
+    ) \
+)
+
+.PHONY: full
+full: $(BUILD_TYPES)
+
+
+
 
 .PHONY: h
 h:
@@ -76,13 +98,13 @@ h:
 	@echo
 	@echo 'cmd a="<shell command>"'
 	@echo '    Runs a abitrary shell command in the build directory specified'
-	@echo '    by the BUILD_TYPE.'
+	@echo '    by the BT.'
 	@echo '    e.g.'
 	@echo '    $$make cmd a="ctest -R target.test"'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
-	@echo 'BUILD_TYPE=<Debug|Release>'
+	@echo 'BT=<Debug|Release>'
 	@echo '    specifies the CMake build type, and the build subdirectory'
 	@echo '    default: Debug'
 	@echo
@@ -96,8 +118,8 @@ h:
 	@echo
 	@echo 'INSTALL_PREFIX=<path>'
 	@echo '    Specifies the CMAKE_INSTALL_PREFIX CMake variable value'
-	@echo '    default when BUILD_TYPE is Debug: ./build/debug/install'
-	@echo '    default when BUILD_TYPE is Release: ./build/release/install'
+	@echo '    default when BT is Debug: ./build/debug/install'
+	@echo '    default when BT is Release: ./build/release/install'
 	@echo
 	@echo '-j <jobs>'
 	@echo '    <jobs> pass -j flag to underlying BUILD_TOOL to set the job number'
@@ -105,7 +127,7 @@ h:
 	@echo
 	@echo 'EXAMPLES:'
 	@echo
-	@echo 'make BUILD_TYPE=Release all -j8'
+	@echo 'make BT=Release all -j8'
 	@echo 'make target'
 
 .PHONY: nuke

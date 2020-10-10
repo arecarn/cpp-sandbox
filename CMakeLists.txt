@@ -19,6 +19,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 include(ccache)
 include(cppcheck)
 include(clang_tidy)
+include(sanitizers)
 
 include(clang_format)
 file(
