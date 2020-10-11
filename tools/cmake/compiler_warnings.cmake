@@ -45,11 +45,3 @@ function(target_set_default_compiler_warnings target)
 
     target_compile_options(${target} INTERFACE ${PROJECT_WARNINGS})
 endfunction()
-
-function(target_executable_enable_ubisan target)
-    set(GCC_UBISAN_FLAGS
-        -fsanitize=undefined # print warning at runtime when undefined behavior is detected
-        -fno-sanitize-recover #terminate when undefined behavior is detected
-    )
-    target_compile_options(${target} INTERFACE ${GCC_UBISAN_FLAGS})
-endfunction()
