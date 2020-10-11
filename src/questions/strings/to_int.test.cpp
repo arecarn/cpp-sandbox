@@ -51,109 +51,58 @@
 // Explanation: The number "-91283472332" is out of the range of a 32-bit signed
 // integer. Therefore INT_MIN (−2147483648) is returned.
 
+#include <cctype>
 #include <gtest/gtest.h>
 #include <limits>
 #include <string>
 
-enum class State
+int to_int(std::string s)
 {
-    Find_Non_White_Space,
-    Find_Sign,
-    Skip_Leading_Zeros,
-    First_Digit,
-    Convert,
-};
-
-int to_int(std::string str)
-{
-    auto is_num = [](char c) -> bool {
-        return c >= '0' && c <= '9';
-    };
-
-    auto to_int = [](char c) -> int {
-        return c - '0';
-    };
-
-    decltype(str.size()) i {0};
     int result = 0;
-    int sign = 1;
-    State state = State::Find_Non_White_Space;
+    size_t i {0};
 
-    // walk past whitespace
-    while (i < str.size())
+    while (s[i] == ' ' || s[i] == '\t')
     {
-        switch (state)
-        {
-            case State::Find_Non_White_Space:
-
-                if (str[i] == ' ' || str[i] == '\t')
-                {
-                    i++;
-                    break;
-                }
-                state = State::Find_Sign;
-                break;
-
-            case State::Find_Sign:
-                if (str[i] == '-')
-                {
-                    sign = -1;
-                    i++;
-                }
-                else if (str[i] == '+')
-                {
-                    i++;
-                }
-
-            case State::Skip_Leading_Zeros:
-                if (str[i] == '0')
-                {
-                    i++; // TODO test
-                    break;
-                }
-                state = State::First_Digit;
-
-            case State::First_Digit:
-                if (is_num(str[i]))
-                {
-                    result = to_int(str[i]) * sign;
-                }
-                else
-                {
-                    return 0;
-                }
-                i++;
-                state = State::Convert;
-                break;
-
-            case State::Convert:
-                if (is_num(str[i]))
-                {
-
-                    int num = sign == -1 ? -to_int(str[i])
-                                         : to_int(str[i]);
-                    int new_result = result * 10 + num;
-                    i++;
-
-                    // check for overflow
-                    if ((new_result - num) / 10 != result)
-                    {
-                        if (sign == -1)
-                        {
-                            return std::numeric_limits<int>::min();
-                        }
-                        return std::numeric_limits<int>::max();
-                    }
-                    result = new_result;
-                }
-                else
-                {
-                    return result;
-                }
-                break;
-        }
+        i++;
     }
-    return result;
+
+    int sign {1};
+    if (s[i] == '-')
+    {
+        sign = -1;
+        i++;
+    }
+    else if (s[i] == '+')
+    {
+        i++;
+    }
+
+    while (i != s.size() && std::isdigit(s[i]))
+    {
+        if (result < std::numeric_limits<int>::max() / 10)
+        {
+            result *= 10;
+        }
+        else
+        {
+            return (sign > 0) ? std::numeric_limits<int>::max()
+                              : std::numeric_limits<int>::min();
+        }
+
+        int num = (s[i] - '0');
+        if (result < std::numeric_limits<int>::max() - num)
+        {
+            result += num;
+        }
+        else
+        {
+            return (sign > 0) ? std::numeric_limits<int>::max()
+                              : std::numeric_limits<int>::min();
+        }
+        i++;
+    }
+
+    return result * sign;
 }
 
 TEST(atoi, convert_positive_int_string_to_an_int)
@@ -171,7 +120,8 @@ TEST(atoi, convert_positive_int_with_leading_plus_string_to_an_int)
     ASSERT_EQ(to_int("+123"), 123);
 }
 
-TEST(atoi, convert_positive_int_with_leading_plus_and_leading_zero_string_to_an_int)
+TEST(atoi,
+    convert_positive_int_with_leading_plus_and_leading_zero_string_to_an_int)
 {
     ASSERT_EQ(to_int("+000123"), 123);
 }
@@ -193,10 +143,15 @@ TEST(atoi, return_int_min_for_an_int_string_that_is_too_small)
 
 TEST(atoi, return_int_max_for_an_int_string_that_is_too_large)
 {
-    ASSERT_EQ(to_int("999999999999999999"), std::numeric_limits<int>::max());
+    ASSERT_EQ(to_int("4294967111111111111"), std::numeric_limits<int>::max());
 }
 
 TEST(atoi, return_zero_for_an_invalid_string)
 {
     ASSERT_EQ(to_int("this won't work 55"), 0);
+}
+
+TEST(atoi, return_number_given_trailing_text)
+{
+    ASSERT_EQ(to_int("55 this will work"), 55);
 }

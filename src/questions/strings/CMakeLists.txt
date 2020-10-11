@@ -78,10 +78,10 @@ target_set_default_compiler_warnings(string_rotation.test)
 create_test(string_rotation.test)
 
 ################################################################################
-# atoi
+# to_int
 ################################################################################
-add_executable(atoi.test ${CMAKE_CURRENT_SOURCE_DIR}/atoi.test.cpp)
-target_link_libraries(atoi.test gtest_main)
-target_set_default_compiler_warnings(atoi.test)
-target_executable_enable_ubisan(atoi.test)
-create_test(atoi.test)
+add_executable(to_int.test ${CMAKE_CURRENT_SOURCE_DIR}/to_int.test.cpp)
+target_link_libraries(to_int.test gtest_main)
+target_set_default_compiler_warnings(to_int.test)
+target_executable_enable_ubisan(to_int.test)
+create_test(to_int.test)
