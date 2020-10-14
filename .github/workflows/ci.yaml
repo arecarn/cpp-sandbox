@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: arecarn/c-and-cpp
-      steps:
-        - uses: actions/checkout@v2
-        - name: What OS is running
-          run: make full
+    steps:
+      - uses: actions/checkout@v2
+      - name: What OS is running
+        run: make full
