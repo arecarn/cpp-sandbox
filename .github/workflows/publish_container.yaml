@@ -1,7 +1,11 @@
 ---
 name: Publish Docker
 
-on: [push]  # yamllint disable-line rule:truthy
+on: # yamllint disable-line rule:truthy
+  push:
+    branches: "*"
+  pull_request:
+    branches: "*"
 
 jobs:
   build:
