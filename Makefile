@@ -58,7 +58,8 @@ endif
 all: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
 	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a}; \
+	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a} && \
+	cmake --build $(BUILD_PREFIX) --target test ${ta};
 
 define build_type_template =
 $(1):
@@ -138,10 +139,11 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
 	mkdir -p $(BUILD_PREFIX)
 	touch -c $@
+	# allow this to fail when not in a git repo
+	git config core.hooksPath .githooks || true
 	# run CMake to generate and configure the build scripts
-	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json && \
-	git config core.hooksPath .githooks && \
-	cd $(BUILD_PREFIX) && \
+	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json; \
+	cd $(BUILD_PREFIX); \
 	cmake ../.. $(CMAKE_OPTIONS); \
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
