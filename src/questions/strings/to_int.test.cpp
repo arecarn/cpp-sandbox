@@ -1,4 +1,4 @@
-// Implement atoi which converts a string to an integer.
+// Implement to_int which converts a string to an integer.
 //
 // The function first discards as many whitespace characters as necessary until
 // the first non-whitespace character is found. Then, starting from this
@@ -79,7 +79,7 @@ int to_int(std::string s)
 
     while (i != s.size() && std::isdigit(s[i]))
     {
-        if (result < std::numeric_limits<int>::max() / 10)
+        if (result <= std::numeric_limits<int>::max() / 10)
         {
             result *= 10;
         }
@@ -90,7 +90,7 @@ int to_int(std::string s)
         }
 
         int num = (s[i] - '0');
-        if (result < std::numeric_limits<int>::max() - num)
+        if (result <= std::numeric_limits<int>::max() - num)
         {
             result += num;
         }
@@ -105,53 +105,65 @@ int to_int(std::string s)
     return result * sign;
 }
 
-TEST(atoi, convert_positive_int_string_to_an_int)
+TEST(to_int, convert_positive_int_string_to_an_int)
 {
     ASSERT_EQ(to_int("42"), 42);
 }
 
-TEST(atoi, convert_positive_int_with_leading_zero_string_to_an_int)
+TEST(to_int, convert_positive_int_with_leading_zero_string_to_an_int)
 {
     ASSERT_EQ(to_int("042"), 42);
 }
 
-TEST(atoi, convert_positive_int_with_leading_plus_string_to_an_int)
+TEST(to_int, convert_positive_int_with_leading_plus_string_to_an_int)
 {
     ASSERT_EQ(to_int("+123"), 123);
 }
 
-TEST(atoi,
+TEST(to_int,
     convert_positive_int_with_leading_plus_and_leading_zero_string_to_an_int)
 {
     ASSERT_EQ(to_int("+000123"), 123);
 }
 
-TEST(atoi, convert_negative_int_string_to_an_int)
+TEST(to_int, convert_negative_int_string_to_an_int)
 {
     ASSERT_EQ(to_int("-7832"), -7832);
 }
 
-TEST(atoi, convert_negative_int_with_leading_zero_string_to_an_int)
+TEST(to_int, convert_negative_int_with_leading_zero_string_to_an_int)
 {
     ASSERT_EQ(to_int("-007832"), -7832);
 }
 
-TEST(atoi, return_int_min_for_an_int_string_that_is_too_small)
+TEST(to_int, return_int_min_for_an_int_string_that_is_too_small)
 {
     ASSERT_EQ(to_int("-999999999999999999"), std::numeric_limits<int>::min());
 }
 
-TEST(atoi, return_int_max_for_an_int_string_that_is_too_large)
+TEST(to_int, return_int_max_for_an_int_string_that_is_too_large)
 {
     ASSERT_EQ(to_int("4294967111111111111"), std::numeric_limits<int>::max());
 }
 
-TEST(atoi, return_zero_for_an_invalid_string)
+TEST(to_int, return_zero_for_an_invalid_string)
 {
     ASSERT_EQ(to_int("this won't work 55"), 0);
 }
 
-TEST(atoi, return_number_given_trailing_text)
+TEST(to_int, return_number_given_trailing_text)
 {
     ASSERT_EQ(to_int("55 this will work"), 55);
+}
+
+TEST(to_int, max_int_string)
+{
+    auto max_int_str = std::to_string(std::numeric_limits<int>::max());
+    ASSERT_EQ(to_int(max_int_str), std::numeric_limits<int>::max());
+}
+
+TEST(to_int, min_int_string)
+{
+    auto min_int_str = std::to_string(std::numeric_limits<int>::min());
+    ASSERT_EQ(to_int(min_int_str), std::numeric_limits<int>::min());
 }
