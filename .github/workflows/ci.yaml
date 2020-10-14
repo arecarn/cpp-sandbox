@@ -14,5 +14,5 @@ jobs:
       image: arecarn/c-and-cpp
     steps:
       - uses: actions/checkout@v2
-      - name: What OS is running
+      - name: Build & Test All Targets
         run: make full
