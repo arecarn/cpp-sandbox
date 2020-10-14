@@ -84,3 +84,11 @@ add_executable(to_int.test ${CMAKE_CURRENT_SOURCE_DIR}/to_int.test.cpp)
 target_link_libraries(to_int.test gtest_main)
 target_set_default_compiler_warnings(to_int.test)
 create_test(to_int.test)
+
+################################################################################
+# to_string
+################################################################################
+add_executable(to_string.test ${CMAKE_CURRENT_SOURCE_DIR}/to_string.test.cpp)
+target_link_libraries(to_string.test gtest_main)
+target_set_default_compiler_warnings(to_string.test)
+create_test(to_string.test)
