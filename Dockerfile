@@ -32,5 +32,4 @@ RUN python3.8 -m pip install \
         cmake \
         gersemi
 
-WORKDIR /home/app
 ENTRYPOINT /bin/bash

@@ -1,0 +1,18 @@
+---
+name: CI
+
+on:  # yamllint disable-line rule:truthy
+push:
+  branches: "*"
+  pull_request:
+    branches: "*"
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        container:
+          image: arecarn/c-and-cpp
+          steps:
+            - uses: actions/checkout@v2
+            - name: What OS is running
+              run: make full
