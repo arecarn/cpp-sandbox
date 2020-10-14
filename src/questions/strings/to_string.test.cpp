@@ -10,7 +10,7 @@ std::string to_string(int a_int)
     {
         int num = abs(i % 10);
         i = i / 10;
-        char c = static_cast<char>(num + '0');
+        auto c = static_cast<char>(num + '0');
         result.push_back(c);
     } while (i != 0);
 
