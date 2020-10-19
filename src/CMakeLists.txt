@@ -1,13 +1,18 @@
 ################################################################################
-# Library
+# CMake Modules Includes
 ################################################################################
-add_library(yahsm INTERFACE)
-target_include_directories(yahsm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_set_default_compiler_warnings(yahsm)
+include(cppcheck)
+include(clang_tidy)
 
 ################################################################################
-# Test
+# Subdirectories
 ################################################################################
-add_executable(yahsm.test ${CMAKE_CURRENT_SOURCE_DIR}/yahsm.test.cpp)
-target_link_libraries(yahsm.test gtest_main yahsm)
-create_test(yahsm.test)
+add_subdirectory(array)
+add_subdirectory(pong)
+add_subdirectory(ringbuffer)
+add_subdirectory(span)
+add_subdirectory(state_machine)
+add_subdirectory(tagged_union)
+add_subdirectory(pod_variant)
+add_subdirectory(yahsm)
+add_subdirectory(questions)
