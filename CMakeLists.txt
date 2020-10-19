@@ -13,9 +13,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 
 # TODO Doxygen
-# TODO sanitizers
-# TODO purity
-# TODO include what you use
 include(ccache)
 include(cppcheck)
 include(clang_tidy)
@@ -30,9 +27,11 @@ file(
 clang_format_add_format_cpp_targets(FILES "${C_AND_CPP_SOURCE_FILES}")
 
 include(gersemi)
+list(APPEND CMAKE_SOURCE_FILES
+    ${PROJECT_SOURCE_DIR}/CMakeLists.txt
+)
 file(
     GLOB_RECURSE CMAKE_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/CMakeLists.txt"
     "${PROJECT_SOURCE_DIR}/src/*.cmake"
     "${PROJECT_SOURCE_DIR}/tools/*.cmake"
 )
@@ -43,14 +42,13 @@ add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
 
 include(compiler_warnings)
 
-include(get_google_test)
-get_google_test()
-
 enable_testing()
 
 macro(create_test target)
     add_test(NAME ${target} COMMAND ${target})
 endmacro()
+
+add_subdirectory(external/googletest)
 
 add_subdirectory(src/array)
 add_subdirectory(src/pong)
