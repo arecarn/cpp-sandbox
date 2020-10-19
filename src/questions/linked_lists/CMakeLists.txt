@@ -39,3 +39,14 @@ add_executable(
 target_link_libraries(delete_middle_node.test gtest_main)
 target_set_default_compiler_warnings(delete_middle_node.test)
 create_test(delete_middle_node.test)
+
+################################################################################
+# Merge Two Sorted Lists
+################################################################################
+add_executable(
+    merged_two_sorted_lists.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/merged_two_sorted_lists.test.cpp
+)
+target_link_libraries(merged_two_sorted_lists.test gtest_main)
+target_set_default_compiler_warnings(merged_two_sorted_lists.test)
+create_test(merged_two_sorted_lists.test)
