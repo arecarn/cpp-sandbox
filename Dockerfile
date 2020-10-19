@@ -1,5 +1,7 @@
 FROM ubuntu:18.04
 
+RUN apt-add-repository ppa:git-core/ppa
+
 RUN echo "Updating Ubuntu"
 RUN apt-get update --fix-missing && apt-get upgrade -y
 
