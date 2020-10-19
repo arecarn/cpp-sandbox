@@ -1,9 +1,12 @@
 FROM ubuntu:18.04
 
-RUN apt-add-repository ppa:git-core/ppa
 
 RUN echo "Updating Ubuntu"
 RUN apt-get update --fix-missing && apt-get upgrade -y
+
+RUN apt-get install -y software-properties-common && \
+        apt-add-repository ppa:git-core/ppa && \
+        apt-get update
 
 RUN echo "Installing dependencies..."
 RUN apt install -y \
