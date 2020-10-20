@@ -1,57 +1,79 @@
-#include <algorithm>
+#include "list_node.hpp"
 #include <gtest/gtest.h>
-#include <list>
+#include <memory>
 
-template <typename T>
-std::list<T> merged_two_sorted_lists(std::list<T> l1, std::list<T> l2)
+void insert_helper(std::shared_ptr<ListNode<int>>& node, std::shared_ptr<ListNode<int>>& new_node)
 {
-    std::list<T> result;
-    auto i1 = l1.begin();
-    auto i2 = l2.begin();
 
-    while (i1 != l1.end() && i2 != l2.end())
+    if (node != nullptr)
     {
-        if (*i1 < *i2)
+        node->next = new_node;
+        new_node = new_node->next;
+        node = node->next;
+    }
+    else
+    {
+        node = new_node;
+        new_node = new_node->next;
+    }
+}
+
+std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<int>>& l1, std::shared_ptr<ListNode<int>>& l2)
+{
+    std::shared_ptr<ListNode<int>> result;
+    auto& result_head = result;
+
+    while (l1 != nullptr && l2 != nullptr)
+    {
+        if (l1->data < l2->data)
         {
-            result.push_back(*i1);
-            i1++;
+            insert_helper(result, l1);
         }
         else
         {
-            result.push_back(*i2);
-            i2++;
+            insert_helper(result, l2);
         }
     }
 
-    if (i1 != l1.end())
+    while (l1 != nullptr)
     {
-        std::copy(i1, l1.end(), std::back_inserter(result));
+        insert_helper(result, l1);
     }
 
-    if (i2 != l2.end())
+    while (l2 != nullptr)
     {
-        std::copy(i2, l2.end(), std::back_inserter(result));
+        insert_helper(result, l2);
     }
 
-    return result;
+    return result_head;
 }
 
-TEST(test, list_1_and_2_are_the_same)
+TEST(test, basic)
 {
-    std::list<int> l1 {1, 2, 3, 4, 5};
-    std::list<int> l2 {1, 2, 3, 4, 5};
+    auto l1 = make_list({1, 2, 3, 4, 5});
+    auto l2 = make_list({1, 2, 3, 4, 5});
 
-    std::list<int> result = merged_two_sorted_lists(l1, l2);
-    const std::list<int> expected = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5};
-    ASSERT_EQ(result, expected);
+    auto result = merged_two_sorted_lists(l1, l2);
+    auto expected = make_list({1, 1, 2, 2, 3, 3, 4, 4, 5, 5});
+    ASSERT_TRUE(result == expected);
 }
 
-TEST(test, list_1_greater_than_list_2)
+TEST(test, basic2)
 {
-    std::list<int> l1 {1, 2, 3, 4, 5};
-    std::list<int> l2 {1, 2, 3};
+    auto l1 = make_list({1, 2, 3, 4, 5});
+    auto l2 = make_list(std::initializer_list<int> {});
 
-    std::list<int> result = merged_two_sorted_lists(l1, l2);
-    const std::list<int> expected = {1, 1, 2, 2, 3, 3, 4, 5};
-    ASSERT_EQ(result, expected);
+    auto result = merged_two_sorted_lists(l1, l2);
+    auto expected = make_list({1, 2, 3, 4, 5});
+    ASSERT_TRUE(result == expected);
+}
+
+TEST(test, basic3)
+{
+    auto l1 = make_list({1, 2, 3, 4, 5});
+    auto l2 = make_list({3, 4, 5});
+
+    auto result = merged_two_sorted_lists(l1, l2);
+    auto expected = make_list({1, 2, 3, 3, 4, 4, 5, 5});
+    ASSERT_TRUE(result == expected);
 }

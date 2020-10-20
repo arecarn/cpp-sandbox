@@ -1,11 +1,20 @@
 ################################################################################
 # Linked List Node
 ################################################################################
-add_library(list_node.il INTERFACE)
-target_include_directories(list_node.il INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-target_set_default_compiler_warnings(list_node.il)
-add_library(list_node.sl STATIC ${CMAKE_CURRENT_SOURCE_DIR}/list_node.cpp)
-target_link_libraries(list_node.sl list_node.il)
+add_library(list_node INTERFACE)
+target_include_directories(list_node INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(list_node)
+add_library(list_node.check STATIC ${CMAKE_CURRENT_SOURCE_DIR}/list_node.check.cpp)
+target_link_libraries(list_node.check list_node)
+
+# Test
+add_executable(
+    list_node.test
+    ${CMAKE_CURRENT_SOURCE_DIR}/list_node.test.cpp
+)
+target_link_libraries(list_node.test gtest_main)
+target_set_default_compiler_warnings(list_node.test)
+create_test(list_node.test)
 
 ################################################################################
 # Remove Dupes
