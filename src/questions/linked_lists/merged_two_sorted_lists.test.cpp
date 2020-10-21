@@ -43,7 +43,7 @@ std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<
     return result_head;
 }
 
-TEST(test, basic)
+TEST(merged_two_sorted_lists, when_lists_are_equal)
 {
     auto l1 = make_list({1, 2, 3, 4, 5});
     auto l2 = make_list({1, 2, 3, 4, 5});
@@ -53,7 +53,7 @@ TEST(test, basic)
     ASSERT_TRUE(result == expected);
 }
 
-TEST(test, basic2)
+TEST(merged_two_sorted_lists, when_one_list_is_empty)
 {
     auto l1 = make_list({1, 2, 3, 4, 5});
     auto l2 = make_list(std::initializer_list<int> {});
@@ -63,7 +63,7 @@ TEST(test, basic2)
     ASSERT_TRUE(result == expected);
 }
 
-TEST(test, basic3)
+TEST(merged_two_sorted_lists, when_one_list_shorter_than_the_other)
 {
     auto l1 = make_list({1, 2, 3, 4, 5});
     auto l2 = make_list({3, 4, 5});
