@@ -35,15 +35,10 @@ std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<
         }
     }
 
-    while (l1 != nullptr)
-    {
-        insert_helper(result, l1);
-    }
-
-    while (l2 != nullptr)
-    {
-        insert_helper(result, l2);
-    }
+    // insert the rest of the remaining list
+    insert_helper(
+        result,
+        (l1 != nullptr) ? l1 : l2);
 
     return result_head;
 }
