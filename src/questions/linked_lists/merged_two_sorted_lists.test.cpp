@@ -2,45 +2,30 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-void insert_helper(std::shared_ptr<ListNode<int>>& node, std::shared_ptr<ListNode<int>>& new_node)
+void insert_helper(std::shared_ptr<ListNode<int>>& tail, std::shared_ptr<ListNode<int>>& new_node)
 {
-
-    if (node != nullptr)
-    {
-        node->next = new_node;
-        new_node = new_node->next;
-        node = node->next;
-    }
-    else
-    {
-        node = new_node;
-        new_node = new_node->next;
-    }
+    tail->next = new_node;
+    tail = tail->next;
+    new_node = new_node->next;
 }
 
 std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<int>>& l1, std::shared_ptr<ListNode<int>>& l2)
 {
-    std::shared_ptr<ListNode<int>> result;
-    auto& result_head = result;
+    auto dummy_head = std::make_shared<ListNode<int>>();
+    auto& tail = dummy_head;
 
     while (l1 != nullptr && l2 != nullptr)
     {
-        if (l1->data < l2->data)
-        {
-            insert_helper(result, l1);
-        }
-        else
-        {
-            insert_helper(result, l2);
-        }
+        insert_helper(tail,
+            (l1->data <= l2->data) ? l1 : l2);
     }
 
     // insert the rest of the remaining list
     insert_helper(
-        result,
+        tail,
         (l1 != nullptr) ? l1 : l2);
 
-    return result_head;
+    return dummy_head->next;
 }
 
 TEST(merged_two_sorted_lists, when_lists_are_equal)
