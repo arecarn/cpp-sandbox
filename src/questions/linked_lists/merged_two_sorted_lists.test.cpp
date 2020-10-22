@@ -12,7 +12,7 @@ void insert_helper(std::shared_ptr<ListNode<int>>& tail, std::shared_ptr<ListNod
 std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<int>>& l1, std::shared_ptr<ListNode<int>>& l2)
 {
     auto dummy_head = std::make_shared<ListNode<int>>();
-    auto& tail = dummy_head;
+    auto tail = dummy_head;
 
     while (l1 != nullptr && l2 != nullptr)
     {
@@ -35,6 +35,8 @@ TEST(merged_two_sorted_lists, when_lists_are_equal)
 
     auto result = merged_two_sorted_lists(l1, l2);
     auto expected = make_list({1, 1, 2, 2, 3, 3, 4, 4, 5, 5});
+    std::cerr << "result: " << to_string(result) << '\n';
+    std::cerr << "expected: " << to_string(expected) << '\n';
     ASSERT_TRUE(result == expected);
 }
 
@@ -45,6 +47,8 @@ TEST(merged_two_sorted_lists, when_one_list_is_empty)
 
     auto result = merged_two_sorted_lists(l1, l2);
     auto expected = make_list({1, 2, 3, 4, 5});
+    std::cerr << "result: " << to_string(result) << '\n';
+    std::cerr << "expected: " << to_string(expected) << '\n';
     ASSERT_TRUE(result == expected);
 }
 
@@ -55,5 +59,7 @@ TEST(merged_two_sorted_lists, when_one_list_shorter_than_the_other)
 
     auto result = merged_two_sorted_lists(l1, l2);
     auto expected = make_list({1, 2, 3, 3, 4, 4, 5, 5});
+    std::cerr << "result: " << to_string(result) << '\n';
+    std::cerr << "expected: " << to_string(expected) << '\n';
     ASSERT_TRUE(result == expected);
 }
