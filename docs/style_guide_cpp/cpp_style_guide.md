@@ -7,10 +7,10 @@
 * applies to classes, structs, enums, template type parameters
 ```cpp
 class ClassName;
-class StructName;
+struct StructName;
 enum EnumName;
 enum class EnumClassName;
-template <typename Type>
+template <typename T, typename Type>
 ```
 
 ### Variable Names
@@ -39,7 +39,7 @@ constexpr uint32_t Variable_Name;
 #### Static Global Variables
 
 ```cpp
-static uint32_t s_static_global_name;
+static uint32_t g_static_global_name;
 ```
 
 #### Global Variables
@@ -48,34 +48,42 @@ static uint32_t s_static_global_name;
 uint32_t g_global_name;
 ```
 
-#### Class Member Variables
+#### Struct and Class Member Variable Names
 
-Note that const and constexpr member variables are static storage duration and
-follow the same rules as `Static Constant Variables`.
 ```cpp
 // class member variables
 class ClassName
 {
-    static s_variable_name;
+    priavate:
+    static static_variable_name;
+
+    const uint32_t Private_Const_Name;
+    static constexpr uint32_t Private_Static_Constexpr_Name = 42;
+
     uint32_t m_variable_name;
-    volatile uint32_t m_variable_name;
-    uint32_t& m_variable_name;
-    uint32_t* m_variable_name_;
-    const uint32_t* Variable_Name;
-    const uint32_t Variable_Name;
-    constexpr uint32_t Variable_Name;
-}
+    volatile uint32_t m_volatile_variable_name;
+    uint32_t& m_reference_name;
+    uint32_t* m_pointer_name;
+    const uint32_t* m_pointer_to_const_name;
+    uint32_t *const m_const_pointer_to_variable_name;
 
-```
+    ...
 
-#### Struct Member Variables
+    public:
+    static static_variable_name;
 
-Struct member variables are named like normal variables without `m_` prefix.
+    const uint32_t Private_Const_Name;
+    static constexpr uint32_t Private_Static_Constexpr_Name = 42;
 
-```cpp
-uint32_t variable_name;
-uint32_t& variable_name;
-uint32_t* variable_name;
+    uint32_t variable_name;
+    volatile uint32_t volatile_variable_name;
+    uint32_t& reference_name;
+    uint32_t* pointer_name;
+    const uint32_t* pointer_to_const_name;
+    uint32_t *const const_pointer_to_variable_name;
+
+    ...
+};
 ```
 
 ### Free Function Names
@@ -105,16 +113,16 @@ private:
 }
 ```
 
-* Getter or Setters should have the same name as the member, without any scope prefix.
+* Getter or Setters should have the same name as the member, without any m_ prefix.
 
 ### Namespace Names
 
 * specifies a project name
 
 ```cpp
-namespace style
+namespace Style
 {
-namespace guide
+namespace Guide
 {
 
 ...
@@ -126,16 +134,15 @@ namespace guide
 ### Enums and Enumerations
 
 ```cpp
-
-Non-class plain enums shall be prefixed with the enum name if they are in the global namespace.
-
 enum EnumName
 {
-    EnumName_Enumerator_Name_A;
-    EnumName_Enumerator_Name_B;
-    EnumName_Enumerator_Name_Max;
+    Enumerator_Name_A;
+    Enumerator_Name_B;
+    Enumerator_Name_Max;
 }
+```
 
+```cpp
 enum class EnumName
 {
     Enumerator_Name_A;
@@ -147,7 +154,6 @@ enum class EnumName
 ### Macro / #define Names
 
 * Parenthesize all macro parameters
-
 ```cpp
 #define DEFINE_NAMES 5
 #define SUM(a, b) ((a)+(b))
@@ -201,7 +207,8 @@ src
 
 ### Exceptions to Naming Rules
 
-replicating standard library functionality
+* replicating standard library functionality
+* test names
 
 ### General Naming Guidelines
 
@@ -242,4 +249,4 @@ void function_name(
 * exceptions
     * URLs
     * string literals
-    * when clarity is removed
+    * slight deviations
