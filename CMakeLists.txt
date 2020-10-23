@@ -10,7 +10,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 
-
 ################################################################################
 # C++ Settings
 ################################################################################
@@ -46,7 +45,11 @@ file(
     "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
     "${PROJECT_SOURCE_DIR}/src/*.[ch]"
 )
-clang_format_add_format_cpp_targets(FILES "${C_AND_CPP_SOURCE_FILES}")
+clang_format_add_format_targets(
+    FORMAT_TARGET_NAME "format_c_and_cpp"
+    FORMAT_CHECK_TARGET_NAME "format_check_c_and_cpp"
+    FILES "${C_AND_CPP_SOURCE_FILES}"
+)
 
 ################################################################################
 # Gesermi CMake Formatting Target
@@ -60,13 +63,22 @@ file(
     "${PROJECT_SOURCE_DIR}/src/*.cmake"
     "${PROJECT_SOURCE_DIR}/tools/*.cmake"
 )
-gersemi_add_format_cmake_targets(FILES "${CMAKE_SOURCE_FILES}")
+gersemi_add_format_cmake_targets(
+    FORMAT_TARGET_NAME "format_cmake"
+    FORMAT_CHECK_TARGET_NAME "format_check_cmake"
+    FILES "${CMAKE_SOURCE_FILES}"
+)
 
 ################################################################################
 # Custom Targets
 ################################################################################
-add_custom_target(format ALL DEPENDS format_cpp format_cmake)
-add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
+if (TARGET format_c_and_cpp OR TARGET format_cmake)
+    add_custom_target(format ALL DEPENDS format_c_and_cpp format_cmake)
+endif()
+
+if (TARGET format_check_c_and_cpp OR TARGET format_check_cmake)
+    add_custom_target(format_check DEPENDS format_check_c_and_cpp format_check_cmake)
+endif()
 
 ################################################################################
 # Testing Settings

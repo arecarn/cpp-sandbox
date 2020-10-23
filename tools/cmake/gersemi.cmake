@@ -4,10 +4,6 @@ find_program(
     DOC "Path to gersemi CMake formatting executable"
 )
 
-if(NOT GERSEMI)
-    message(WARNING "gersemi not found! format_cmake* targets will do nothing!")
-endif()
-
 function(gersemi_add_format_cmake_targets)
     set(options)
     set(oneValueArgs)
@@ -32,7 +28,6 @@ function(gersemi_add_format_cmake_targets)
             COMMENT "Checking formatting of CMake source files"
         )
     else()
-        add_custom_target(format_cmake)
-        add_custom_target(format_check_cmake)
+        message(WARNING "gersemi Not Found! CMake Format Targets Not Created.")
     endif()
 endfunction()

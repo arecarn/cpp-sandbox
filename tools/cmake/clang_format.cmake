@@ -4,17 +4,10 @@ find_program(
     DOC "Path to clang-tidy executable"
 )
 
-if(NOT CLANG_FORMAT)
-    message(
-        WARNING
-        "gersemi not found, format_cpp* targets target will do nothing!"
-    )
-endif()
-
-function(clang_format_add_format_cpp_targets)
+function(clang_format_add_format_targets)
     set(options)
     set(oneValueArgs)
-    set(multiValueArgs FILES)
+    set(multiValueArgs FORMAT_TARGET_NAME FORMAT_CHECK_TARGET_NAME FILES)
     cmake_parse_arguments(
         ARGS
         "${options}"
@@ -24,13 +17,13 @@ function(clang_format_add_format_cpp_targets)
     )
     if(CLANG_FORMAT)
         add_custom_target(
-            format_cpp
+            ${ARGS_FORMAT_TARGET_NAME}
             COMMAND ${CLANG_FORMAT} -i -style=file ${ARGS_FILES}
             COMMENT "Formatting C and C++ source files"
         )
 
         add_custom_target(
-            format_check_cpp
+            ${ARGS_FORMAT_CHECK_TARGET_NAME}
             COMMAND
                 ${CLANG_FORMAT} -style=file -output-replacements-xml
                 ${ARGS_FILES}
@@ -45,7 +38,6 @@ function(clang_format_add_format_cpp_targets)
             COMMENT "Checking formatting of C and C++ source files"
         )
     else()
-        add_custom_target(format_cpp)
-        add_custom_target(format_check_cpp)
+        message(WARNING "clang-format Not Found! Format Targets Not Created.")
     endif()
 endfunction()
