@@ -24,10 +24,21 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(ccache)
 include(sanitizers)
 include(compiler_warnings)
-# TODO Doxygen
 
 ################################################################################
-#  Clang Format Source Formatting
+#  Doxygen Documentation Target
+################################################################################
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    doxygen_add_docs(
+        doxygen
+        ${PROJECT_SOURCE_DIR}/src
+        COMMENT "Generating Doxygen Documentation"
+    )
+endif()
+
+################################################################################
+# Clang Format Source Formatting Target
 ################################################################################
 include(clang_format)
 file(
@@ -38,7 +49,7 @@ file(
 clang_format_add_format_cpp_targets(FILES "${C_AND_CPP_SOURCE_FILES}")
 
 ################################################################################
-#  Gesermi CMake Formatting
+# Gesermi CMake Formatting Target
 ################################################################################
 include(gersemi)
 list(APPEND CMAKE_SOURCE_FILES
@@ -52,7 +63,7 @@ file(
 gersemi_add_format_cmake_targets(FILES "${CMAKE_SOURCE_FILES}")
 
 ################################################################################
-#  Custom Targets
+# Custom Targets
 ################################################################################
 add_custom_target(format ALL DEPENDS format_cpp format_cmake)
 add_custom_target(format_check DEPENDS format_check_cpp format_check_cmake)
