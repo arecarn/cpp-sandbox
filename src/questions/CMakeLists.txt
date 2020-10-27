@@ -1,4 +1,4 @@
 add_subdirectory(arrays)
 add_subdirectory(strings)
 add_subdirectory(linked_lists)
-add_subdirectory(primative_types)
+add_subdirectory(primitive_types)
