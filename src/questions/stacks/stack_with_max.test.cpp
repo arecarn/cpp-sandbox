@@ -3,9 +3,9 @@
 
 #include <gtest/gtest.h>
 #include <numeric>
+#include <stack>
 #include <stdexcept>
 #include <unordered_map>
-#include <vector>
 
 class StackWithMax
 {
@@ -16,17 +16,28 @@ public:
     int max();
 
 private:
-    std::vector<int> m_data;
-    std::vector<int> m_max_data;
+    std::stack<int> m_data;
+
+    struct MaxWithCount
+    {
+        int max;
+        size_t count;
+    };
+    std::stack<MaxWithCount> m_max_with_count;
 };
 
 void StackWithMax::push(int val)
 {
-    m_data.push_back(val);
-    if (m_max_data.empty() || val >= max())
+    if (m_max_with_count.empty() || val > max())
     {
-        m_max_data.push_back(val);
+        m_max_with_count.push({val, 1});
     }
+    else if (val == max())
+    {
+        m_max_with_count.top().count++;
+    }
+
+    m_data.push(val);
 }
 
 void StackWithMax::pop()
@@ -36,11 +47,19 @@ void StackWithMax::pop()
         throw std::out_of_range {"empty"};
     }
 
-    if (*m_data.rbegin() == *m_max_data.rbegin())
+    if (m_data.top() == m_max_with_count.top().max)
     {
-        m_max_data.erase(m_max_data.begin() + (m_max_data.size() - 1));
+        if (m_max_with_count.top().count == 1)
+        {
+            m_max_with_count.pop();
+        }
+        else
+        {
+            m_max_with_count.top().count--;
+        }
     }
-    m_data.erase(m_data.begin() + (m_data.size() - 1));
+
+    m_data.pop();
 }
 
 int StackWithMax::peek()
@@ -49,17 +68,16 @@ int StackWithMax::peek()
     {
         throw std::out_of_range {"empty"};
     }
-    return m_data[m_data.size() - 1];
+    return m_data.top();
 }
 
 int StackWithMax::max()
 {
-
     if (m_data.empty())
     {
         throw std::out_of_range {"empty"};
     }
-    return m_max_data[m_max_data.size() - 1];
+    return m_max_with_count.top().max;
 }
 
 template <typename Exception, typename Operation>
