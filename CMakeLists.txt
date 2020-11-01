@@ -1,9 +1,9 @@
+cmake_minimum_required(VERSION 3.10.2)
 project(cpp-sandbox)
 
 ################################################################################
 # CMake Settings
 ################################################################################
-cmake_minimum_required(VERSION 3.10.2)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
