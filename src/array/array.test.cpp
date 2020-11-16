@@ -12,6 +12,7 @@ TEST(array, static)
         ASSERT_EQ(j, i);
         j++;
     }
+    ASSERT_EQ(j, 3);
 
     j = 0;
     for (const auto& i : array)
@@ -19,6 +20,7 @@ TEST(array, static)
         ASSERT_EQ(j, i);
         j++;
     }
+    ASSERT_EQ(j, 3);
 }
 
 TEST(array, size)

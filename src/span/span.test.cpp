@@ -19,6 +19,8 @@ TEST(span, static)
         ASSERT_EQ(j, i);
         j++;
     }
+    ASSERT_EQ(j, 5);
+    ASSERT_TRUE(&c_array_span[4] + 1 == c_array_span.end());
 
     j = 0;
     for (const auto& i : array_span)
@@ -26,6 +28,8 @@ TEST(span, static)
         ASSERT_EQ(j, i);
         j++;
     }
+    ASSERT_EQ(j, 3);
+    ASSERT_TRUE(&array_span[2] + 1 == array_span.end());
 }
 
 TEST(span, size)
