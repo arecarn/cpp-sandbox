@@ -6,11 +6,10 @@ target_include_directories(hierarchical_state_machine PUBLIC ${CMAKE_CURRENT_SOU
 target_set_default_compiler_warnings(hierarchical_state_machine)
 
 ################################################################################
-# Test
+# Demo
 ################################################################################
 add_executable(
-    hierarchical_state_machine.test
-    ${CMAKE_CURRENT_SOURCE_DIR}/hierarchical_state_machine.test.cpp
+    hierarchical_state_machine.demo
+    ${CMAKE_CURRENT_SOURCE_DIR}/hierarchical_state_machine.demo.cpp
 )
-target_link_libraries(hierarchical_state_machine.test gtest_main hierarchical_state_machine)
-create_test(hierarchical_state_machine.test)
+target_link_libraries(hierarchical_state_machine.demo hierarchical_state_machine)

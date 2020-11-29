@@ -1,90 +1,90 @@
 #include "hierarchical_state_machine.hpp"
 
-static Msg const startMsg = {START_EVT};
-static Msg const entryMsg = {ENTRY_EVT};
-static Msg const exitMsg = {EXIT_EVT};
+static Msg const Start_Msg = {START_EVT};
+static Msg const Entry_Msg = {ENTRY_EVT};
+static Msg const Exit_Msg = {EXIT_EVT};
 #define MAX_STATE_NESTING 8
 
 /* State Ctor...............................................................*/
 State::State(char const* n, State* s, EvtHndlr h)
-    : name(n)
-    , super(s)
-    , hndlr(h)
+    : m_name(n)
+    , m_super(s)
+    , m_hndlr(h)
 {
 }
 
 /* Hsm Ctor.................................................................*/
-Hsm::Hsm(char const* n, EvtHndlr topHndlr)
-    : top("top", 0, topHndlr)
-    , name(n)
+Hsm::Hsm(char const* n, EvtHndlr top_hndlr)
+    : m_top("top", nullptr, top_hndlr)
+    , m_name(n)
 {
 }
 
 /* enter and start the top state............................................*/
-void Hsm::onStart()
+void Hsm::on_start()
 {
-    curr = &top;
-    next = 0;
-    curr->onEvent(this, &entryMsg);
-    while (curr->onEvent(this, &startMsg), next)
+    m_curr = &m_top;
+    m_next = nullptr;
+    m_curr->on_event(this, &Entry_Msg);
+    while (m_curr->on_event(this, &Start_Msg), m_next)
     {
-        State* entryPath[MAX_STATE_NESTING];
-        register State** trace = entryPath;
-        register State* s;
-        *trace = 0;
-        for (s = next; s != curr; s = s->super)
+        State* entry_path[MAX_STATE_NESTING];
+        State** trace = entry_path;
+        State* s;
+        *trace = nullptr;
+        for (s = m_next; s != m_curr; s = s->m_super)
         {
             *(++trace) = s; /* trace path to target */
         }
         while (s = *trace--)
         { /* retrace entry from source */
-            s->onEvent(this, &entryMsg);
+            s->on_event(this, &Entry_Msg);
         }
-        curr = next;
-        next = 0;
+        m_curr = m_next;
+        m_next = nullptr;
     }
 }
 
 /* state machine "engine"...................................................*/
-void Hsm::onEvent(Msg const* msg)
+void Hsm::on_event(Msg const* msg)
 {
-    State* entryPath[MAX_STATE_NESTING];
-    register State** trace;
-    register State* s;
-    for (s = curr; s; s = s->super)
+    State* entry_path[MAX_STATE_NESTING];
+    State** trace;
+    State* s;
+    for (s = m_curr; s; s = s->m_super)
     {
-        source = s; /* level of outermost event handler */
-        msg = s->onEvent(this, msg);
-        if (msg == 0)
+        m_source = s; /* level of outermost event handler */
+        msg = s->on_event(this, msg);
+        if (msg == nullptr)
         { /* processed? */
-            if (next)
+            if (m_next)
             { /* state transition taken? */
-                trace = entryPath;
-                *trace = 0;
-                for (s = next; s != curr; s = s->super)
+                trace = entry_path;
+                *trace = nullptr;
+                for (s = m_next; s != m_curr; s = s->m_super)
                 {
                     *(++trace) = s; /* trace path to target */
                 }
                 while (s = *trace--)
                 { /* retrace entry from LCA */
-                    s->onEvent(this, &entryMsg);
+                    s->on_event(this, &Entry_Msg);
                 }
-                curr = next;
-                next = 0;
-                while (curr->onEvent(this, &startMsg), next)
+                m_curr = m_next;
+                m_next = nullptr;
+                while (m_curr->on_event(this, &Start_Msg), m_next)
                 {
-                    trace = entryPath;
-                    *trace = 0;
-                    for (s = next; s != curr; s = s->super)
+                    trace = entry_path;
+                    *trace = nullptr;
+                    for (s = m_next; s != m_curr; s = s->m_super)
                     {
                         *(++trace) = s; /* record path to target */
                     }
                     while (s = *trace--)
                     { /* retrace the entry */
-                        s->onEvent(this, &entryMsg);
+                        s->on_event(this, &Entry_Msg);
                     }
-                    curr = next;
-                    next = 0;
+                    m_curr = m_next;
+                    m_next = nullptr;
                 }
             }
             break; /* event processed */
@@ -93,38 +93,39 @@ void Hsm::onEvent(Msg const* msg)
 }
 
 /* exit current states and all superstates up to LCA .......................*/
-void Hsm::exit_(unsigned char toLca)
+void Hsm::exit(unsigned char to_lca)
 {
-    register State* s = curr;
-    while (s != source)
+    State* s = m_curr;
+    while (s != m_source)
     {
-        s->onEvent(this, &exitMsg);
-        s = s->super;
+        s->on_event(this, &Exit_Msg);
+        s = s->m_super;
     }
-    while (toLca--)
+    while (to_lca--)
     {
-        s->onEvent(this, &exitMsg);
-        s = s->super;
+        s->on_event(this, &Exit_Msg);
+        s = s->m_super;
     }
-    curr = s;
+    m_curr = s;
 }
 
 /* find # of levels to Least Common Ancestor................................*/
-unsigned char Hsm::toLCA_(State* target)
+unsigned char Hsm::to_lca(State* target)
 {
-    State *s, *t;
-    unsigned char toLca = 0;
-    if (source == target)
+    State* s;
+    State* t;
+    unsigned char to_lca = 0;
+    if (m_source == target)
     {
         return 1;
     }
-    for (s = source; s; ++toLca, s = s->super)
+    for (s = m_source; s; ++to_lca, s = s->m_super)
     {
-        for (t = target; t; t = t->super)
+        for (t = target; t; t = t->m_super)
         {
             if (s == t)
             {
-                return toLca;
+                return to_lca;
             }
         }
     }

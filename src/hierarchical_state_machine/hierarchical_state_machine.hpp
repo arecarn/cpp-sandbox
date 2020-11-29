@@ -3,69 +3,69 @@
 
 #include <cassert>
 
-typedef int Event;
+using Event = int;
 struct Msg
 {
-    Event vt;
+    Event evt;
 };
 
 class Hsm; /* forward declaration */
-typedef Msg const* (Hsm::*EvtHndlr)(Msg const*);
+using EvtHndlr = const Msg* (Hsm::*)(const Msg*);
 
 class State
 {
-    State* super; /* pointer to superstate */
-    EvtHndlr hndlr; /* state's handler function */
-    char const* name;
+    State* m_super; /* pointer to superstate */
+    EvtHndlr m_hndlr; /* state's handler function */
+    char const* m_name;
 
 public:
     State(char const* name, State* super, EvtHndlr hndlr);
 
 private:
-    Msg const* onEvent(Hsm* ctx, Msg const* msg)
+    Msg const* on_event(Hsm* ctx, Msg const* msg)
     {
-        return (ctx->*hndlr)(msg);
+        return (ctx->*m_hndlr)(msg);
     }
     friend class Hsm;
 };
 
 class Hsm
 { /* Hierarchical State Machine base class */
-    char const* name; /* pointer to static name */
-    State* curr; /* current state */
+    char const* m_name; /* pointer to static name */
+    State* m_curr; /* current state */
 protected:
-    State* next; /* next state (non 0 if transition taken) */
-    State* source; /* source state during last transition */
-    State top; /* top-most state object */
+    State* m_next; /* next state (non 0 if transition taken) */
+    State* m_source; /* source state during last transition */
+    State m_top; /* top-most state object */
 public:
-    Hsm(char const* name, EvtHndlr topHndlr); /* Ctor */
-    void onStart(); /* enter and start the top state */
-    void onEvent(Msg const* msg); /* "state machine engine" */
+    Hsm(char const* name, EvtHndlr top_hndlr); /* Ctor */
+    void on_start(); /* enter and start the top state */
+    void on_event(Msg const* msg); /* "state machine engine" */
 protected:
-    unsigned char toLCA_(State* target);
-    void exit_(unsigned char toLca);
-    State* STATE_CURR() { return curr; }
-    void STATE_START(State* target)
+    unsigned char to_lca(State* target);
+    void exit(unsigned char to_lca);
+    State* state_curr() { return m_curr; }
+    void state_start(State* target)
     {
-        assert(next == 0);
-        next = target;
+        assert(m_next == 0);
+        m_next = target;
     }
-#define STATE_TRAN(target_)                 \
-    if (1)                                  \
-    {                                       \
-        static unsigned char toLca_ = 0xFF; \
-        assert(next == 0);                  \
-        if (toLca_ == 0xFF)                 \
-            toLca_ = toLCA_(target_);       \
-        exit_(toLca_);                      \
-        next = (target_);                   \
-    }                                       \
-    else                                    \
+#define STATE_TRAN(target_)                \
+    if (1)                                 \
+    {                                      \
+        static unsigned char depth = 0xFF; \
+        assert(m_next == 0);               \
+        if (depth == 0xFF)                 \
+            depth = to_lca(target_);       \
+        exit(depth);                       \
+        m_next = (target_);                \
+    }                                      \
+    else                                   \
         ((void)0)
 };
 
-#define START_EVT ((Event)(-1))
-#define ENTRY_EVT ((Event)(-2))
-#define EXIT_EVT ((Event)(-3))
+[[maybe_unused]] constexpr Event START_EVT {-1};
+[[maybe_unused]] constexpr Event ENTRY_EVT {-2};
+[[maybe_unused]] constexpr Event EXIT_EVT {-3};
 
-#endif HIERARCHICAL_STATE_MACHINE
+#endif //HIERARCHICAL_STATE_MACHINE
