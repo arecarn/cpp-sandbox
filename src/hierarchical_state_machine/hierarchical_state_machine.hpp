@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#define MAX_STATE_NESTING 8
+
 using Event = int;
 struct Msg
 {
@@ -37,6 +39,8 @@ protected:
     State* m_next; /* next state (non 0 if transition taken) */
     State* m_source; /* source state during last transition */
     State m_top; /* top-most state object */
+    State* entry_path[MAX_STATE_NESTING];
+
 public:
     Hsm(char const* name, EvtHndlr top_hndlr); /* Ctor */
     void on_start(); /* enter and start the top state */
@@ -44,6 +48,7 @@ public:
 protected:
     unsigned char to_lca(State* target);
     void exit(unsigned char to_lca);
+    void enter();
     State* state_curr() { return m_curr; }
     void state_start(State* target)
     {
