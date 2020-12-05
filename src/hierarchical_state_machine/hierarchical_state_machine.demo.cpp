@@ -15,12 +15,12 @@ protected:
 
 public:
     HsmTest();
-    Msg const* top_hndlr(Msg const* msg);
-    Msg const* s1_hndlr(Msg const* msg);
-    Msg const* s11_hndlr(Msg const* msg);
-    Msg const* s2_hndlr(Msg const* msg);
-    Msg const* s21_hndlr(Msg const* msg);
-    Msg const* s211_hndlr(Msg const* msg);
+    Msg const* top_handler(Msg const* msg);
+    Msg const* s1_handler(Msg const* msg);
+    Msg const* s11_handler(Msg const* msg);
+    Msg const* s2_handler(Msg const* msg);
+    Msg const* s21_handler(Msg const* msg);
+    Msg const* s211_handler(Msg const* msg);
 };
 
 enum HsmTestEvents
@@ -35,13 +35,12 @@ enum HsmTestEvents
     H_SIG
 };
 
-Msg const* HsmTest::top_hndlr(Msg const* msg)
+Msg const* HsmTest::top_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
-        case START_EVT:
+        case INIT_EVT:
             printf("top-INIT;");
-            state_start(&m_s1);
             return nullptr;
         case ENTRY_EVT:
             printf("top-ENTRY;");
@@ -57,13 +56,12 @@ Msg const* HsmTest::top_hndlr(Msg const* msg)
     return msg;
 }
 
-Msg const* HsmTest::s1_hndlr(Msg const* msg)
+Msg const* HsmTest::s1_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
-        case START_EVT:
+        case INIT_EVT:
             printf("s1-INIT;");
-            state_start(&m_s11);
             return nullptr;
         case ENTRY_EVT:
             printf("s1-ENTRY;");
@@ -95,7 +93,7 @@ Msg const* HsmTest::s1_hndlr(Msg const* msg)
     return msg;
 }
 
-Msg const* HsmTest::s11_hndlr(Msg const* msg)
+Msg const* HsmTest::s11_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
@@ -121,13 +119,12 @@ Msg const* HsmTest::s11_hndlr(Msg const* msg)
     return msg;
 }
 
-Msg const* HsmTest::s2_hndlr(Msg const* msg)
+Msg const* HsmTest::s2_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
-        case START_EVT:
+        case INIT_EVT:
             printf("s2-INIT;");
-            state_start(&m_s21);
             return nullptr;
         case ENTRY_EVT:
             printf("s2-ENTRY;");
@@ -147,13 +144,12 @@ Msg const* HsmTest::s2_hndlr(Msg const* msg)
     return msg;
 }
 
-Msg const* HsmTest::s21_hndlr(Msg const* msg)
+Msg const* HsmTest::s21_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
-        case START_EVT:
+        case INIT_EVT:
             printf("s21-INIT;");
-            state_start(&m_s211);
             return nullptr;
         case ENTRY_EVT:
             printf("s21-ENTRY;");
@@ -178,7 +174,7 @@ Msg const* HsmTest::s21_hndlr(Msg const* msg)
     return msg;
 }
 
-Msg const* HsmTest::s211_hndlr(Msg const* msg)
+Msg const* HsmTest::s211_handler(Msg const* msg)
 {
     switch (msg->evt)
     {
@@ -201,12 +197,12 @@ Msg const* HsmTest::s211_hndlr(Msg const* msg)
 }
 
 HsmTest::HsmTest()
-    : Hsm {"HsmTest", static_cast<EvtHndlr>(&HsmTest::top_hndlr)}
-    , m_s1 {"s1", &m_top, static_cast<EvtHndlr>(&HsmTest::s1_hndlr)}
-    , m_s11 {"s11", &m_s1, static_cast<EvtHndlr>(&HsmTest::s11_hndlr)}
-    , m_s2 {"s2", &m_top, static_cast<EvtHndlr>(&HsmTest::s2_hndlr)}
-    , m_s21 {"s21", &m_s2, static_cast<EvtHndlr>(&HsmTest::s21_hndlr)}
-    , m_s211 {"s211", &m_s21, static_cast<EvtHndlr>(&HsmTest::s211_hndlr)}
+    : Hsm {"HsmTest", static_cast<EventHandler>(&HsmTest::top_handler), &m_s1}
+    , m_s1 {"s1", &m_top, static_cast<EventHandler>(&HsmTest::s1_handler), &m_s11}
+    , m_s11 {"s11", &m_s1, static_cast<EventHandler>(&HsmTest::s11_handler)}
+    , m_s2 {"s2", &m_top, static_cast<EventHandler>(&HsmTest::s2_handler), &m_s21}
+    , m_s21 {"s21", &m_s2, static_cast<EventHandler>(&HsmTest::s21_handler), &m_s211}
+    , m_s211 {"s211", &m_s21, static_cast<EventHandler>(&HsmTest::s211_handler)}
 {
 }
 

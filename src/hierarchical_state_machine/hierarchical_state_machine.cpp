@@ -1,20 +1,21 @@
 #include "hierarchical_state_machine.hpp"
 
-static Msg const Start_Msg = {START_EVT};
+static Msg const Init_Msg = {INIT_EVT};
 static Msg const Entry_Msg = {ENTRY_EVT};
 static Msg const Exit_Msg = {EXIT_EVT};
 
 /// State constructor
-State::State(char const* n, State* s, EvtHndlr h)
+State::State(char const* n, State* s, EventHandler h, State* i)
     : m_name(n)
     , m_super(s)
-    , m_hndlr(h)
+    , m_handler(h)
+    , m_inital(i)
 {
 }
 
 /// HSM constructor
-Hsm::Hsm(char const* n, EvtHndlr top_hndlr)
-    : m_top("top", nullptr, top_hndlr)
+Hsm::Hsm(char const* n, EventHandler top_hndlr, State* inital)
+    : m_top("top", nullptr, top_hndlr, inital)
     , m_name(n)
 {
 }
@@ -22,41 +23,52 @@ Hsm::Hsm(char const* n, EvtHndlr top_hndlr)
 /// enters and starts the top state
 void Hsm::on_start()
 {
-    m_curr = &m_top;
+    m_current = &m_top;
     m_next = nullptr;
-    m_curr->on_event(this, &Entry_Msg);
+    m_current->on_event(this, &Entry_Msg);
+    init_state();
+}
 
-    // perform start events till there are no more transitions
-    while (m_curr->on_event(this, &Start_Msg), m_next)
+void Hsm::init_state()
+{
+    // perform init events till there are no more transitions
+    while (true)
     {
-        enter();
+        m_current->on_event(this, &Init_Msg);
+        if (m_current->m_inital)
+        {
+            assert(m_next == nullptr);
+            m_next = m_current->m_inital;
+        }
+
+        if (m_next)
+        {
+            enter();
+        }
+        else
+        {
+            break;
+        }
     }
 }
 
 /// state machine engine
 void Hsm::on_event(Msg const* msg)
 {
-    State* entry_path[MAX_STATE_NESTING];
-    State** trace;
     State* s;
     // try to handle events walking up the inheritance chain if not handled
-    for (s = m_curr; s; s = s->m_super)
+    for (s = m_current; s; s = s->m_super)
     {
-        m_source = s; /* level of outermost event handler */
+        m_source = s; // level of outermost event handler
         msg = s->on_event(this, msg);
         if (msg == nullptr) // the event was processed
         {
-            if (m_next) // a state transition was initated
+            if (m_next) // a state transition was initiated
             {
                 // the current state is the LCA of the source and target state
                 // so enter the target state
                 enter();
-
-                // perform start events till there are no more transitions
-                while (m_curr->on_event(this, &Start_Msg), m_next)
-                {
-                    enter();
-                }
+                init_state();
             }
             break; // event processed
         }
@@ -65,25 +77,25 @@ void Hsm::on_event(Msg const* msg)
 
 void Hsm::enter()
 {
-    State** trace = entry_path;
+    State** trace = m_entry_path;
     State* s;
     *trace = nullptr;
-    for (State* s = m_next; s != m_curr; s = s->m_super)
+    for (State* s = m_next; s != m_current; s = s->m_super)
     {
-        *(++trace) = s; /* record path to target */
+        *(++trace) = s; // record path to target
     }
     while ((s = *trace--))
-    { /* retrace the entry */
+    { // retrace the entry
         s->on_event(this, &Entry_Msg);
     }
-    m_curr = m_next;
+    m_current = m_next;
     m_next = nullptr;
 }
 
 /// exit current states and all superstates up to least common ancestor
 void Hsm::exit(unsigned char to_lca)
 {
-    State* s = m_curr;
+    State* s = m_current;
     while (s != m_source)
     {
         s->on_event(this, &Exit_Msg);
@@ -94,7 +106,7 @@ void Hsm::exit(unsigned char to_lca)
         s->on_event(this, &Exit_Msg);
         s = s->m_super;
     }
-    m_curr = s;
+    m_current = s;
 }
 
 /// find number of levels to the least common ancestor
