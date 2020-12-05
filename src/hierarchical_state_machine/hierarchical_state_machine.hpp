@@ -55,18 +55,37 @@ protected:
         assert(m_next == 0);
         m_next = target;
     }
-#define STATE_TRAN(target_)                \
-    if (1)                                 \
-    {                                      \
-        static unsigned char depth = 0xFF; \
-        assert(m_next == 0);               \
-        if (depth == 0xFF)                 \
-            depth = to_lca(target_);       \
-        exit(depth);                       \
-        m_next = (target_);                \
-    }                                      \
-    else                                   \
-        ((void)0)
+
+#define STATE_TRAN(TARGET)                     \
+    {                                          \
+        static Transition t {*this, (TARGET)}; \
+        t();                                   \
+    }
+
+    friend class Transition;
+};
+
+class Transition
+{
+public:
+    Transition(Hsm& hsm, State& target)
+        : m_depth {hsm.to_lca(&target)}
+        , m_target {target}
+        , m_hsm {hsm}
+    {
+    }
+
+    void operator()()
+    {
+        assert(m_hsm.m_next == nullptr);
+        m_hsm.exit(m_depth);
+        m_hsm.m_next = &m_target;
+    }
+
+private:
+    const unsigned char m_depth;
+    State& m_target;
+    Hsm& m_hsm;
 };
 
 [[maybe_unused]] constexpr Event START_EVT {-1};

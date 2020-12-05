@@ -4,7 +4,7 @@ static Msg const Start_Msg = {START_EVT};
 static Msg const Entry_Msg = {ENTRY_EVT};
 static Msg const Exit_Msg = {EXIT_EVT};
 
-/* State Ctor...............................................................*/
+/// State constructor
 State::State(char const* n, State* s, EvtHndlr h)
     : m_name(n)
     , m_super(s)
@@ -12,14 +12,14 @@ State::State(char const* n, State* s, EvtHndlr h)
 {
 }
 
-/* Hsm Ctor.................................................................*/
+/// HSM constructor
 Hsm::Hsm(char const* n, EvtHndlr top_hndlr)
     : m_top("top", nullptr, top_hndlr)
     , m_name(n)
 {
 }
 
-/* enter and start the top state............................................*/
+/// enters and starts the top state
 void Hsm::on_start()
 {
     m_curr = &m_top;
@@ -33,7 +33,7 @@ void Hsm::on_start()
     }
 }
 
-/* state machine "engine"...................................................*/
+/// state machine engine
 void Hsm::on_event(Msg const* msg)
 {
     State* entry_path[MAX_STATE_NESTING];
@@ -58,7 +58,7 @@ void Hsm::on_event(Msg const* msg)
                     enter();
                 }
             }
-            break; /* event processed */
+            break; // event processed
         }
     }
 }
@@ -80,7 +80,7 @@ void Hsm::enter()
     m_next = nullptr;
 }
 
-/* exit current states and all superstates up to LCA .......................*/
+/// exit current states and all superstates up to least common ancestor
 void Hsm::exit(unsigned char to_lca)
 {
     State* s = m_curr;
@@ -97,7 +97,7 @@ void Hsm::exit(unsigned char to_lca)
     m_curr = s;
 }
 
-/* find # of levels to Least Common Ancestor................................*/
+/// find number of levels to the least common ancestor
 unsigned char Hsm::to_lca(State* target)
 {
     State* s;

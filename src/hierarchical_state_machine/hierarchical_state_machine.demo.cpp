@@ -1,4 +1,4 @@
-#include "hierarchical_state_machine.hpp" //.h "
+#include "hierarchical_state_machine.hpp"
 #include <cassert>
 #include <cstdio>
 
@@ -51,7 +51,7 @@ Msg const* HsmTest::top_hndlr(Msg const* msg)
             return nullptr;
         case E_SIG:
             printf("top-E;");
-            STATE_TRAN(&m_s211);
+            STATE_TRAN(m_s211);
             return nullptr;
     }
     return msg;
@@ -73,23 +73,23 @@ Msg const* HsmTest::s1_hndlr(Msg const* msg)
             return nullptr;
         case A_SIG:
             printf("s1-A;");
-            STATE_TRAN(&m_s1);
+            STATE_TRAN(m_s1);
             return nullptr;
         case B_SIG:
             printf("s1-B;");
-            STATE_TRAN(&m_s11);
+            STATE_TRAN(m_s11);
             return nullptr;
         case C_SIG:
             printf("s1-C;");
-            STATE_TRAN(&m_s2);
+            STATE_TRAN(m_s2);
             return nullptr;
         case D_SIG:
             printf("s1-D;");
-            STATE_TRAN(&m_top);
+            STATE_TRAN(m_top);
             return nullptr;
         case F_SIG:
             printf("s1-F;");
-            STATE_TRAN(&m_s211);
+            STATE_TRAN(m_s211);
             return nullptr;
     }
     return msg;
@@ -107,7 +107,7 @@ Msg const* HsmTest::s11_hndlr(Msg const* msg)
             return nullptr;
         case G_SIG:
             printf("s11-G;");
-            STATE_TRAN(&m_s211);
+            STATE_TRAN(m_s211);
             return nullptr;
         case H_SIG:
             if (m_my_foo)
@@ -137,11 +137,11 @@ Msg const* HsmTest::s2_hndlr(Msg const* msg)
             return nullptr;
         case C_SIG:
             printf("s2-C;");
-            STATE_TRAN(&m_s1);
+            STATE_TRAN(m_s1);
             return nullptr;
         case F_SIG:
             printf("s2-F;");
-            STATE_TRAN(&m_s11);
+            STATE_TRAN(m_s11);
             return nullptr;
     }
     return msg;
@@ -163,14 +163,14 @@ Msg const* HsmTest::s21_hndlr(Msg const* msg)
             return nullptr;
         case B_SIG:
             printf("s21-B;");
-            STATE_TRAN(&m_s211);
+            STATE_TRAN(m_s211);
             return nullptr;
         case H_SIG:
             if (!m_my_foo)
             {
                 printf("s21-H;");
                 m_my_foo = 1;
-                STATE_TRAN(&m_s21);
+                STATE_TRAN(m_s21);
                 return nullptr;
             }
             break;
@@ -190,11 +190,11 @@ Msg const* HsmTest::s211_hndlr(Msg const* msg)
             return nullptr;
         case D_SIG:
             printf("s211-D;");
-            STATE_TRAN(&m_s21);
+            STATE_TRAN(m_s21);
             return nullptr;
         case G_SIG:
             printf("s211-G;");
-            STATE_TRAN(&m_top);
+            STATE_TRAN(m_top);
             return nullptr;
     }
     return msg;
