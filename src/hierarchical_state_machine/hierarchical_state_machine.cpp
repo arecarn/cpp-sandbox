@@ -6,8 +6,8 @@ static Msg const Exit_Msg = {EXIT_EVT};
 
 /// State constructor
 State::State(char const* n, State* s, EventHandler h, State* i)
-    : m_name(n)
-    , m_super(s)
+    : m_super(s)
+    , m_name(n)
     , m_handler(h)
     , m_inital(i)
 {
@@ -15,8 +15,8 @@ State::State(char const* n, State* s, EventHandler h, State* i)
 
 /// HSM constructor
 Hsm::Hsm(char const* n, EventHandler top_hndlr, State* inital)
-    : m_top("top", nullptr, top_hndlr, inital)
-    , m_name(n)
+    : m_name(n)
+    , m_top("top", nullptr, top_hndlr, inital)
 {
 }
 

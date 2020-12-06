@@ -41,19 +41,21 @@ Msg const* HsmTest::top_handler(Msg const* msg)
     {
         case INIT_EVT:
             printf("top-INIT;");
-            return nullptr;
+            break;
         case ENTRY_EVT:
             printf("top-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("top-EXIT;");
-            return nullptr;
+            break;
         case E_SIG:
             printf("top-E;");
             STATE_TRAN(m_s211);
-            return nullptr;
+            break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 Msg const* HsmTest::s1_handler(Msg const* msg)
@@ -62,35 +64,37 @@ Msg const* HsmTest::s1_handler(Msg const* msg)
     {
         case INIT_EVT:
             printf("s1-INIT;");
-            return nullptr;
+            break;
         case ENTRY_EVT:
             printf("s1-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("s1-EXIT;");
-            return nullptr;
+            break;
         case A_SIG:
             printf("s1-A;");
             STATE_TRAN(m_s1);
-            return nullptr;
+            break;
         case B_SIG:
             printf("s1-B;");
             STATE_TRAN(m_s11);
-            return nullptr;
+            break;
         case C_SIG:
             printf("s1-C;");
             STATE_TRAN(m_s2);
-            return nullptr;
+            break;
         case D_SIG:
             printf("s1-D;");
             STATE_TRAN(m_top);
-            return nullptr;
+            break;
         case F_SIG:
             printf("s1-F;");
             STATE_TRAN(m_s211);
-            return nullptr;
+            break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 Msg const* HsmTest::s11_handler(Msg const* msg)
@@ -99,24 +103,25 @@ Msg const* HsmTest::s11_handler(Msg const* msg)
     {
         case ENTRY_EVT:
             printf("s11-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("s11-EXIT;");
-            return nullptr;
+            break;
         case G_SIG:
             printf("s11-G;");
             STATE_TRAN(m_s211);
-            return nullptr;
+            break;
         case H_SIG:
             if (m_my_foo)
             {
                 printf("s11-H;");
                 m_my_foo = 0;
-                return nullptr;
             }
             break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 Msg const* HsmTest::s2_handler(Msg const* msg)
@@ -125,23 +130,25 @@ Msg const* HsmTest::s2_handler(Msg const* msg)
     {
         case INIT_EVT:
             printf("s2-INIT;");
-            return nullptr;
+            break;
         case ENTRY_EVT:
             printf("s2-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("s2-EXIT;");
-            return nullptr;
+            break;
         case C_SIG:
             printf("s2-C;");
             STATE_TRAN(m_s1);
-            return nullptr;
+            break;
         case F_SIG:
             printf("s2-F;");
             STATE_TRAN(m_s11);
-            return nullptr;
+            break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 Msg const* HsmTest::s21_handler(Msg const* msg)
@@ -150,28 +157,29 @@ Msg const* HsmTest::s21_handler(Msg const* msg)
     {
         case INIT_EVT:
             printf("s21-INIT;");
-            return nullptr;
+            break;
         case ENTRY_EVT:
             printf("s21-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("s21-EXIT;");
-            return nullptr;
+            break;
         case B_SIG:
             printf("s21-B;");
             STATE_TRAN(m_s211);
-            return nullptr;
+            break;
         case H_SIG:
             if (!m_my_foo)
             {
                 printf("s21-H;");
                 m_my_foo = 1;
                 STATE_TRAN(m_s21);
-                return nullptr;
             }
             break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 Msg const* HsmTest::s211_handler(Msg const* msg)
@@ -180,20 +188,22 @@ Msg const* HsmTest::s211_handler(Msg const* msg)
     {
         case ENTRY_EVT:
             printf("s211-ENTRY;");
-            return nullptr;
+            break;
         case EXIT_EVT:
             printf("s211-EXIT;");
-            return nullptr;
+            break;
         case D_SIG:
             printf("s211-D;");
             STATE_TRAN(m_s21);
-            return nullptr;
+            break;
         case G_SIG:
             printf("s211-G;");
             STATE_TRAN(m_top);
-            return nullptr;
+            break;
+        default:
+            return msg;
     }
-    return msg;
+    return nullptr;
 }
 
 HsmTest::HsmTest()
