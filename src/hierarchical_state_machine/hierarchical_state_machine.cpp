@@ -43,7 +43,7 @@ void Hsm::init_state()
 
         if (m_next)
         {
-            enter();
+            enter_from_lca();
         }
         else
         {
@@ -67,7 +67,7 @@ void Hsm::on_event(Msg const* msg)
             {
                 // the current state is the LCA of the source and target state
                 // so enter the target state
-                enter();
+                enter_from_lca();
                 init_state();
             }
             break; // event processed
@@ -75,7 +75,7 @@ void Hsm::on_event(Msg const* msg)
     }
 }
 
-void Hsm::enter()
+void Hsm::enter_from_lca()
 {
     State** trace = m_entry_path;
     State* s;
@@ -93,7 +93,7 @@ void Hsm::enter()
 }
 
 /// exit current states and all superstates up to least common ancestor
-void Hsm::exit(unsigned char to_lca)
+void Hsm::exit_to_lca(unsigned char to_lca)
 {
     State* s = m_current;
     while (s != m_source)

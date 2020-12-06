@@ -35,26 +35,27 @@ private:
     friend class Hsm;
 };
 
+// Hierarchical State Machine base class
 class Hsm
-{ // Hierarchical State Machine base class
-    char const* m_name; // pointer to static name */
-    State* m_current; /* current state */
+{
+    char const* m_name; /// pointer to static name
+    State* m_current; /// current state
     const State* m_inital;
 
 protected:
-    State* m_next; /* next state (non 0 if transition taken) */
-    State* m_source; /* source state during last transition */
-    State m_top; /* top-most state object */
+    State* m_next; /// next state (non 0 if transition taken)
+    State* m_source; /// source state during last transition
+    State m_top; /// top-most state object
     State* m_entry_path[MAX_STATE_NESTING];
 
 public:
     Hsm(char const* name, EventHandler top_hndlr, State* inital = nullptr); /* Ctor */
-    void on_start(); /* enter and start the top state */
-    void on_event(Msg const* msg); /* "state machine engine" */
+    void on_start(); /// enter and start the top state
+    void on_event(Msg const* msg); /// "state machine engine"
 protected:
     unsigned char to_lca(State* target);
-    void exit(unsigned char to_lca);
-    void enter();
+    void exit_to_lca(unsigned char to_lca);
+    void enter_from_lca();
     State* current_state() { return m_current; }
     void init_state();
 
@@ -80,7 +81,7 @@ public:
     void operator()()
     {
         assert(m_hsm.m_next == nullptr);
-        m_hsm.exit(m_depth);
+        m_hsm.exit_to_lca(m_depth);
         m_hsm.m_next = &m_target;
     }
 
