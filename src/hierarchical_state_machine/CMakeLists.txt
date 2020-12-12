@@ -1,8 +1,15 @@
 ################################################################################
 # Library
 ################################################################################
-add_library(hierarchical_state_machine STATIC ${CMAKE_CURRENT_SOURCE_DIR}/hierarchical_state_machine.cpp)
-target_include_directories(hierarchical_state_machine PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(hierarchical_state_machine INTERFACE)
+target_include_directories(hierarchical_state_machine INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_set_default_compiler_warnings(hierarchical_state_machine)
+
+################################################################################
+# Independent Compilation Test
+################################################################################
+add_library(hierarchical_state_machine.compile.test STATIC ${CMAKE_CURRENT_SOURCE_DIR}/hierarchical_state_machine.cpp)
+target_link_libraries(hierarchical_state_machine)
 target_set_default_compiler_warnings(hierarchical_state_machine)
 
 ################################################################################

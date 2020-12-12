@@ -2,25 +2,35 @@
 #include <cassert>
 #include <cstdio>
 
-class HsmTest : public Hsm
+struct Event
+{
+    int id;
+};
+
+EventId id(const Event& msg)
+{
+    return msg.id;
+}
+
+class HsmTest : public Hsm<Event>
 {
     int m_my_foo {0};
 
 protected:
-    State m_s1;
-    State m_s11;
-    State m_s2;
-    State m_s21;
-    State m_s211;
+    State<Event> m_s1;
+    State<Event> m_s11;
+    State<Event> m_s2;
+    State<Event> m_s21;
+    State<Event> m_s211;
 
 public:
     HsmTest();
-    Msg const* top_handler(Msg const* msg);
-    Msg const* s1_handler(Msg const* msg);
-    Msg const* s11_handler(Msg const* msg);
-    Msg const* s2_handler(Msg const* msg);
-    Msg const* s21_handler(Msg const* msg);
-    Msg const* s211_handler(Msg const* msg);
+    Event const* top_handler(EventId id, Event const* msg);
+    Event const* s1_handler(EventId id, Event const* msg);
+    Event const* s11_handler(EventId id, Event const* msg);
+    Event const* s2_handler(EventId id, Event const* msg);
+    Event const* s21_handler(EventId id, Event const* msg);
+    Event const* s211_handler(EventId id, Event const* msg);
 };
 
 enum HsmTestEvents
@@ -35,9 +45,9 @@ enum HsmTestEvents
     H_SIG
 };
 
-Msg const* HsmTest::top_handler(Msg const* msg)
+Event const* HsmTest::top_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case INIT_EVT:
             printf("top-INIT;");
@@ -50,7 +60,10 @@ Msg const* HsmTest::top_handler(Msg const* msg)
             break;
         case E_SIG:
             printf("top-E;");
-            STATE_TRAN(m_s211);
+            {
+                static Transition t(*this, m_s211);
+                t();
+            }
             break;
         default:
             return msg;
@@ -58,9 +71,9 @@ Msg const* HsmTest::top_handler(Msg const* msg)
     return nullptr;
 }
 
-Msg const* HsmTest::s1_handler(Msg const* msg)
+Event const* HsmTest::s1_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case INIT_EVT:
             printf("s1-INIT;");
@@ -73,23 +86,38 @@ Msg const* HsmTest::s1_handler(Msg const* msg)
             break;
         case A_SIG:
             printf("s1-A;");
-            STATE_TRAN(m_s1);
+            {
+                static Transition<Event> t(*this, m_s1);
+                t();
+            }
             break;
         case B_SIG:
             printf("s1-B;");
-            STATE_TRAN(m_s11);
+            {
+                static Transition<Event> t(*this, m_s11);
+                t();
+            }
             break;
         case C_SIG:
             printf("s1-C;");
-            STATE_TRAN(m_s2);
+            {
+                static Transition<Event> t(*this, m_s2);
+                t();
+            }
             break;
         case D_SIG:
             printf("s1-D;");
-            STATE_TRAN(m_top);
+            {
+                static Transition<Event> t(*this, m_top);
+                t();
+            }
             break;
         case F_SIG:
             printf("s1-F;");
-            STATE_TRAN(m_s211);
+            {
+                static Transition<Event> t(*this, m_s211);
+                t();
+            }
             break;
         default:
             return msg;
@@ -97,9 +125,9 @@ Msg const* HsmTest::s1_handler(Msg const* msg)
     return nullptr;
 }
 
-Msg const* HsmTest::s11_handler(Msg const* msg)
+Event const* HsmTest::s11_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case ENTRY_EVT:
             printf("s11-ENTRY;");
@@ -109,7 +137,10 @@ Msg const* HsmTest::s11_handler(Msg const* msg)
             break;
         case G_SIG:
             printf("s11-G;");
-            STATE_TRAN(m_s211);
+            {
+                static Transition<Event> t(*this, m_s211);
+                t();
+            }
             break;
         case H_SIG:
             if (m_my_foo)
@@ -124,9 +155,9 @@ Msg const* HsmTest::s11_handler(Msg const* msg)
     return nullptr;
 }
 
-Msg const* HsmTest::s2_handler(Msg const* msg)
+Event const* HsmTest::s2_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case INIT_EVT:
             printf("s2-INIT;");
@@ -139,11 +170,17 @@ Msg const* HsmTest::s2_handler(Msg const* msg)
             break;
         case C_SIG:
             printf("s2-C;");
-            STATE_TRAN(m_s1);
+            {
+                static Transition<Event> t(*this, m_s1);
+                t();
+            }
             break;
         case F_SIG:
             printf("s2-F;");
-            STATE_TRAN(m_s11);
+            {
+                static Transition<Event> t(*this, m_s11);
+                t();
+            }
             break;
         default:
             return msg;
@@ -151,9 +188,9 @@ Msg const* HsmTest::s2_handler(Msg const* msg)
     return nullptr;
 }
 
-Msg const* HsmTest::s21_handler(Msg const* msg)
+Event const* HsmTest::s21_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case INIT_EVT:
             printf("s21-INIT;");
@@ -166,14 +203,20 @@ Msg const* HsmTest::s21_handler(Msg const* msg)
             break;
         case B_SIG:
             printf("s21-B;");
-            STATE_TRAN(m_s211);
+            {
+                static Transition<Event> t(*this, m_s211);
+                t();
+            }
             break;
         case H_SIG:
             if (!m_my_foo)
             {
                 printf("s21-H;");
                 m_my_foo = 1;
-                STATE_TRAN(m_s21);
+                {
+                    static Transition<Event> t(*this, m_s21);
+                    t();
+                }
             }
             break;
         default:
@@ -182,9 +225,9 @@ Msg const* HsmTest::s21_handler(Msg const* msg)
     return nullptr;
 }
 
-Msg const* HsmTest::s211_handler(Msg const* msg)
+Event const* HsmTest::s211_handler(EventId id, Event const* msg)
 {
-    switch (msg->evt)
+    switch (id)
     {
         case ENTRY_EVT:
             printf("s211-ENTRY;");
@@ -194,11 +237,17 @@ Msg const* HsmTest::s211_handler(Msg const* msg)
             break;
         case D_SIG:
             printf("s211-D;");
-            STATE_TRAN(m_s21);
+            {
+                static Transition<Event> t(*this, m_s21);
+                t();
+            }
             break;
         case G_SIG:
             printf("s211-G;");
-            STATE_TRAN(m_top);
+            {
+                static Transition<Event> t(*this, m_top);
+                t();
+            }
             break;
         default:
             return msg;
@@ -207,16 +256,16 @@ Msg const* HsmTest::s211_handler(Msg const* msg)
 }
 
 HsmTest::HsmTest()
-    : Hsm {"HsmTest", static_cast<EventHandler>(&HsmTest::top_handler), &m_s1}
-    , m_s1 {"s1", &m_top, static_cast<EventHandler>(&HsmTest::s1_handler), &m_s11}
-    , m_s11 {"s11", &m_s1, static_cast<EventHandler>(&HsmTest::s11_handler)}
-    , m_s2 {"s2", &m_top, static_cast<EventHandler>(&HsmTest::s2_handler), &m_s21}
-    , m_s21 {"s21", &m_s2, static_cast<EventHandler>(&HsmTest::s21_handler), &m_s211}
-    , m_s211 {"s211", &m_s21, static_cast<EventHandler>(&HsmTest::s211_handler)}
+    : Hsm {"HsmTest", static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1}
+    , m_s1 {"s1", &m_top, static_cast<EventHandler<Event>>(&HsmTest::s1_handler), &m_s11}
+    , m_s11 {"s11", &m_s1, static_cast<EventHandler<Event>>(&HsmTest::s11_handler)}
+    , m_s2 {"s2", &m_top, static_cast<EventHandler<Event>>(&HsmTest::s2_handler), &m_s21}
+    , m_s21 {"s21", &m_s2, static_cast<EventHandler<Event>>(&HsmTest::s21_handler), &m_s211}
+    , m_s211 {"s211", &m_s21, static_cast<EventHandler<Event>>(&HsmTest::s211_handler)}
 {
 }
 
-const Msg HsmTestMsg[] = {
+const Event HsmTestMsg[] = {
     {A_SIG},
     {B_SIG},
     {C_SIG},
