@@ -19,4 +19,5 @@ add_executable(
     hierarchical_state_machine.demo
     ${CMAKE_CURRENT_SOURCE_DIR}/hierarchical_state_machine.demo.cpp
 )
-target_link_libraries(hierarchical_state_machine.demo hierarchical_state_machine)
+target_link_libraries(hierarchical_state_machine.demo hierarchical_state_machine gtest_main)
+create_test(hierarchical_state_machine.demo)

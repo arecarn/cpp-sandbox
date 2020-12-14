@@ -25,13 +25,15 @@ state Top {
     }
 
     state S2 {
+        [*] ---> S21
         S2 --> S1: C
         S2 --> S11: F
         state S21 {
+            [*] ---> S211
             S21 -> S21: B / if !foo: foo = 1
-        }
-        state S211 {
-            S211 -u-> Top: G
+            state S211 {
+                S211 -u-> Top: G
+            }
         }
     }
 }
