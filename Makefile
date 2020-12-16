@@ -196,6 +196,7 @@ docker-run:
 	--interactive \
 	--detach \
 	--rm \
+	--volume="$${HOME}" \
 	--volume="/etc/group:/etc/group:ro" \
 	--volume="/etc/passwd:/etc/passwd:ro" \
 	--volume="/etc/shadow:/etc/shadow:ro" \

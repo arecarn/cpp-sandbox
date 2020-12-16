@@ -42,11 +42,15 @@ state Top {
 
 # Implementation Notes/Thoughts
 
+
 - state machine should be fed by queue so states themselves can emit events
+    - instead of this should there be some context object that is passed into
+      states that holds a handle to data the state may want to modify/access.
+      This might include a handle to the queue that feeds the state mahcine.
 
 - States should not be modifying the state machine i.e. the
   Transition objects shouldn't poke at the Hsm object. This is
-  mixing code that should be there.
+  mixing code that should not be there.
     - if states could be their own unique classes then they
       could pre-calculate all their transition data at
       construction time using multiple transition object members
@@ -64,9 +68,18 @@ state Top {
         - examples:
         - passing DerivedHsm pointer to on_event handlers
 
-- need to be able to specify generic Message object this could
-    - this could be achieved by making by templatizing the base
-      class with a message type requiring some id(Msg) free function to
-      trslate generic Msg into an int.
+- input events -> state machine -> output actions
+- The implementation of the actions performed by a state machine (excluding
+  modifications to extended state) should be decoupled from the state machine
+  code. This is both the state machine and the actions
+  themselves can be independently tested.
+    - an actions object could be passed into the state machine as an interface,
+      and for testing it could be mocked out.
+
+- Should there be some way to inject the current state (including the extended
+  state) into the state machine, to aid in testing? It sure does make testing
+  easier.
+    - this could be part of the state machine's constructor
+    - this could be member functions that modify the state machines state
 
 
