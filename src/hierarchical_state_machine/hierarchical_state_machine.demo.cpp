@@ -41,7 +41,7 @@ struct Event
     int id;
 };
 
-EventId id(const Event& msg)
+EventId to_event_id(const Event& msg)
 {
     return msg.id;
 }
@@ -292,13 +292,23 @@ Event const* HsmTest::s211_handler(EventId id, Event const* msg)
     return nullptr;
 }
 
+enum StateDemoId : StateId
+{
+    Top,
+    S1,
+    S11,
+    S2,
+    S21,
+    S211,
+};
+
 HsmTest::HsmTest()
-    : Hsm {"HsmTest", static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1}
-    , m_s1 {"s1", &m_top, static_cast<EventHandler<Event>>(&HsmTest::s1_handler), &m_s11}
-    , m_s11 {"s11", &m_s1, static_cast<EventHandler<Event>>(&HsmTest::s11_handler)}
-    , m_s2 {"s2", &m_top, static_cast<EventHandler<Event>>(&HsmTest::s2_handler), &m_s21}
-    , m_s21 {"s21", &m_s2, static_cast<EventHandler<Event>>(&HsmTest::s21_handler), &m_s211}
-    , m_s211 {"s211", &m_s21, static_cast<EventHandler<Event>>(&HsmTest::s211_handler)}
+    : Hsm {Top, static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1}
+    , m_s1 {S1, &m_top, static_cast<EventHandler<Event>>(&HsmTest::s1_handler), &m_s11}
+    , m_s11 {S11, &m_s1, static_cast<EventHandler<Event>>(&HsmTest::s11_handler)}
+    , m_s2 {S2, &m_top, static_cast<EventHandler<Event>>(&HsmTest::s2_handler), &m_s21}
+    , m_s21 {S21, &m_s2, static_cast<EventHandler<Event>>(&HsmTest::s21_handler), &m_s211}
+    , m_s211 {S211, &m_s21, static_cast<EventHandler<Event>>(&HsmTest::s211_handler)}
 {
 }
 
@@ -307,7 +317,7 @@ class HsmTestFixture : public ::testing::Test
 protected:
 };
 
-TEST_F(HsmTestFixture, t)
+TEST_F(HsmTestFixture, t) // NOLINT(readability-function-size)
 {
     Event a {A_SIG};
     Event b {B_SIG};
@@ -320,6 +330,7 @@ TEST_F(HsmTestFixture, t)
     HsmTest hsm_test;
 
     // Initial Transitions
+    EXPECT_EQ(Top, hsm_test.state());
     hsm_test.on_start();
     EXPECT_EQ("top-ENTRY", g_trace.pop());
     EXPECT_EQ("top-INIT", g_trace.pop());
@@ -327,6 +338,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-INIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-A
     hsm_test.on_event(&a);
@@ -337,6 +349,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-INIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-B
     hsm_test.on_event(&b);
@@ -344,6 +357,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s11-EXIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-C
     hsm_test.on_event(&c);
@@ -356,6 +370,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-INIT", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // s211-C
     hsm_test.on_event(&c);
@@ -367,6 +382,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-INIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-D
     hsm_test.on_event(&d);
@@ -378,6 +394,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-INIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-E
     hsm_test.on_event(&e);
@@ -388,6 +405,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-ENTRY", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // s211-D
     hsm_test.on_event(&d);
@@ -396,6 +414,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-INIT", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // s211-F
     hsm_test.on_event(&f);
@@ -406,6 +425,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-ENTRY", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-F
     hsm_test.on_event(&e);
@@ -416,6 +436,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-ENTRY", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // s211-G
     hsm_test.on_event(&g);
@@ -428,6 +449,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s1-INIT", g_trace.pop());
     EXPECT_EQ("s11-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 
     // s11-G
     hsm_test.on_event(&g);
@@ -438,6 +460,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-ENTRY", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // s211-H
     EXPECT_EQ(0, hsm_test.my_foo());
@@ -450,6 +473,7 @@ TEST_F(HsmTestFixture, t)
     EXPECT_EQ("s21-INIT", g_trace.pop());
     EXPECT_EQ("s211-ENTRY", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S211, hsm_test.state());
 
     // transition to s11
     hsm_test.on_event(&g);
@@ -459,9 +483,11 @@ TEST_F(HsmTestFixture, t)
     }
 
     // s11-H
+    EXPECT_EQ(S11, hsm_test.state());
     EXPECT_EQ(1, hsm_test.my_foo());
     hsm_test.on_event(&h);
     EXPECT_EQ("s11-H", g_trace.pop());
     EXPECT_EQ(0, hsm_test.my_foo());
     EXPECT_EQ(true, g_trace.empty());
+    EXPECT_EQ(S11, hsm_test.state());
 }

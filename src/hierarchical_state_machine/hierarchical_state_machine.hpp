@@ -6,6 +6,7 @@
 #define MAX_STATE_NESTING 8
 
 using EventId = int;
+using StateId = int;
 
 template <typename Event>
 class Hsm;
@@ -18,14 +19,19 @@ class State
 {
     State* const m_super; /// pointer to superstate
     EventHandler<Event> m_handler; /// state's handler function
-    char const* m_name;
+    const int m_id;
     State* const m_inital; /// initial state
 
 public:
-    State(char const* name,
+    State(StateId id,
         State* super,
         EventHandler<Event> handler,
         State* inital = nullptr);
+
+    [[nodiscard]] StateId id() const
+    {
+        return m_id;
+    }
 
 private:
     Event const* on_event(Hsm<Event>* ctx, EventId id, Event const* msg)
@@ -39,7 +45,6 @@ private:
 template <typename Event>
 class Hsm
 {
-    char const* m_name; /// pointer to static name
     State<Event>* m_current; /// current state
     const State<Event>* m_inital;
 
@@ -50,9 +55,14 @@ protected:
     State<Event>* m_entry_path[MAX_STATE_NESTING];
 
 public:
-    Hsm(char const* name, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr); /* Ctor */
+    Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr);
     void on_start(); /// enter and start the top state
     void on_event(Event const* msg); /// "state machine engine"
+    StateId state() const
+    {
+        return m_current->id();
+    }
+
 protected:
     unsigned char to_lca(State<Event>* target);
     void exit_to_lca(unsigned char to_lca);
@@ -96,19 +106,20 @@ private:
 
 /// State constructor
 template <typename Event>
-State<Event>::State(char const* n, State* s, EventHandler<Event> h, State* i)
+State<Event>::State(StateId id, State* s, EventHandler<Event> h, State* i)
     : m_super(s)
     , m_handler(h)
-    , m_name(n)
+    , m_id(id)
     , m_inital(i)
 {
 }
 
 /// HSM constructor
 template <typename Event>
-Hsm<Event>::Hsm(char const* n, EventHandler<Event> top_hndlr, State<Event>* inital)
-    : m_name(n)
-    , m_top("top", nullptr, top_hndlr, inital)
+Hsm<Event>::Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital)
+    : m_current {&m_top}
+    , m_next {nullptr}
+    , m_top(topId, nullptr, top_hndlr, inital)
 {
 }
 
@@ -116,8 +127,6 @@ Hsm<Event>::Hsm(char const* n, EventHandler<Event> top_hndlr, State<Event>* init
 template <typename Event>
 void Hsm<Event>::on_start()
 {
-    m_current = &m_top;
-    m_next = nullptr;
     m_current->on_event(this, ENTRY_EVT, nullptr);
     init_state();
 }
@@ -155,7 +164,7 @@ void Hsm<Event>::on_event(Event const* msg)
     for (s = m_current; s; s = s->m_super)
     {
         m_source = s; // level of outermost event handler
-        msg = s->on_event(this, id(*msg), msg);
+        msg = s->on_event(this, to_event_id(*msg), msg);
         if (msg == nullptr) // the event was processed
         {
             if (m_next) // a state transition was initiated
