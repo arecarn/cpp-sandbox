@@ -28,10 +28,6 @@ private:
 template <typename Event>
 class Handled
 {
-public:
-    Handled(Event const* /*unused*/)
-    {
-    }
 };
 
 template <typename Event>
@@ -167,12 +163,12 @@ public:
     {
     }
 
-    unsigned char levels_to_lca()
+    [[nodiscard]] unsigned char levels_to_lca() const
     {
         return m_levels_to_lca;
     }
 
-    State<Event>& target()
+    State<Event>& target() const
     {
         return m_target;
     }

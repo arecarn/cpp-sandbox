@@ -105,13 +105,13 @@ Result<Event> HsmTest::top_handler(EventId event_id, Event const* event)
         case Event_E:
         {
             g_trace("top-E");
-            static Transition transition(*this, m_s211);
+            static Transition<Event> transition(*this, m_s211);
             return transition;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
 
 Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
@@ -164,9 +164,9 @@ Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
             return transition;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
 
 Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
@@ -200,9 +200,9 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
             break;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
 
 Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
@@ -237,10 +237,11 @@ Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
             return transition;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
+
 Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
@@ -280,9 +281,9 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
             break;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
 
 Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
@@ -312,9 +313,9 @@ Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
             return transition;
         }
         default:
-            return Unhandled {event};
+            return Unhandled<Event> {event};
     }
-    return Handled {event};
+    return Handled<Event> {};
 }
 
 enum StateDemoId : StateId
