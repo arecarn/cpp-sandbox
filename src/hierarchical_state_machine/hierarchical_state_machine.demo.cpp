@@ -63,12 +63,12 @@ public:
     {
         return m_my_foo;
     }
-    Event const* top_handler(EventId event_id, Event const* event);
-    Event const* s1_handler(EventId event_id, Event const* event);
-    Event const* s11_handler(EventId event_id, Event const* event);
-    Event const* s2_handler(EventId event_id, Event const* event);
-    Event const* s21_handler(EventId event_id, Event const* event);
-    Event const* s211_handler(EventId event_id, Event const* event);
+    Result<Event> top_handler(EventId event_id, Event const* event);
+    Result<Event> s1_handler(EventId event_id, Event const* event);
+    Result<Event> s11_handler(EventId event_id, Event const* event);
+    Result<Event> s2_handler(EventId event_id, Event const* event);
+    Result<Event> s21_handler(EventId event_id, Event const* event);
+    Result<Event> s211_handler(EventId event_id, Event const* event);
 };
 
 enum HsmTestEvents
@@ -83,213 +83,238 @@ enum HsmTestEvents
     Event_H
 };
 
-Event const* HsmTest::top_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::top_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Init:
+        {
             g_trace("top-Init");
             break;
+        }
         case Event_Entry:
+        {
             g_trace("top-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("top-Exit");
             break;
+        }
         case Event_E:
+        {
             g_trace("top-E");
-            {
-                static Transition t(*this, m_s211);
-                t();
-            }
-            break;
+            static Transition transition(*this, m_s211);
+            return transition;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
 
-Event const* HsmTest::s1_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Init:
+        {
             g_trace("s1-Init");
             break;
+        }
         case Event_Entry:
+        {
             g_trace("s1-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("s1-Exit");
             break;
+        }
         case Event_A:
+        {
             g_trace("s1-A");
-            {
-                static Transition<Event> t(*this, m_s1);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s1);
+            return transition;
+        }
         case Event_B:
+        {
             g_trace("s1-B");
-            {
-                static Transition<Event> t(*this, m_s11);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s11);
+            return transition;
+        }
         case Event_C:
+        {
             g_trace("s1-C");
-            {
-                static Transition<Event> t(*this, m_s2);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s2);
+            return transition;
+        }
         case Event_D:
+        {
             g_trace("s1-D");
-            {
-                static Transition<Event> t(*this, m_top);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_top);
+            return transition;
+        }
         case Event_F:
+        {
             g_trace("s1-F");
-            {
-                static Transition<Event> t(*this, m_s211);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s211);
+            return transition;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
 
-Event const* HsmTest::s11_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Entry:
+        {
             g_trace("s11-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("s11-Exit");
             break;
+        }
         case Event_G:
+        {
             g_trace("s11-G");
-            {
-                static Transition<Event> t(*this, m_s211);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s211);
+            return transition;
+        }
+        break;
         case Event_H:
+        {
             if (m_my_foo)
             {
                 g_trace("s11-H");
                 m_my_foo = 0;
             }
             break;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
 
-Event const* HsmTest::s2_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Init:
+        {
             g_trace("s2-Init");
             break;
+        }
         case Event_Entry:
+        {
             g_trace("s2-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("s2-Exit");
             break;
+        }
         case Event_C:
+        {
             g_trace("s2-C");
-            {
-                static Transition<Event> t(*this, m_s1);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s1);
+            return transition;
+        }
         case Event_F:
+        {
             g_trace("s2-F");
-            {
-                static Transition<Event> t(*this, m_s11);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s11);
+            return transition;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
-Event const* HsmTest::s21_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Init:
+        {
             g_trace("s21-Init");
             break;
+        }
         case Event_Entry:
+        {
             g_trace("s21-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("s21-Exit");
             break;
+        }
         case Event_B:
+        {
             g_trace("s21-B");
-            {
-                static Transition<Event> t(*this, m_s211);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s211);
+            return transition;
+        }
         case Event_H:
+        {
             if (!m_my_foo)
             {
                 g_trace("s21-H");
                 m_my_foo = 1;
                 {
-                    static Transition<Event> t(*this, m_s21);
-                    t();
+                    static Transition<Event> transition(*this, m_s21);
+                    return transition;
                 }
             }
             break;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
 
-Event const* HsmTest::s211_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
 {
     switch (event_id)
     {
         case Event_Entry:
+        {
             g_trace("s211-Entry");
             break;
+        }
         case Event_Exit:
+        {
             g_trace("s211-Exit");
             break;
+        }
         case Event_D:
+        {
             g_trace("s211-D");
-            {
-                static Transition<Event> t(*this, m_s21);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_s21);
+            return transition;
+        }
         case Event_G:
+        {
             g_trace("s211-G");
-            {
-                static Transition<Event> t(*this, m_top);
-                t();
-            }
-            break;
+            static Transition<Event> transition(*this, m_top);
+            return transition;
+        }
         default:
-            return event;
+            return Unhandled {event};
     }
-    return nullptr;
+    return Handled {event};
 }
 
 enum StateDemoId : StateId

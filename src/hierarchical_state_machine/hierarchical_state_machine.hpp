@@ -9,10 +9,93 @@ using EventId = int;
 using StateId = int;
 
 template <typename Event>
+class Unhandled
+{
+public:
+    Unhandled(Event const* event)
+        : m_event {event}
+    {
+    }
+    Event const* event()
+    {
+        return m_event;
+    }
+
+private:
+    Event const* m_event;
+};
+
+template <typename Event>
+class Handled
+{
+public:
+    Handled(Event const* /*unused*/)
+    {
+    }
+};
+
+template <typename Event>
+class Transition;
+
+template <typename Event>
+class Result
+{
+public:
+    enum class State
+    {
+        Handled,
+        Unhandled,
+    };
+
+    Result(Unhandled<Event> u)
+        : m_state {State::Unhandled}
+        , m_event {u.event()}
+
+    {
+    }
+
+    Result(Handled<Event> /*unused*/)
+        : m_state {State::Handled}
+    {
+    }
+
+    Result(Transition<Event>& transition)
+        : m_state {State::Handled}
+        , m_transition {&transition}
+    {
+    }
+
+    Event const* event()
+    {
+        return m_event;
+    }
+
+    bool was_handeled()
+    {
+        return m_state == State::Handled;
+    }
+
+    bool has_transition()
+    {
+        return m_transition != nullptr;
+    }
+
+    Transition<Event>& transition()
+    {
+        return *m_transition;
+    }
+
+private:
+    State m_state = State::Unhandled;
+    Event const* m_event = nullptr;
+    Transition<Event>* const m_transition = nullptr;
+};
+
+template <typename Event>
 class Hsm;
 
 template <typename Event>
-using EventHandler = const Event* (Hsm<Event>::*)(EventId id, const Event*);
+using EventHandler = Result<Event> (Hsm<Event>::*)(EventId id, const Event*);
 
 template <typename Event>
 class State
@@ -34,7 +117,7 @@ public:
     }
 
 private:
-    Event const* on_event(Hsm<Event>* ctx, EventId id, Event const* event)
+    Result<Event> on_event(Hsm<Event>* ctx, EventId id, Event const* event)
     {
         return (ctx->*m_handler)(id, event);
     }
@@ -58,14 +141,14 @@ public:
     Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr);
     void on_start(); /// enter and start the top state
     void on_event(Event const* event); /// "state machine engine"
-    StateId state() const
+    [[nodiscard]] StateId state() const
     {
         return m_current->id();
     }
 
 protected:
-    unsigned char to_lca(State<Event>* target);
-    void exit_to_lca(unsigned char to_lca);
+    unsigned char levels_to_lca(State<Event>* target);
+    void exit_to_lca(unsigned char levels_to_lca);
     void enter_from_lca();
     State<Event>* current_state() { return m_current; }
     void init_state();
@@ -79,23 +162,24 @@ class Transition
 {
 public:
     Transition(Hsm<Event>& hsm, State<Event>& target)
-        : m_depth {hsm.to_lca(&target)}
+        : m_levels_to_lca {hsm.levels_to_lca(&target)}
         , m_target {target}
-        , m_hsm {hsm}
     {
     }
 
-    void operator()()
+    unsigned char levels_to_lca()
     {
-        assert(m_hsm.m_next == nullptr);
-        m_hsm.exit_to_lca(m_depth);
-        m_hsm.m_next = &m_target;
+        return m_levels_to_lca;
+    }
+
+    State<Event>& target()
+    {
+        return m_target;
     }
 
 private:
-    const unsigned char m_depth;
+    const unsigned char m_levels_to_lca;
     State<Event>& m_target;
-    Hsm<Event>& m_hsm;
 };
 
 [[maybe_unused]] constexpr EventId Event_Init {-1};
@@ -164,18 +248,23 @@ void Hsm<Event>::on_event(Event const* event)
     for (s = m_current; s; s = s->m_super)
     {
         m_source = s; // level of outermost event handler
-        event = s->on_event(this, to_event_id(*event), event);
-        if (event == nullptr) // the event was processed
+        auto result = s->on_event(this, to_event_id(*event), event);
+        if (result.was_handeled())
         {
-            if (m_next) // a state transition was initiated
+            if (result.has_transition())
             {
+                auto& t = result.transition();
+                assert(m_next == nullptr);
+                exit_to_lca(t.levels_to_lca());
+                m_next = &t.target();
                 // the current state is the LCA of the source and target state
                 // so enter the target state
                 enter_from_lca();
                 init_state();
             }
-            break; // event processed
+            break;
         }
+        event = result.event();
     }
 }
 
@@ -199,7 +288,7 @@ void Hsm<Event>::enter_from_lca()
 
 /// exit current states and all superstates up to least common ancestor
 template <typename Event>
-void Hsm<Event>::exit_to_lca(unsigned char to_lca)
+void Hsm<Event>::exit_to_lca(unsigned char levels_to_lca)
 {
     State<Event>* s = m_current;
     while (s != m_source)
@@ -207,7 +296,7 @@ void Hsm<Event>::exit_to_lca(unsigned char to_lca)
         s->on_event(this, Event_Exit, nullptr);
         s = s->m_super;
     }
-    while (to_lca--)
+    while (levels_to_lca--)
     {
         s->on_event(this, Event_Exit, nullptr);
         s = s->m_super;
@@ -215,24 +304,23 @@ void Hsm<Event>::exit_to_lca(unsigned char to_lca)
     m_current = s;
 }
 
-/// find number of levels to the least common ancestor
 template <typename Event>
-unsigned char Hsm<Event>::to_lca(State<Event>* target)
+unsigned char Hsm<Event>::levels_to_lca(State<Event>* target)
 {
     State<Event>* s;
     State<Event>* t;
-    unsigned char to_lca = 0;
+    unsigned char levels_to_lca = 0;
     if (m_source == target)
     {
         return 1;
     }
-    for (s = m_source; s; ++to_lca, s = s->m_super)
+    for (s = m_source; s; ++levels_to_lca, s = s->m_super)
     {
         for (t = target; t; t = t->m_super)
         {
             if (s == t)
             {
-                return to_lca;
+                return levels_to_lca;
             }
         }
     }
