@@ -41,9 +41,9 @@ struct Event
     int id;
 };
 
-EventId to_event_id(const Event& msg)
+EventId to_event_id(const Event& event)
 {
-    return msg.id;
+    return event.id;
 }
 
 class HsmTest : public Hsm<Event>
@@ -63,40 +63,40 @@ public:
     {
         return m_my_foo;
     }
-    Event const* top_handler(EventId id, Event const* msg);
-    Event const* s1_handler(EventId id, Event const* msg);
-    Event const* s11_handler(EventId id, Event const* msg);
-    Event const* s2_handler(EventId id, Event const* msg);
-    Event const* s21_handler(EventId id, Event const* msg);
-    Event const* s211_handler(EventId id, Event const* msg);
+    Event const* top_handler(EventId event_id, Event const* event);
+    Event const* s1_handler(EventId event_id, Event const* event);
+    Event const* s11_handler(EventId event_id, Event const* event);
+    Event const* s2_handler(EventId event_id, Event const* event);
+    Event const* s21_handler(EventId event_id, Event const* event);
+    Event const* s211_handler(EventId event_id, Event const* event);
 };
 
 enum HsmTestEvents
 {
-    A_SIG,
-    B_SIG,
-    C_SIG,
-    D_SIG,
-    E_SIG,
-    F_SIG,
-    G_SIG,
-    H_SIG
+    Event_A,
+    Event_B,
+    Event_C,
+    Event_D,
+    Event_E,
+    Event_F,
+    Event_G,
+    Event_H
 };
 
-Event const* HsmTest::top_handler(EventId id, Event const* msg)
+Event const* HsmTest::top_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case INIT_EVT:
-            g_trace("top-INIT");
+        case Event_Init:
+            g_trace("top-Init");
             break;
-        case ENTRY_EVT:
-            g_trace("top-ENTRY");
+        case Event_Entry:
+            g_trace("top-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("top-EXIT");
+        case Event_Exit:
+            g_trace("top-Exit");
             break;
-        case E_SIG:
+        case Event_E:
             g_trace("top-E");
             {
                 static Transition t(*this, m_s211);
@@ -104,53 +104,53 @@ Event const* HsmTest::top_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
 
-Event const* HsmTest::s1_handler(EventId id, Event const* msg)
+Event const* HsmTest::s1_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case INIT_EVT:
-            g_trace("s1-INIT");
+        case Event_Init:
+            g_trace("s1-Init");
             break;
-        case ENTRY_EVT:
-            g_trace("s1-ENTRY");
+        case Event_Entry:
+            g_trace("s1-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("s1-EXIT");
+        case Event_Exit:
+            g_trace("s1-Exit");
             break;
-        case A_SIG:
+        case Event_A:
             g_trace("s1-A");
             {
                 static Transition<Event> t(*this, m_s1);
                 t();
             }
             break;
-        case B_SIG:
+        case Event_B:
             g_trace("s1-B");
             {
                 static Transition<Event> t(*this, m_s11);
                 t();
             }
             break;
-        case C_SIG:
+        case Event_C:
             g_trace("s1-C");
             {
                 static Transition<Event> t(*this, m_s2);
                 t();
             }
             break;
-        case D_SIG:
+        case Event_D:
             g_trace("s1-D");
             {
                 static Transition<Event> t(*this, m_top);
                 t();
             }
             break;
-        case F_SIG:
+        case Event_F:
             g_trace("s1-F");
             {
                 static Transition<Event> t(*this, m_s211);
@@ -158,29 +158,29 @@ Event const* HsmTest::s1_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
 
-Event const* HsmTest::s11_handler(EventId id, Event const* msg)
+Event const* HsmTest::s11_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case ENTRY_EVT:
-            g_trace("s11-ENTRY");
+        case Event_Entry:
+            g_trace("s11-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("s11-EXIT");
+        case Event_Exit:
+            g_trace("s11-Exit");
             break;
-        case G_SIG:
+        case Event_G:
             g_trace("s11-G");
             {
                 static Transition<Event> t(*this, m_s211);
                 t();
             }
             break;
-        case H_SIG:
+        case Event_H:
             if (m_my_foo)
             {
                 g_trace("s11-H");
@@ -188,32 +188,32 @@ Event const* HsmTest::s11_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
 
-Event const* HsmTest::s2_handler(EventId id, Event const* msg)
+Event const* HsmTest::s2_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case INIT_EVT:
-            g_trace("s2-INIT");
+        case Event_Init:
+            g_trace("s2-Init");
             break;
-        case ENTRY_EVT:
-            g_trace("s2-ENTRY");
+        case Event_Entry:
+            g_trace("s2-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("s2-EXIT");
+        case Event_Exit:
+            g_trace("s2-Exit");
             break;
-        case C_SIG:
+        case Event_C:
             g_trace("s2-C");
             {
                 static Transition<Event> t(*this, m_s1);
                 t();
             }
             break;
-        case F_SIG:
+        case Event_F:
             g_trace("s2-F");
             {
                 static Transition<Event> t(*this, m_s11);
@@ -221,31 +221,31 @@ Event const* HsmTest::s2_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
-Event const* HsmTest::s21_handler(EventId id, Event const* msg)
+Event const* HsmTest::s21_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case INIT_EVT:
-            g_trace("s21-INIT");
+        case Event_Init:
+            g_trace("s21-Init");
             break;
-        case ENTRY_EVT:
-            g_trace("s21-ENTRY");
+        case Event_Entry:
+            g_trace("s21-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("s21-EXIT");
+        case Event_Exit:
+            g_trace("s21-Exit");
             break;
-        case B_SIG:
+        case Event_B:
             g_trace("s21-B");
             {
                 static Transition<Event> t(*this, m_s211);
                 t();
             }
             break;
-        case H_SIG:
+        case Event_H:
             if (!m_my_foo)
             {
                 g_trace("s21-H");
@@ -257,29 +257,29 @@ Event const* HsmTest::s21_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
 
-Event const* HsmTest::s211_handler(EventId id, Event const* msg)
+Event const* HsmTest::s211_handler(EventId event_id, Event const* event)
 {
-    switch (id)
+    switch (event_id)
     {
-        case ENTRY_EVT:
-            g_trace("s211-ENTRY");
+        case Event_Entry:
+            g_trace("s211-Entry");
             break;
-        case EXIT_EVT:
-            g_trace("s211-EXIT");
+        case Event_Exit:
+            g_trace("s211-Exit");
             break;
-        case D_SIG:
+        case Event_D:
             g_trace("s211-D");
             {
                 static Transition<Event> t(*this, m_s21);
                 t();
             }
             break;
-        case G_SIG:
+        case Event_G:
             g_trace("s211-G");
             {
                 static Transition<Event> t(*this, m_top);
@@ -287,7 +287,7 @@ Event const* HsmTest::s211_handler(EventId id, Event const* msg)
             }
             break;
         default:
-            return msg;
+            return event;
     }
     return nullptr;
 }
@@ -319,146 +319,146 @@ protected:
 
 TEST_F(HsmTestFixture, t) // NOLINT(readability-function-size)
 {
-    Event a {A_SIG};
-    Event b {B_SIG};
-    Event c {C_SIG};
-    Event d {D_SIG};
-    Event e {E_SIG};
-    Event f {F_SIG};
-    Event g {G_SIG};
-    Event h {H_SIG};
+    const Event a {Event_A};
+    const Event b {Event_B};
+    const Event c {Event_C};
+    const Event d {Event_D};
+    const Event e {Event_E};
+    const Event f {Event_F};
+    const Event g {Event_G};
+    const Event h {Event_H};
     HsmTest hsm_test;
 
     // Initial Transitions
     EXPECT_EQ(Top, hsm_test.state());
     hsm_test.on_start();
-    EXPECT_EQ("top-ENTRY", g_trace.pop());
-    EXPECT_EQ("top-INIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s1-INIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("top-Entry", g_trace.pop());
+    EXPECT_EQ("top-Init", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s1-Init", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-A
     hsm_test.on_event(&a);
     EXPECT_EQ("s1-A", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s1-INIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s1-Init", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-B
     hsm_test.on_event(&b);
     EXPECT_EQ("s1-B", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-C
     hsm_test.on_event(&c);
     EXPECT_EQ("s1-C", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-ENTRY", g_trace.pop());
-    EXPECT_EQ("s2-INIT", g_trace.pop());
-    EXPECT_EQ("s21-ENTRY", g_trace.pop());
-    EXPECT_EQ("s21-INIT", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Entry", g_trace.pop());
+    EXPECT_EQ("s2-Init", g_trace.pop());
+    EXPECT_EQ("s21-Entry", g_trace.pop());
+    EXPECT_EQ("s21-Init", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 
     // s211-C
     hsm_test.on_event(&c);
     EXPECT_EQ("s2-C", g_trace.pop());
-    EXPECT_EQ("s211-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s1-INIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s211-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s1-Init", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-D
     hsm_test.on_event(&d);
     EXPECT_EQ("s1-D", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("top-INIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s1-INIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("top-Init", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s1-Init", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-E
     hsm_test.on_event(&e);
     EXPECT_EQ("top-E", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-ENTRY", g_trace.pop());
-    EXPECT_EQ("s21-ENTRY", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Entry", g_trace.pop());
+    EXPECT_EQ("s21-Entry", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 
     // s211-D
     hsm_test.on_event(&d);
     EXPECT_EQ("s211-D", g_trace.pop());
-    EXPECT_EQ("s211-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-INIT", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s211-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Init", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 
     // s211-F
     hsm_test.on_event(&f);
     EXPECT_EQ("s2-F", g_trace.pop());
-    EXPECT_EQ("s211-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s211-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-F
     hsm_test.on_event(&e);
     EXPECT_EQ("top-E", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-ENTRY", g_trace.pop());
-    EXPECT_EQ("s21-ENTRY", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Entry", g_trace.pop());
+    EXPECT_EQ("s21-Entry", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 
     // s211-G
     hsm_test.on_event(&g);
     EXPECT_EQ("s211-G", g_trace.pop());
-    EXPECT_EQ("s211-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-EXIT", g_trace.pop());
-    EXPECT_EQ("top-INIT", g_trace.pop());
-    EXPECT_EQ("s1-ENTRY", g_trace.pop());
-    EXPECT_EQ("s1-INIT", g_trace.pop());
-    EXPECT_EQ("s11-ENTRY", g_trace.pop());
+    EXPECT_EQ("s211-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Exit", g_trace.pop());
+    EXPECT_EQ("top-Init", g_trace.pop());
+    EXPECT_EQ("s1-Entry", g_trace.pop());
+    EXPECT_EQ("s1-Init", g_trace.pop());
+    EXPECT_EQ("s11-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S11, hsm_test.state());
 
     // s11-G
     hsm_test.on_event(&g);
     EXPECT_EQ("s11-G", g_trace.pop());
-    EXPECT_EQ("s11-EXIT", g_trace.pop());
-    EXPECT_EQ("s1-EXIT", g_trace.pop());
-    EXPECT_EQ("s2-ENTRY", g_trace.pop());
-    EXPECT_EQ("s21-ENTRY", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s11-Exit", g_trace.pop());
+    EXPECT_EQ("s1-Exit", g_trace.pop());
+    EXPECT_EQ("s2-Entry", g_trace.pop());
+    EXPECT_EQ("s21-Entry", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 
@@ -467,11 +467,11 @@ TEST_F(HsmTestFixture, t) // NOLINT(readability-function-size)
     hsm_test.on_event(&h);
     EXPECT_EQ("s21-H", g_trace.pop());
     EXPECT_EQ(1, hsm_test.my_foo());
-    EXPECT_EQ("s211-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-EXIT", g_trace.pop());
-    EXPECT_EQ("s21-ENTRY", g_trace.pop());
-    EXPECT_EQ("s21-INIT", g_trace.pop());
-    EXPECT_EQ("s211-ENTRY", g_trace.pop());
+    EXPECT_EQ("s211-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Exit", g_trace.pop());
+    EXPECT_EQ("s21-Entry", g_trace.pop());
+    EXPECT_EQ("s21-Init", g_trace.pop());
+    EXPECT_EQ("s211-Entry", g_trace.pop());
     EXPECT_EQ(true, g_trace.empty());
     EXPECT_EQ(S211, hsm_test.state());
 

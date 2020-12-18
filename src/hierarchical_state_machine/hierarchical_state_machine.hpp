@@ -34,9 +34,9 @@ public:
     }
 
 private:
-    Event const* on_event(Hsm<Event>* ctx, EventId id, Event const* msg)
+    Event const* on_event(Hsm<Event>* ctx, EventId id, Event const* event)
     {
-        return (ctx->*m_handler)(id, msg);
+        return (ctx->*m_handler)(id, event);
     }
     friend class Hsm<Event>;
 };
@@ -57,7 +57,7 @@ protected:
 public:
     Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr);
     void on_start(); /// enter and start the top state
-    void on_event(Event const* msg); /// "state machine engine"
+    void on_event(Event const* event); /// "state machine engine"
     StateId state() const
     {
         return m_current->id();
@@ -98,9 +98,9 @@ private:
     Hsm<Event>& m_hsm;
 };
 
-[[maybe_unused]] constexpr EventId INIT_EVT {-1};
-[[maybe_unused]] constexpr EventId ENTRY_EVT {-2};
-[[maybe_unused]] constexpr EventId EXIT_EVT {-3};
+[[maybe_unused]] constexpr EventId Event_Init {-1};
+[[maybe_unused]] constexpr EventId Event_Entry {-2};
+[[maybe_unused]] constexpr EventId Event_Exit {-3};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -127,7 +127,7 @@ Hsm<Event>::Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* init
 template <typename Event>
 void Hsm<Event>::on_start()
 {
-    m_current->on_event(this, ENTRY_EVT, nullptr);
+    m_current->on_event(this, Event_Entry, nullptr);
     init_state();
 }
 
@@ -137,7 +137,7 @@ void Hsm<Event>::init_state()
     // perform init events till there are no more transitions
     while (true)
     {
-        m_current->on_event(this, INIT_EVT, nullptr);
+        m_current->on_event(this, Event_Init, nullptr);
         if (m_current->m_inital)
         {
             assert(m_next == nullptr);
@@ -157,15 +157,15 @@ void Hsm<Event>::init_state()
 
 /// state machine engine
 template <typename Event>
-void Hsm<Event>::on_event(Event const* msg)
+void Hsm<Event>::on_event(Event const* event)
 {
     State<Event>* s;
     // try to handle events walking up the inheritance chain if not handled
     for (s = m_current; s; s = s->m_super)
     {
         m_source = s; // level of outermost event handler
-        msg = s->on_event(this, to_event_id(*msg), msg);
-        if (msg == nullptr) // the event was processed
+        event = s->on_event(this, to_event_id(*event), event);
+        if (event == nullptr) // the event was processed
         {
             if (m_next) // a state transition was initiated
             {
@@ -191,7 +191,7 @@ void Hsm<Event>::enter_from_lca()
     }
     while ((s = *trace--))
     { // retrace the entry
-        s->on_event(this, ENTRY_EVT, nullptr);
+        s->on_event(this, Event_Entry, nullptr);
     }
     m_current = m_next;
     m_next = nullptr;
@@ -204,12 +204,12 @@ void Hsm<Event>::exit_to_lca(unsigned char to_lca)
     State<Event>* s = m_current;
     while (s != m_source)
     {
-        s->on_event(this, EXIT_EVT, nullptr);
+        s->on_event(this, Event_Exit, nullptr);
         s = s->m_super;
     }
     while (to_lca--)
     {
-        s->on_event(this, EXIT_EVT, nullptr);
+        s->on_event(this, Event_Exit, nullptr);
         s = s->m_super;
     }
     m_current = s;
