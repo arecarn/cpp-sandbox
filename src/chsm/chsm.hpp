@@ -77,13 +77,14 @@ using EventHandler = Result<Event> (Hsm<Event>::*)(EventId id, const Event*);
 template <typename Event>
 class State
 {
-    State* const m_super; /// pointer to superstate
-    EventHandler<Event> m_handler; /// state's handler function
+    State* const m_super_state; /// pointer to superstate
+    EventHandler<Event> m_event_handler; /// state's handler function
     const StateId m_id;
-    State* const m_inital; /// initial state
+    State* const m_inital_state; /// initial state
 
 public:
-    State(StateId id,
+    State(
+        StateId id,
         State* super,
         EventHandler<Event> handler,
         State* inital = nullptr);
@@ -96,7 +97,7 @@ public:
 private:
     Result<Event> on_event(Hsm<Event>* ctx, EventId id, Event const* event)
     {
-        return (ctx->*m_handler)(id, event);
+        return (ctx->*m_event_handler)(id, event);
     }
     friend class Hsm<Event>;
 };
@@ -105,29 +106,32 @@ private:
 template <typename Event>
 class Hsm
 {
-    State<Event>* m_current; /// current state
-    const State<Event>* m_inital;
+    State<Event>* m_current_state; /// current state
+    const State<Event>* m_inital_state;
 
 protected:
-    State<Event>* m_next; /// next state (non 0 if transition taken)
-    State<Event>* m_source; /// source state during last transition
-    State<Event> m_top; /// top-most state object
+    State<Event>* m_next_state; /// the next state if transition taken otherwise a nullptr
+    State<Event>* m_source_state; /// source state during last transition
+    State<Event> m_top_state; /// top-most state object
     State<Event>* m_entry_path[MAX_STATE_NESTING];
 
 public:
-    Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr);
+    Hsm(StateId top_id, EventHandler<Event> top_hndlr, State<Event>* inital = nullptr);
     void on_start(); /// enter and start the top state
     void on_event(Event const* event); /// "state machine engine"
     [[nodiscard]] StateId state() const
     {
-        return m_current->id();
+        return m_current_state->id();
     }
 
 protected:
     unsigned char levels_to_lca(State<Event>* target);
     void exit_to_lca(unsigned char levels_to_lca);
     void enter_from_lca();
-    State<Event>* current_state() { return m_current; }
+    State<Event>* current_state()
+    {
+        return m_current_state;
+    }
     void init_state();
 
     template <typename T>
@@ -167,20 +171,27 @@ private:
 
 /// State constructor
 template <typename Event>
-State<Event>::State(StateId id, State* s, EventHandler<Event> h, State* i)
-    : m_super(s)
-    , m_handler(h)
+State<Event>::State(
+    StateId id,
+    State* super_state,
+    EventHandler<Event> handler,
+    State* inital_state)
+    : m_super_state(super_state)
+    , m_event_handler(handler)
     , m_id(id)
-    , m_inital(i)
+    , m_inital_state(inital_state)
 {
 }
 
 /// HSM constructor
 template <typename Event>
-Hsm<Event>::Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* inital)
-    : m_current {&m_top}
-    , m_next {nullptr}
-    , m_top(topId, nullptr, top_hndlr, inital)
+Hsm<Event>::Hsm(
+    StateId top_id,
+    EventHandler<Event> top_hndlr,
+    State<Event>* inital)
+    : m_current_state {&m_top_state}
+    , m_next_state {nullptr}
+    , m_top_state(top_id, nullptr, top_hndlr, inital)
 {
 }
 
@@ -188,7 +199,7 @@ Hsm<Event>::Hsm(StateId topId, EventHandler<Event> top_hndlr, State<Event>* init
 template <typename Event>
 void Hsm<Event>::on_start()
 {
-    m_current->on_event(this, Event_Entry, nullptr);
+    m_current_state->on_event(this, Event_Entry, nullptr);
     init_state();
 }
 
@@ -198,14 +209,14 @@ void Hsm<Event>::init_state()
     // perform init events till there are no more transitions
     while (true)
     {
-        m_current->on_event(this, Event_Init, nullptr);
-        if (m_current->m_inital)
+        m_current_state->on_event(this, Event_Init, nullptr);
+        if (m_current_state->m_inital_state)
         {
-            assert(m_next == nullptr);
-            m_next = m_current->m_inital;
+            assert(m_next_state == nullptr);
+            m_next_state = m_current_state->m_inital_state;
         }
 
-        if (m_next)
+        if (m_next_state)
         {
             enter_from_lca();
         }
@@ -222,18 +233,18 @@ void Hsm<Event>::on_event(Event const* event)
 {
     State<Event>* s;
     // try to handle events walking up the inheritance chain if not handled
-    for (s = m_current; s; s = s->m_super)
+    for (s = m_current_state; s; s = s->m_super_state)
     {
-        m_source = s; // level of outermost event handler
+        m_source_state = s; // level of outermost event handler
         auto result = s->on_event(this, to_event_id(*event), event);
         if (result.event_was_handeled())
         {
             if (result.has_transition())
             {
                 auto& t = result.transition();
-                assert(m_next == nullptr);
+                assert(m_next_state == nullptr);
                 exit_to_lca(t.levels_to_lca());
-                m_next = &t.target();
+                m_next_state = &t.target();
                 // the current state is the LCA of the source and target state
                 // so enter the target state
                 enter_from_lca();
@@ -250,34 +261,39 @@ void Hsm<Event>::enter_from_lca()
     State<Event>** trace = m_entry_path;
     State<Event>* s;
     *trace = nullptr;
-    for (s = m_next; s != m_current; s = s->m_super)
+    for (s = m_next_state; s != m_current_state; s = s->m_super_state)
     {
-        *(++trace) = s; // record path to target
+        ++trace;
+        *trace = s; // record path to target
     }
-    while ((s = *trace--))
-    { // retrace the entry
+    while (*trace != nullptr)
+    {
+        // retrace the entry
+        s = *trace;
         s->on_event(this, Event_Entry, nullptr);
+        --trace;
     }
-    m_current = m_next;
-    m_next = nullptr;
+    m_current_state = m_next_state;
+    m_next_state = nullptr;
 }
 
 /// exit current states and all superstates up to least common ancestor
 template <typename Event>
 void Hsm<Event>::exit_to_lca(unsigned char levels_to_lca)
 {
-    State<Event>* s = m_current;
-    while (s != m_source)
+    State<Event>* s = m_current_state;
+    while (s != m_source_state)
     {
         s->on_event(this, Event_Exit, nullptr);
-        s = s->m_super;
+        s = s->m_super_state;
     }
-    while (levels_to_lca--)
+    while (levels_to_lca != 0)
     {
         s->on_event(this, Event_Exit, nullptr);
-        s = s->m_super;
+        s = s->m_super_state;
+        --levels_to_lca;
     }
-    m_current = s;
+    m_current_state = s;
 }
 
 template <typename Event>
@@ -286,13 +302,13 @@ unsigned char Hsm<Event>::levels_to_lca(State<Event>* target)
     State<Event>* s;
     State<Event>* t;
     unsigned char levels_to_lca = 0;
-    if (m_source == target)
+    if (m_source_state == target)
     {
         return 1;
     }
-    for (s = m_source; s; ++levels_to_lca, s = s->m_super)
+    for (s = m_source_state; s; ++levels_to_lca, s = s->m_super_state)
     {
-        for (t = target; t; t = t->m_super)
+        for (t = target; t; t = t->m_super_state)
         {
             if (s == t)
             {
@@ -303,4 +319,4 @@ unsigned char Hsm<Event>::levels_to_lca(State<Event>* target)
     return 0;
 }
 
-#endif //HIERARCHICAL_STATE_MACHINE
+#endif // HIERARCHICAL_STATE_MACHINE
