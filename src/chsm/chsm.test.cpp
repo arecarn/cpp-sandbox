@@ -51,6 +51,7 @@ public:
     MOCK_METHOD(void, top_entry, (), (override));
     MOCK_METHOD(void, top_exit, (), (override));
     MOCK_METHOD(void, top_e, (), (override));
+
     MOCK_METHOD(void, s1_init, (), (override));
     MOCK_METHOD(void, s1_entry, (), (override));
     MOCK_METHOD(void, s1_exit, (), (override));
@@ -59,20 +60,24 @@ public:
     MOCK_METHOD(void, s1_c, (), (override));
     MOCK_METHOD(void, s1_d, (), (override));
     MOCK_METHOD(void, s1_f, (), (override));
+
     MOCK_METHOD(void, s11_entry, (), (override));
     MOCK_METHOD(void, s11_exit, (), (override));
     MOCK_METHOD(void, s11_g, (), (override));
     MOCK_METHOD(void, s11_h, (), (override));
+
     MOCK_METHOD(void, s2_init, (), (override));
     MOCK_METHOD(void, s2_entry, (), (override));
     MOCK_METHOD(void, s2_exit, (), (override));
     MOCK_METHOD(void, s2_c, (), (override));
     MOCK_METHOD(void, s2_f, (), (override));
+
     MOCK_METHOD(void, s21_init, (), (override));
     MOCK_METHOD(void, s21_entry, (), (override));
     MOCK_METHOD(void, s21_exit, (), (override));
     MOCK_METHOD(void, s21_b, (), (override));
     MOCK_METHOD(void, s21_h, (), (override));
+
     MOCK_METHOD(void, s211_entry, (), (override));
     MOCK_METHOD(void, s211_exit, (), (override));
     MOCK_METHOD(void, s211_d, (), (override));
@@ -127,7 +132,7 @@ enum HsmTestEvents
     Event_H
 };
 
-Result<Event> HsmTest::top_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::top_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -153,12 +158,12 @@ Result<Event> HsmTest::top_handler(EventId event_id, Event const* event)
             return Result<Event> {transition};
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
-Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s1_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -208,12 +213,12 @@ Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
             return Result<Event> {transition};
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
-Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -244,12 +249,12 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
             break;
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
-Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s2_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -281,12 +286,12 @@ Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
             return Result<Event> {transition};
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
-Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
     {
@@ -325,12 +330,12 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
             break;
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
-Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
+Result<Event> HsmTest::s211_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
     {
@@ -357,9 +362,9 @@ Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
             return Result<Event> {transition};
         }
         default:
-            return Result {Unhandled<Event> {event}};
+            return Result<Event> {Unhandled<Event> {}};
     }
-    return Result {Handled<Event> {}};
+    return Result<Event> {Handled<Event> {}};
 }
 
 enum StateDemoId : StateId
@@ -410,15 +415,12 @@ protected:
         EXPECT_EQ(S11, m_hsm_test->state());
     }
 
-    // void TearDown() override {}
-
     testing::StrictMock<MockActions> m_actions;
     std::unique_ptr<HsmTest> m_hsm_test;
 };
 
 TEST_F(HsmTestFixtureS11, s11_A)
 {
-    // s11-A
     EXPECT_CALL(m_actions, s1_a());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s1_exit());

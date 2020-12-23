@@ -2,27 +2,16 @@
 #define HIERARCHICAL_STATE_MACHINE
 
 #include <cassert>
+#include <cstdint>
 
 #define MAX_STATE_NESTING 8
 
-using EventId = int;
-using StateId = int;
+using EventId = int32_t;
+using StateId = int32_t;
 
 template <typename Event>
 class Unhandled
 {
-public:
-    explicit Unhandled(Event const* event)
-        : m_event {event}
-    {
-    }
-    Event const* event() const
-    {
-        return m_event;
-    }
-
-private:
-    Event const* m_event;
 };
 
 template <typename Event>
@@ -43,10 +32,8 @@ public:
         Unhandled,
     };
 
-    explicit Result(Unhandled<Event> u)
+    explicit Result(Unhandled<Event> /*unused*/)
         : m_state {State::Unhandled}
-        , m_event {u.event()}
-
     {
     }
 
@@ -61,12 +48,7 @@ public:
     {
     }
 
-    Event const* event() const
-    {
-        return m_event;
-    }
-
-    [[nodiscard]] bool was_handeled() const
+    [[nodiscard]] bool event_was_handeled() const
     {
         return m_state == State::Handled;
     }
@@ -83,7 +65,6 @@ public:
 
 private:
     State m_state = State::Unhandled;
-    Event const* m_event = nullptr;
     Transition<Event>* const m_transition = nullptr;
 };
 
@@ -98,7 +79,7 @@ class State
 {
     State* const m_super; /// pointer to superstate
     EventHandler<Event> m_handler; /// state's handler function
-    const int m_id;
+    const StateId m_id;
     State* const m_inital; /// initial state
 
 public:
@@ -245,7 +226,7 @@ void Hsm<Event>::on_event(Event const* event)
     {
         m_source = s; // level of outermost event handler
         auto result = s->on_event(this, to_event_id(*event), event);
-        if (result.was_handeled())
+        if (result.event_was_handeled())
         {
             if (result.has_transition())
             {
@@ -260,7 +241,6 @@ void Hsm<Event>::on_event(Event const* event)
             }
             break;
         }
-        event = result.event();
     }
 }
 
