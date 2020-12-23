@@ -43,19 +43,19 @@ public:
         Unhandled,
     };
 
-    Result(Unhandled<Event> u)
+    explicit Result(Unhandled<Event> u)
         : m_state {State::Unhandled}
         , m_event {u.event()}
 
     {
     }
 
-    Result(Handled<Event> /*unused*/)
+    explicit Result(Handled<Event> /*unused*/)
         : m_state {State::Handled}
     {
     }
 
-    Result(Transition<Event>& transition)
+    explicit Result(Transition<Event>& transition)
         : m_state {State::Handled}
         , m_transition {&transition}
     {
@@ -66,12 +66,12 @@ public:
         return m_event;
     }
 
-    bool was_handeled() const
+    [[nodiscard]] bool was_handeled() const
     {
         return m_state == State::Handled;
     }
 
-    bool has_transition() const
+    [[nodiscard]] bool has_transition() const
     {
         return m_transition != nullptr;
     }

@@ -102,7 +102,7 @@ protected:
     Actions& m_actions;
 
 public:
-    HsmTest(Actions& actions);
+    explicit HsmTest(Actions& actions);
     [[nodiscard]] int my_foo() const
     {
         return m_my_foo;
@@ -150,12 +150,12 @@ Result<Event> HsmTest::top_handler(EventId event_id, Event const* event)
         {
             m_actions.top_e();
             static Transition<Event> transition(*this, m_s211);
-            return transition;
+            return Result<Event> {transition};
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
@@ -181,36 +181,36 @@ Result<Event> HsmTest::s1_handler(EventId event_id, Event const* event)
         {
             m_actions.s1_a();
             static Transition<Event> transition(*this, m_s1);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_B:
         {
             m_actions.s1_b();
             static Transition<Event> transition(*this, m_s11);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_C:
         {
             m_actions.s1_c();
             static Transition<Event> transition(*this, m_s2);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_D:
         {
             m_actions.s1_d();
             static Transition<Event> transition(*this, m_top);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_F:
         {
             m_actions.s1_f();
             static Transition<Event> transition(*this, m_s211);
-            return transition;
+            return Result<Event> {transition};
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
@@ -231,7 +231,7 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
         {
             m_actions.s11_g();
             static Transition<Event> transition(*this, m_s211);
-            return transition;
+            return Result<Event> {transition};
         }
         break;
         case Event_H:
@@ -244,9 +244,9 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* event)
             break;
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
@@ -272,18 +272,18 @@ Result<Event> HsmTest::s2_handler(EventId event_id, Event const* event)
         {
             m_actions.s2_c();
             static Transition<Event> transition(*this, m_s1);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_F:
         {
             m_actions.s2_f();
             static Transition<Event> transition(*this, m_s11);
-            return transition;
+            return Result<Event> {transition};
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
@@ -309,7 +309,7 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
         {
             m_actions.s21_b();
             static Transition<Event> transition(*this, m_s211);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_H:
         {
@@ -319,15 +319,15 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* event)
                 m_my_foo = 1;
                 {
                     static Transition<Event> transition(*this, m_s21);
-                    return transition;
+                    return Result<Event> {transition};
                 }
             }
             break;
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
@@ -348,18 +348,18 @@ Result<Event> HsmTest::s211_handler(EventId event_id, Event const* event)
         {
             m_actions.s211_d();
             static Transition<Event> transition(*this, m_s21);
-            return transition;
+            return Result<Event> {transition};
         }
         case Event_G:
         {
             m_actions.s211_g();
             static Transition<Event> transition(*this, m_top);
-            return transition;
+            return Result<Event> {transition};
         }
         default:
-            return Unhandled<Event> {event};
+            return Result {Unhandled<Event> {event}};
     }
-    return Handled<Event> {};
+    return Result {Handled<Event> {}};
 }
 
 enum StateDemoId : StateId
