@@ -12,11 +12,11 @@ template <typename Event>
 class Unhandled
 {
 public:
-    Unhandled(Event const* event)
+    explicit Unhandled(Event const* event)
         : m_event {event}
     {
     }
-    Event const* event()
+    Event const* event() const
     {
         return m_event;
     }
@@ -61,17 +61,17 @@ public:
     {
     }
 
-    Event const* event()
+    Event const* event() const
     {
         return m_event;
     }
 
-    bool was_handeled()
+    bool was_handeled() const
     {
         return m_state == State::Handled;
     }
 
-    bool has_transition()
+    bool has_transition() const
     {
         return m_transition != nullptr;
     }
