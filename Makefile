@@ -13,8 +13,10 @@ endif
 
 BUILD_TYPE_LOWER := $(shell echo $(BT) | tr A-Z a-z)
 
+BUILD_DIR ?= build
+
 # Figure out where to build the software. Use BUILD_PREFIX if it was passed in.
-BUILD_PREFIX ?= $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)
+BUILD_PREFIX ?= $(THIS_DIR)/$(BUILD_DIR)/$(BUILD_TYPE_LOWER)
 
 BUILD_TOOL ?= ninja
 ifneq "$(BUILD_TOOL)" "ninja"
@@ -34,7 +36,7 @@ endif
 BUILD_TOOL_PID := $(shell echo $$PPID)
 JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_PID).*$(BUILD_TOOL)")))
 
-INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/build/$(BUILD_TYPE_LOWER)/install )
+INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/$(BUILD_DIR)/$(BUILD_TYPE_LOWER)/install )
 
 # Default to a Debug build. If you want to enable debugging flags, run
 # "make BT=Release"
@@ -133,7 +135,7 @@ h:
 
 .PHONY: nuke
 nuke:
-	rm -rf build/
+	rm -rf $(BUILD_DIR)/
 
 $(BUILD_PREFIX)/$(BUILD_FILE):
 	# create the temporary build directory if needed
@@ -180,7 +182,9 @@ DOCKER_IMAGE_NAME ?= c-and-cpp-env
 docker-build:
 	docker build --tag $(DOCKER_IMAGE_NAME) .
 
-
+.PHONY: docker-clean-build
+docker-clean-build:
+	docker build --no-cache --tag $(DOCKER_IMAGE_NAME) .
 
 UID=$(shell id -u)
 GID=$(shell id -g)
@@ -188,7 +192,6 @@ GID=$(shell id -g)
 .PHONY: docker-run
 docker-run:
 	docker run \
-	--user ${UID}:${GID} \
 	--name $(DOCKER_IMAGE_NAME) \
 	--volume ${PWD}:${PWD} \
 	--workdir=${PWD} \
@@ -196,14 +199,15 @@ docker-run:
 	--interactive \
 	--detach \
 	--rm \
-	--volume="$${HOME}" \
 	--volume="/etc/group:/etc/group:ro" \
 	--volume="/etc/passwd:/etc/passwd:ro" \
 	--volume="/etc/shadow:/etc/shadow:ro" \
 	--env="DISPLAY" \
 	--net=host \
-	$(DOCKER_IMAGE_NAME) \
-	useradd -m -u ${UID} -g ${GID} ${USER}
+	--env GID=$$GID \
+	--env UID=$$UID \
+	--env USER=$$USER \
+	$(DOCKER_IMAGE_NAME)
 
 
 .PHONY: docker-setup

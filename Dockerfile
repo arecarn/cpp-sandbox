@@ -26,16 +26,19 @@ RUN apt install -y \
         python3 \
         python3-pip \
         tar \
-        unzip\
-        libsfml-dev\
+        unzip \
+        libsfml-dev \
         python3.8
 
 RUN apt install -y \
-    x11-apps
+    x11-apps \
+    gosu
 
 
 RUN python3.8 -m pip install \
         cmake \
         gersemi
 
-ENTRYPOINT /bin/bash
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/bash"]
