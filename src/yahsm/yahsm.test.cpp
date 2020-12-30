@@ -41,7 +41,7 @@ using S21  = CompState<TestHSM, 5, S2>;
 using S211 = LeafState<TestHSM, 6, S21>;
 // clang-format on
 
-enum class Signal
+enum class Event
 {
     A,
     B,
@@ -74,14 +74,14 @@ public:
         m_state = &state;
     }
 
-    [[nodiscard]] Signal get_sig() const
+    [[nodiscard]] Event event() const
     {
-        return m_sig;
+        return m_event;
     }
 
-    void dispatch(Signal sig)
+    void dispatch(Event event)
     {
-        m_sig = sig;
+        m_event = event;
         m_state->handler(*this);
     }
 
@@ -97,7 +97,7 @@ public:
 
 private:
     const TopState<TestHSM>* m_state;
-    Signal m_sig;
+    Event m_event;
     int m_foo;
 };
 
@@ -107,9 +107,9 @@ template <>
 template <typename X>
 inline void S0::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::E:
+        case Event::E:
         {
             Tran<X, This, S211> t(h);
             printf("s0-E;");
@@ -145,33 +145,33 @@ template <>
 template <typename X>
 inline void S1::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::A:
+        case Event::A:
         {
             Tran<X, This, S1> t(h);
             printf("s1-A;");
             return;
         }
-        case Signal::B:
+        case Event::B:
         {
             Tran<X, This, S11> t(h);
             printf("s1-B;");
             return;
         }
-        case Signal::C:
+        case Event::C:
         {
             Tran<X, This, S2> t(h);
             printf("s1-C;");
             return;
         }
-        case Signal::D:
+        case Event::D:
         {
             Tran<X, This, S0> t(h);
             printf("s1-D;");
             return;
         }
-        case Signal::F:
+        case Event::F:
         {
             Tran<X, This, S211> t(h);
             printf("s1-F;");
@@ -208,15 +208,15 @@ template <>
 template <typename X>
 inline void S11::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::G:
+        case Event::G:
         {
             Tran<X, This, S211> t(h);
             printf("s11-G;");
             return;
         }
-        case Signal::H:
+        case Event::H:
             if (h.foo())
             {
                 printf("s11-H");
@@ -255,15 +255,15 @@ template <>
 template <typename X>
 inline void S2::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::C:
+        case Event::C:
         {
             Tran<X, This, S1> t(h);
             printf("s2-C");
             return;
         }
-        case Signal::F:
+        case Event::F:
         {
             Tran<X, This, S11> t(h);
             printf("s2-F");
@@ -300,15 +300,15 @@ template <>
 template <typename X>
 inline void S21::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::B:
+        case Event::B:
         {
             Tran<X, This, S211> t(h);
             printf("s21-B;");
             return;
         }
-        case Signal::H:
+        case Event::H:
             if (!h.foo())
             {
                 Tran<X, This, S21> t(h);
@@ -341,15 +341,15 @@ template <>
 template <typename X>
 inline void S211::handle(TestHSM& h, const X& x) const
 {
-    switch (h.get_sig())
+    switch (h.event())
     {
-        case Signal::D:
+        case Event::D:
         {
             Tran<X, This, S21> t(h);
             printf("s211-D;");
             return;
         }
-        case Signal::G:
+        case Event::G:
         {
             Tran<X, This, S0> t(h);
             printf("s211-G;");
@@ -382,8 +382,8 @@ bool test_dispatch(char c)
     {
         return false;
     }
-    printf("\nSignal<-%c: ", c);
-    s_test.dispatch(static_cast<Signal>(c - 'a'));
+    printf("\nEvent<-%c: ", c);
+    s_test.dispatch(static_cast<Event>(c - 'a'));
     printf("\n");
     return true;
 }
