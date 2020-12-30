@@ -99,6 +99,7 @@ class HsmTest : public Hsm<Event>
     int m_my_foo {0};
 
 protected:
+    State<Event> m_top_state;
     State<Event> m_s1_state;
     State<Event> m_s11_state;
     State<Event> m_s2_state;
@@ -157,9 +158,9 @@ Result<Event> HsmTest::top_handler(EventId event_id, Event const* /*unused*/)
             return Result<Event> {Transition<Event> {m_s211_state}};
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 Result<Event> HsmTest::s1_handler(EventId event_id, Event const* /*unused*/)
@@ -207,9 +208,9 @@ Result<Event> HsmTest::s1_handler(EventId event_id, Event const* /*unused*/)
             return Result<Event> {Transition<Event> {m_s211_state}};
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
@@ -242,9 +243,9 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
             break;
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 Result<Event> HsmTest::s2_handler(EventId event_id, Event const* /*unused*/)
@@ -277,9 +278,9 @@ Result<Event> HsmTest::s2_handler(EventId event_id, Event const* /*unused*/)
             return Result<Event> {Transition<Event> {m_s11_state}};
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
@@ -319,9 +320,9 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
             break;
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 Result<Event> HsmTest::s211_handler(EventId event_id, Event const* /*event*/)
@@ -349,9 +350,9 @@ Result<Event> HsmTest::s211_handler(EventId event_id, Event const* /*event*/)
             return Result<Event> {Transition<Event> {m_top_state}};
         }
         default:
-            return Result<Event> {Unhandled<Event> {}};
+            return Result<Event> {Unhandled {}};
     }
-    return Result<Event> {Handled<Event> {}};
+    return Result<Event> {Handled {}};
 }
 
 enum StateDemoId : StateId
@@ -365,7 +366,8 @@ enum StateDemoId : StateId
 };
 
 HsmTest::HsmTest(Actions& actions)
-    : Hsm {Top, static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1_state}
+    : Hsm {m_top_state}
+    , m_top_state {Top, nullptr, static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1_state}
     , m_s1_state {S1, &m_top_state, static_cast<EventHandler<Event>>(&HsmTest::s1_handler), &m_s11_state}
     , m_s11_state {S11, &m_s1_state, static_cast<EventHandler<Event>>(&HsmTest::s11_handler)}
     , m_s2_state {S2, &m_top_state, static_cast<EventHandler<Event>>(&HsmTest::s2_handler), &m_s21_state}
