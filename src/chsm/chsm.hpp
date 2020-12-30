@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cstdint>
 
-constexpr uint8_t Max_State_Nesting = 8;
+constexpr uint8_t Max_State_Nesting = 255;
 
 template <typename Event>
 class Hsm;
@@ -165,8 +165,8 @@ public:
     }
 
 private:
-    unsigned char levels_to_lca(State<Event>* source, State<Event>* target);
-    void exit_to_lca(State<Event>* source, unsigned char levels_to_lca);
+    uint8_t levels_to_lca(State<Event>* source, State<Event>* target);
+    void exit_to_lca(State<Event>* source, uint8_t levels_to_lca);
     void enter_from_lca();
     void init_state();
 
@@ -219,7 +219,7 @@ template <typename Event>
 void Hsm<Event>::on_event(Event const* event)
 {
     // try to handle events walking up the inheritance chain if not handled
-    for (auto s = m_current_state; s; s = s->super_state())
+    for (auto s = m_current_state; s != nullptr; s = s->super_state())
     {
         auto result = s->on_event(this, to_event_id(*event), event);
         if (result.event_was_handeled())
@@ -242,9 +242,8 @@ template <typename Event>
 void Hsm<Event>::enter_from_lca()
 {
     State<Event>** trace = m_entry_path;
-    State<Event>* s;
     *trace = nullptr;
-    for (s = m_next_state; s != m_current_state; s = s->super_state())
+    for (State<Event>* s = m_next_state; s != m_current_state; s = s->super_state())
     {
         ++trace;
         *trace = s; // record path to target
@@ -252,8 +251,7 @@ void Hsm<Event>::enter_from_lca()
     while (*trace != nullptr)
     {
         // retrace the entry
-        s = *trace;
-        s->on_event(this, Event_Entry, nullptr);
+        (*trace)->on_event(this, Event_Entry, nullptr);
         --trace;
     }
     m_current_state = m_next_state;
@@ -262,7 +260,7 @@ void Hsm<Event>::enter_from_lca()
 
 /// exit current states and all super states up to least common ancestor
 template <typename Event>
-void Hsm<Event>::exit_to_lca(State<Event>* source, unsigned char levels_to_lca)
+void Hsm<Event>::exit_to_lca(State<Event>* source, uint8_t levels_to_lca)
 {
     State<Event>* s = m_current_state;
     while (s != source)
@@ -280,11 +278,11 @@ void Hsm<Event>::exit_to_lca(State<Event>* source, unsigned char levels_to_lca)
 }
 
 template <typename Event>
-unsigned char Hsm<Event>::levels_to_lca(State<Event>* source, State<Event>* target)
+uint8_t Hsm<Event>::levels_to_lca(State<Event>* source, State<Event>* target)
 {
     State<Event>* s;
     State<Event>* t;
-    unsigned char levels_to_lca = 0;
+    uint8_t levels_to_lca = 0;
     if (source == target)
     {
         return 1;
