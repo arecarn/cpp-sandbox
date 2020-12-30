@@ -7,16 +7,73 @@
 // Overload issue 64 December 2004
 // http://www.state-machine.com/resources/Heinzmann04.pdf
 
-/* This is a basic implementation of UML Statecharts.
- * The key observation is that the machine can only
- * be in a leaf state at any given time. The composite
- * states are only traversed, never final.
- * Only the leaf states are ever instantiated. The composite
- * states are only mechanisms used to generate code. They are
- * never instantiated.
- */
+// This is a basic implementation of UML Statecharts. The key observation is
+// that the machine can only be in a leaf state at any given time. The composite
+// states are only traversed, never final. Only the leaf states are ever
+// instantiated. The composite states are only mechanisms used to generate code.
+// They are never instantiated.
 
-// Helpers
+// Top State, Composite State and Leaf State
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename H>
+struct TopState
+{
+    using Host = H;
+    using Base = void;
+    virtual void handler(Host&) const = 0;
+    [[nodiscard]] virtual unsigned id() const = 0;
+    virtual ~TopState() = default;
+};
+
+template <typename H, unsigned Id, typename B>
+struct CompState;
+
+template <typename H, unsigned Id, typename B = CompState<H, 0, TopState<H>>>
+struct CompState : B
+{
+    using Base = B;
+    using This = CompState<H, Id, Base>;
+    template <typename X>
+    void handle(H& h, const X& x) const { Base::handle(h, x); }
+    static void init(H& /*unused*/); // no implementation
+    static void entry(H& /*unused*/) { }
+    static void exit(H& /*unused*/) { }
+};
+
+template <typename H>
+struct CompState<H, 0, TopState<H>> : TopState<H>
+{
+    using Base = TopState<H>;
+    using This = CompState<H, 0, Base>;
+    template <typename X>
+    void handle(H& /*unused*/, const X& /*unused*/) const { }
+    static void init(H& /*unused*/); // no implementation
+    static void entry(H& /*unused*/) { }
+    static void exit(H& /*unused*/) { }
+};
+
+template <typename H, unsigned Id, typename B = CompState<H, 0, TopState<H>>>
+struct LeafState : B
+{
+    using Host = H;
+    using Base = B;
+    using This = LeafState<H, Id, Base>;
+    template <typename X>
+    void handle(H& h, const X& x) const { Base::handle(h, x); }
+    virtual void handler(H& h) const { handle(h, *this); }
+    [[nodiscard]] virtual unsigned id() const { return Id; }
+    static void init(H& h) { h.next(Obj); } // don't specialize this
+    static void entry(H& /*unused*/) { }
+    static void exit(H& /*unused*/) { }
+    static const LeafState Obj; // only the leaf states have instances
+};
+
+template <typename H, unsigned Id, typename B>
+const LeafState<H, Id, B> LeafState<H, Id, B>::Obj;
+
+// Transition
+////////////////////////////////////////////////////////////////////////////////
 
 // A gadget from Herb Sutter's GotW #71 -- depends on SFINAE
 template <class D, class B>
@@ -24,21 +81,18 @@ class IsDerivedFrom
 {
     class Yes
     {
-        char a[1];
+        char m_a[1];
     };
     class No
     {
-        char a[10];
+        char m_a[10];
     };
-    static Yes Test(B*); // undefined
-    static No Test(...); // undefined
+    static Yes test(B*); // undefined
+    static No test(...); // undefined
 public:
-    enum
-    {
-        Res = (sizeof(Test(static_cast<D*>(0))) == sizeof(Yes))
-            ? 1
-            : 0
-    };
+    static constexpr char Res = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes))
+        ? 1
+        : 0;
 };
 
 template <bool>
@@ -46,129 +100,80 @@ class Bool
 {
 };
 
-// Top State, Composite State and Leaf State
-
-template <typename H>
-struct TopState
-{
-    typedef H Host;
-    typedef void Base;
-    virtual void handler(Host&) const = 0;
-    virtual unsigned getId() const = 0;
-    virtual ~TopState() = default;
-};
-
-template <typename H, unsigned id, typename B>
-struct CompState;
-
-template <typename H, unsigned id, typename B = CompState<H, 0, TopState<H>>>
-struct CompState : B
-{
-    typedef B Base;
-    typedef CompState<H, id, Base> This;
-    template <typename X>
-    void handle(H& h, const X& x) const { Base::handle(h, x); }
-    static void init(H&); // no implementation
-    static void entry(H&) { }
-    static void exit(H&) { }
-};
-
-template <typename H>
-struct CompState<H, 0, TopState<H>> : TopState<H>
-{
-    typedef TopState<H> Base;
-    typedef CompState<H, 0, Base> This;
-    template <typename X>
-    void handle(H&, const X&) const { }
-    static void init(H&); // no implementation
-    static void entry(H&) { }
-    static void exit(H&) { }
-};
-
-template <typename H, unsigned id, typename B = CompState<H, 0, TopState<H>>>
-struct LeafState : B
-{
-    typedef H Host;
-    typedef B Base;
-    typedef LeafState<H, id, Base> This;
-    template <typename X>
-    void handle(H& h, const X& x) const { Base::handle(h, x); }
-    virtual void handler(H& h) const { handle(h, *this); }
-    virtual unsigned getId() const { return id; }
-    static void init(H& h) { h.next(obj); } // don't specialize this
-    static void entry(H&) { }
-    static void exit(H&) { }
-    static const LeafState obj; // only the leaf states have instances
-};
-
-template <typename H, unsigned id, typename B>
-const LeafState<H, id, B> LeafState<H, id, B>::obj;
-
-// Transition Object
-
 template <typename C, typename S, typename T>
 // Current, Source, Target
 struct Tran
 {
-    typedef typename C::Host Host;
-    typedef typename C::Base CurrentBase;
-    typedef typename S::Base SourceBase;
-    typedef typename T::Base TargetBase;
+    using Host = typename C::Host;
+    using CurrentBase = typename C::Base;
+    using SourceBase = typename S::Base;
+    using TargetBase = typename T::Base;
+
     enum
     { // work out when to terminate template recursion
-        eTB_CB = IsDerivedFrom<TargetBase, CurrentBase>::Res,
-        eS_CB = IsDerivedFrom<S, CurrentBase>::Res,
-        eS_C = IsDerivedFrom<S, C>::Res,
-        eC_S = IsDerivedFrom<C, S>::Res,
-        exitStop = eTB_CB && eS_C,
-        entryStop = eS_C || (eS_CB && !eC_S)
+        TargetBase_Derivies_From_CurrentBase
+        = IsDerivedFrom<TargetBase, CurrentBase>::Res,
+
+        Source_Derivies_From_CurrentBase = IsDerivedFrom<S, CurrentBase>::Res,
+
+        Source_Derivies_From_Current = IsDerivedFrom<S, C>::Res,
+
+        Current_Derivies_From_Source = IsDerivedFrom<C, S>::Res,
+
+        Exit_Stop = TargetBase_Derivies_From_CurrentBase
+            && Source_Derivies_From_Current,
+
+        Entry_Stop = Source_Derivies_From_Current
+            || (Source_Derivies_From_CurrentBase && !Current_Derivies_From_Source)
     };
-    // We use overloading to stop recursion.
-    // The more natural template specialization
-    // method would require to specialize the inner
-    // template without specializing the outer one,
-    // which is forbidden.
-    static void exitActions(Host&, Bool<true>) { }
-    static void exitActions(Host& h, Bool<false>)
+
+    // overloading is used to stop recursion. The more natural template
+    // specialization method would require to specialize the inner template
+    // without specializing the outer one, which is forbidden.
+    static void exit_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+    static void exit_actions(Host& h, Bool<false> /*unused*/)
     {
         C::exit(h);
-        Tran<CurrentBase, S, T>::exitActions(h, Bool<exitStop>());
+        Tran<CurrentBase, S, T>::exit_actions(h, Bool<Exit_Stop>());
     }
-    static void entryActions(Host&, Bool<true>) { }
-    static void entryActions(Host& h, Bool<false>)
+    static void entry_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+    static void entry_actions(Host& h, Bool<false> /*unused*/)
     {
-        Tran<CurrentBase, S, T>::entryActions(h, Bool<entryStop>());
+        Tran<CurrentBase, S, T>::entry_actions(h, Bool<Entry_Stop>());
         C::entry(h);
     }
     Tran(Host& h)
-        : host_(h)
+        : m_host(h)
     {
-        exitActions(host_, Bool<false>());
+        exit_actions(m_host, Bool<false>());
     }
     ~Tran()
     {
-        Tran<T, S, T>::entryActions(host_, Bool<false>());
-        T::init(host_);
+        Tran<T, S, T>::entry_actions(m_host, Bool<false>());
+        T::init(m_host);
     }
-    Host& host_;
+    Host& m_host;
 };
 
-// Initializer for Compound States
+// InitalStateSetup
+////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
 struct InitalStateSetup
 {
-    typedef typename T::Host Host;
+    using Host = typename T::Host;
     InitalStateSetup(Host& h)
-        : host_(h)
+        : m_host(h)
     {
     }
     ~InitalStateSetup()
     {
-        T::entry(host_);
-        T::init(host_);
+        T::entry(m_host);
+        T::init(m_host);
     }
-    Host& host_;
+
+private:
+    Host& m_host;
 };
 
 #endif // YAHSM_HPP
