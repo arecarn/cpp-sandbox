@@ -4,7 +4,7 @@
 // This code is from:
 // Yet Another Hierarchical State Machine
 // by Stefan Heinzmann
-// Overload issue 64 december 2004
+// Overload issue 64 December 2004
 // http://www.state-machine.com/resources/Heinzmann04.pdf
 
 /* This is a basic implementation of UML Statecharts.
