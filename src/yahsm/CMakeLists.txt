@@ -9,5 +9,5 @@ target_set_default_compiler_warnings(yahsm)
 # Test
 ################################################################################
 add_executable(yahsm.test ${CMAKE_CURRENT_SOURCE_DIR}/yahsm.test.cpp)
-target_link_libraries(yahsm.test gtest_main yahsm)
+target_link_libraries(yahsm.test gtest_main gmock yahsm)
 create_test(yahsm.test)
