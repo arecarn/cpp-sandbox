@@ -21,6 +21,7 @@ struct TopState
 {
     using Host = H;
     using Base = void;
+
     virtual void handler(Host&) const = 0;
     [[nodiscard]] virtual unsigned id() const = 0;
     virtual ~TopState() = default;
@@ -34,8 +35,10 @@ struct CompState : B
 {
     using Base = B;
     using This = CompState<H, Id, Base>;
+
     template <typename X>
     void handle(H& h, const X& x) const { Base::handle(h, x); }
+
     static void init(H& /*unused*/); // no implementation
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
@@ -46,8 +49,10 @@ struct CompState<H, 0, TopState<H>> : TopState<H>
 {
     using Base = TopState<H>;
     using This = CompState<H, 0, Base>;
+
     template <typename X>
     void handle(H& /*unused*/, const X& /*unused*/) const { }
+
     static void init(H& /*unused*/); // no implementation
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
@@ -59,13 +64,16 @@ struct LeafState : B
     using Host = H;
     using Base = B;
     using This = LeafState<H, Id, Base>;
+
     template <typename X>
     void handle(H& h, const X& x) const { Base::handle(h, x); }
+
     virtual void handler(H& h) const { handle(h, *this); }
     [[nodiscard]] virtual unsigned id() const { return Id; }
     static void init(H& h) { h.next(Obj); } // don't specialize this
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
+
     static const LeafState Obj; // only the leaf states have instances
 };
 
@@ -100,58 +108,62 @@ class Bool
 {
 };
 
-template <typename C, typename S, typename T>
-// Current, Source, Target
+template <typename Current, typename Source, typename Target>
 struct Tran
 {
-    using Host = typename C::Host;
-    using CurrentBase = typename C::Base;
-    using SourceBase = typename S::Base;
-    using TargetBase = typename T::Base;
+    using Host = typename Current::Host;
+    using CurrentBase = typename Current::Base;
+    using SourceBase = typename Source::Base;
+    using TargetBase = typename Target::Base;
 
     enum
     { // work out when to terminate template recursion
-        TargetBase_Derivies_From_CurrentBase
-        = IsDerivedFrom<TargetBase, CurrentBase>::Res,
+        TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Res,
 
-        Source_Derivies_From_CurrentBase = IsDerivedFrom<S, CurrentBase>::Res,
+        Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Res,
 
-        Source_Derivies_From_Current = IsDerivedFrom<S, C>::Res,
+        Source_Derives_From_Current = IsDerivedFrom<Source, Current>::Res,
 
-        Current_Derivies_From_Source = IsDerivedFrom<C, S>::Res,
+        Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
 
-        Exit_Stop = TargetBase_Derivies_From_CurrentBase
-            && Source_Derivies_From_Current,
+        Exit_Stop = TargetBase_Derives_From_CurrentBase
+            && Source_Derives_From_Current,
 
-        Entry_Stop = Source_Derivies_From_Current
-            || (Source_Derivies_From_CurrentBase && !Current_Derivies_From_Source)
+        Entry_Stop = Source_Derives_From_Current
+            || (Source_Derives_From_CurrentBase && !Current_Derives_From_Source)
     };
 
     // overloading is used to stop recursion. The more natural template
     // specialization method would require to specialize the inner template
     // without specializing the outer one, which is forbidden.
     static void exit_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+
     static void exit_actions(Host& h, Bool<false> /*unused*/)
     {
-        C::exit(h);
-        Tran<CurrentBase, S, T>::exit_actions(h, Bool<Exit_Stop>());
+        Current::exit(h);
+        Tran<CurrentBase, Source, Target>::exit_actions(h, Bool<Exit_Stop>());
     }
+
     static void entry_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+
     static void entry_actions(Host& h, Bool<false> /*unused*/)
     {
-        Tran<CurrentBase, S, T>::entry_actions(h, Bool<Entry_Stop>());
-        C::entry(h);
+        Tran<CurrentBase, Source, Target>::entry_actions(h, Bool<Entry_Stop>());
+        Current::entry(h);
     }
+
     Tran(Host& h)
         : m_host(h)
     {
         exit_actions(m_host, Bool<false>());
     }
+
     ~Tran()
     {
-        Tran<T, S, T>::entry_actions(m_host, Bool<false>());
-        T::init(m_host);
+        Tran<Target, Source, Target>::entry_actions(m_host, Bool<false>());
+        Target::init(m_host);
     }
+
     Host& m_host;
 };
 
