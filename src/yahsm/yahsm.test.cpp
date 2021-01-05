@@ -105,7 +105,8 @@ enum class Event
     E,
     F,
     G,
-    H
+    H,
+    None,
 };
 
 template <>
@@ -162,8 +163,8 @@ public:
     }
 
 private:
-    const TopState<TestHSM>* m_state;
-    Event m_event;
+    const TopState<TestHSM>* m_state {nullptr};
+    Event m_event {Event::None};
     int m_foo;
     Actions& m_actions;
 };
@@ -173,6 +174,7 @@ private:
 template <>
 inline void Top::init(TestHSM& h)
 {
+    h.foo(0);
     InitalStateSetup<S0> i(h);
     h.actions().top_init();
 }
