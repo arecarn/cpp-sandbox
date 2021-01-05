@@ -67,7 +67,6 @@ define build_type_template =
 $(1):
 	@set -o xtrace; \
 	make BT=$(1)
-	make BT=$(1) test
 endef
 
 $(foreach bt, $(BUILD_TYPES), \
@@ -78,8 +77,6 @@ $(foreach bt, $(BUILD_TYPES), \
 
 .PHONY: full
 full: $(BUILD_TYPES)
-
-
 
 
 .PHONY: h
