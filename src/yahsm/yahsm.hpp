@@ -36,8 +36,8 @@ struct CompState : B
     using Base = B;
     using This = CompState<H, Id, Base>;
 
-    template <typename X>
-    void handle(H& h, const X& x) const { Base::handle(h, x); }
+    template <typename Current>
+    void handle(H& h, const Current& c) const { Base::handle(h, c); }
 
     static void init(H& /*unused*/); // no implementation
     static void entry(H& /*unused*/) { }
@@ -50,8 +50,8 @@ struct CompState<H, 0, TopState<H>> : TopState<H>
     using Base = TopState<H>;
     using This = CompState<H, 0, Base>;
 
-    template <typename X>
-    void handle(H& /*unused*/, const X& /*unused*/) const { }
+    template <typename Current>
+    void handle(H& /*unused*/, const Current& /*unused*/) const { }
 
     static void init(H& /*unused*/); // no implementation
     static void entry(H& /*unused*/) { }
@@ -65,8 +65,8 @@ struct LeafState : B
     using Base = B;
     using This = LeafState<H, Id, Base>;
 
-    template <typename X>
-    void handle(H& h, const X& x) const { Base::handle(h, x); }
+    template <typename Current>
+    void handle(H& h, const Current& c) const { Base::handle(h, c); }
 
     virtual void handler(H& h) const { handle(h, *this); }
     [[nodiscard]] virtual unsigned id() const { return Id; }

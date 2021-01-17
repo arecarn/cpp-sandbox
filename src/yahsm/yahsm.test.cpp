@@ -168,21 +168,21 @@ private:
 // Top
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void Top::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void Top::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::E:
         {
-            Tran<X, This, S211> t(h);
+            Tran<Current, This, S211> t(h);
             h.actions().top_e();
             return;
         }
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
@@ -195,45 +195,45 @@ inline void Top::init(TestHSM& h)
 // S1
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void S1::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void S1::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::A:
         {
-            Tran<X, This, S1> t(h);
+            Tran<Current, This, S1> t(h);
             h.actions().s1_a();
             return;
         }
         case Event::B:
         {
-            Tran<X, This, S11> t(h);
+            Tran<Current, This, S11> t(h);
             h.actions().s1_b();
             return;
         }
         case Event::C:
         {
-            Tran<X, This, S2> t(h);
+            Tran<Current, This, S2> t(h);
             h.actions().s1_c();
             return;
         }
         case Event::D:
         {
-            Tran<X, This, Top> t(h);
+            Tran<Current, This, Top> t(h);
             h.actions().s1_d();
             return;
         }
         case Event::F:
         {
-            Tran<X, This, S211> t(h);
+            Tran<Current, This, S211> t(h);
             h.actions().s1_f();
             return;
         }
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
@@ -258,14 +258,14 @@ inline void S1::exit(TestHSM& h)
 // S11
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void S11::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void S11::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::G:
         {
-            Tran<X, This, S211> t(h);
+            Tran<Current, This, S211> t(h);
             h.actions().s11_g();
             return;
         }
@@ -280,7 +280,7 @@ inline void S11::handle(TestHSM& h, const X& x) const
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
@@ -305,27 +305,27 @@ inline void S11::exit(TestHSM& h)
 // S2
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void S2::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void S2::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::C:
         {
-            Tran<X, This, S1> t(h);
+            Tran<Current, This, S1> t(h);
             h.actions().s2_c();
             return;
         }
         case Event::F:
         {
-            Tran<X, This, S11> t(h);
+            Tran<Current, This, S11> t(h);
             h.actions().s2_f();
             return;
         }
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
@@ -350,21 +350,21 @@ inline void S2::exit(TestHSM& h)
 // S21
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void S21::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void S21::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::B:
         {
-            Tran<X, This, S211> t(h);
+            Tran<Current, This, S211> t(h);
             h.actions().s21_b();
             return;
         }
         case Event::H:
             if (!h.foo())
             {
-                Tran<X, This, S21> t(h);
+                Tran<Current, This, S21> t(h);
                 h.actions().s21_h();
                 h.foo(1);
                 return;
@@ -373,7 +373,7 @@ inline void S21::handle(TestHSM& h, const X& x) const
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
@@ -391,27 +391,27 @@ inline void S21::exit(TestHSM& h)
 // S211
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-template <typename X>
-inline void S211::handle(TestHSM& h, const X& x) const
+template <typename Current>
+inline void S211::handle(TestHSM& h, const Current& c) const
 {
     switch (h.event())
     {
         case Event::D:
         {
-            Tran<X, This, S21> t(h);
+            Tran<Current, This, S21> t(h);
             h.actions().s211_d();
             return;
         }
         case Event::G:
         {
-            Tran<X, This, Top> t(h);
+            Tran<Current, This, Top> t(h);
             h.actions().s211_g();
             return;
         }
         default:
             break;
     }
-    return Base::handle(h, x);
+    return Base::handle(h, c);
 }
 
 template <>
