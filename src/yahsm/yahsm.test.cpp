@@ -33,11 +33,9 @@ class Actions
 {
 public:
     virtual void top_init() = 0;
-
-    virtual void s0_init() = 0;
-    virtual void s0_entry() = 0;
-    virtual void s0_exit() = 0;
-    virtual void s0_e() = 0;
+    virtual void top_entry() = 0;
+    virtual void top_exit() = 0;
+    virtual void top_e() = 0;
 
     virtual void s1_init() = 0;
     virtual void s1_entry() = 0;
@@ -77,21 +75,19 @@ class TestHSM;
 enum StateId : unsigned int
 {
     Top_Id, // 0
-    S0_Id, // 1
-    S1_Id, // 2
-    S11_Id, // 3
-    S2_Id, // 4
-    S21_Id, // 5
-    S211_Id, // 6
+    S1_Id, // 1
+    S11_Id, // 2
+    S2_Id, // 3
+    S21_Id, // 4
+    S211_Id, // 5
 };
 
 // clang-format off
 //                    <hsm,          id, parent state>
-using Top  = CompState<TestHSM,  Top_Id     /*none*/>;
-using S0   = CompState<TestHSM,   S0_Id,         Top>;
-using S1   = CompState<TestHSM,   S1_Id,          S0>;
+using Top   = CompState<TestHSM, Top_Id     /*none*/>;
+using S1   = CompState<TestHSM,   S1_Id,          Top>;
 using S11  = LeafState<TestHSM,  S11_Id,          S1>;
-using S2   = CompState<TestHSM,   S2_Id,          S0>;
+using S2   = CompState<TestHSM,   S2_Id,          Top>;
 using S21  = CompState<TestHSM,  S21_Id,          S2>;
 using S211 = LeafState<TestHSM, S211_Id,         S21>;
 // clang-format on
@@ -165,32 +161,22 @@ public:
 private:
     const TopState<TestHSM>* m_state {nullptr};
     Event m_event {Event::None};
-    int m_foo;
+    int m_foo {0};
     Actions& m_actions;
 };
 
 // Top
 ////////////////////////////////////////////////////////////////////////////////
 template <>
-inline void Top::init(TestHSM& h)
-{
-    h.foo(0);
-    InitalStateSetup<S0> i(h);
-    h.actions().top_init();
-}
-
-// S0
-////////////////////////////////////////////////////////////////////////////////
-template <>
 template <typename X>
-inline void S0::handle(TestHSM& h, const X& x) const
+inline void Top::handle(TestHSM& h, const X& x) const
 {
     switch (h.event())
     {
         case Event::E:
         {
             Tran<X, This, S211> t(h);
-            h.actions().s0_e();
+            h.actions().top_e();
             return;
         }
         default:
@@ -200,22 +186,10 @@ inline void S0::handle(TestHSM& h, const X& x) const
 }
 
 template <>
-inline void S0::init(TestHSM& h)
+inline void Top::init(TestHSM& h)
 {
+    h.actions().top_init();
     InitalStateSetup<S1> i(h);
-    h.actions().s0_init();
-}
-
-template <>
-inline void S0::entry(TestHSM& h)
-{
-    h.actions().s0_entry();
-}
-
-template <>
-inline void S0::exit(TestHSM& h)
-{
-    h.actions().s0_exit();
 }
 
 // S1
@@ -246,7 +220,7 @@ inline void S1::handle(TestHSM& h, const X& x) const
         }
         case Event::D:
         {
-            Tran<X, This, S0> t(h);
+            Tran<X, This, Top> t(h);
             h.actions().s1_d();
             return;
         }
@@ -430,7 +404,7 @@ inline void S211::handle(TestHSM& h, const X& x) const
         }
         case Event::G:
         {
-            Tran<X, This, S0> t(h);
+            Tran<X, This, Top> t(h);
             h.actions().s211_g();
             return;
         }
@@ -459,11 +433,9 @@ class MockActions : public Actions
 {
 public:
     MOCK_METHOD(void, top_init, (), (override));
-
-    MOCK_METHOD(void, s0_init, (), (override));
-    MOCK_METHOD(void, s0_entry, (), (override));
-    MOCK_METHOD(void, s0_exit, (), (override));
-    MOCK_METHOD(void, s0_e, (), (override));
+    MOCK_METHOD(void, top_entry, (), (override));
+    MOCK_METHOD(void, top_exit, (), (override));
+    MOCK_METHOD(void, top_e, (), (override));
 
     MOCK_METHOD(void, s1_init, (), (override));
     MOCK_METHOD(void, s1_entry, (), (override));
@@ -505,11 +477,10 @@ protected:
         m_hsm_test = std::make_unique<TestHSM>(m_actions);
 
         // Initial Transitions
-        // EXPECT_EQ(S0_Id, m_hsm_test->state_id()); //TODO can't get state
+        // EXPECT_EQ(top_Id, m_hsm_test->state_id()); //TODO can't get state
         // before init this might be okay though
+        // EXPECT_CALL(m_actions, top_entry());
         EXPECT_CALL(m_actions, top_init());
-        EXPECT_CALL(m_actions, s0_entry());
-        EXPECT_CALL(m_actions, s0_init());
         EXPECT_CALL(m_actions, s1_entry());
         EXPECT_CALL(m_actions, s1_init());
         EXPECT_CALL(m_actions, s11_entry());
@@ -565,9 +536,7 @@ TEST_F(HsmTestFixtureS11, s11_D)
     EXPECT_CALL(m_actions, s1_d());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s1_exit());
-    EXPECT_CALL(m_actions, s0_exit());
-    EXPECT_CALL(m_actions, s0_entry());
-    EXPECT_CALL(m_actions, s0_init());
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -577,11 +546,9 @@ TEST_F(HsmTestFixtureS11, s11_D)
 
 TEST_F(HsmTestFixtureS11, s11_E)
 {
-    EXPECT_CALL(m_actions, s0_e());
+    EXPECT_CALL(m_actions, top_e());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s1_exit());
-    EXPECT_CALL(m_actions, s0_exit());
-    EXPECT_CALL(m_actions, s0_entry());
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
@@ -630,11 +597,11 @@ protected:
         m_hsm_test = std::make_unique<TestHSM>(m_actions);
 
         // Initial Transitions
-        // EXPECT_EQ(S0_Id, m_hsm_test->state_id()); // TODO can't inspect
+        // EXPECT_EQ(top_Id, m_hsm_test->state_id()); // TODO can't inspect
         // initial state
-        EXPECT_CALL(m_actions, top_init()); // investigate differences with chsm
-        EXPECT_CALL(m_actions, s0_entry());
-        EXPECT_CALL(m_actions, s0_init());
+        // EXPECT_CALL(m_actions, top_init()); // investigate differences with chsm
+        // EXPECT_CALL(m_actions, top_entry());
+        EXPECT_CALL(m_actions, top_init());
         EXPECT_CALL(m_actions, s1_entry());
         EXPECT_CALL(m_actions, s1_init());
         EXPECT_CALL(m_actions, s11_entry());
@@ -697,8 +664,8 @@ TEST_F(TestHSMFixtureS211, s211_D)
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_init());
-    EXPECT_CALL(m_actions, s211_entry());
     EXPECT_CALL(m_actions, s21_entry());
+    EXPECT_CALL(m_actions, s211_entry());
     m_hsm_test->dispatch(Event::D);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
@@ -717,14 +684,11 @@ TEST_F(TestHSMFixtureS211, s211_F)
 
 TEST_F(TestHSMFixtureS211, s211_G)
 {
-    // TODO different than chsm
     EXPECT_CALL(m_actions, s211_g());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s2_exit());
-    EXPECT_CALL(m_actions, s0_exit());
-    EXPECT_CALL(m_actions, s0_init());
-    EXPECT_CALL(m_actions, s0_entry());
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -766,9 +730,7 @@ TEST_F(TestHSMFixtureS211, foo)
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s2_exit());
-    EXPECT_CALL(m_actions, s0_exit());
-    EXPECT_CALL(m_actions, s0_init());
-    EXPECT_CALL(m_actions, s0_entry());
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
