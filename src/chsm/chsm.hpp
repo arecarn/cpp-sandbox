@@ -117,7 +117,7 @@ public:
     {
         return m_id;
     }
-    Result<Event> on_event(Hsm<Event>* hsm, EventId id, Event const* event)
+    Result<Event> dispatch(Hsm<Event>* hsm, EventId id, Event const* event)
     {
         return (hsm->*m_event_handler)(id, event);
     }
@@ -157,9 +157,9 @@ class Hsm
 {
 public:
     explicit Hsm(State<Event>& inital);
-    void on_start(); /// enter and start the top state
-    void on_event(Event const* event);
-    [[nodiscard]] StateId state() const
+    void init(); /// enter and start the top state
+    void dispatch(Event const* event);
+    [[nodiscard]] StateId state_id() const
     {
         return m_current_state->id();
     }
@@ -185,9 +185,9 @@ Hsm<Event>::Hsm(State<Event>& inital_state)
 
 /// enters and starts the top state
 template <typename Event>
-void Hsm<Event>::on_start()
+void Hsm<Event>::init()
 {
-    m_current_state->on_event(this, Event_Entry, nullptr);
+    m_current_state->dispatch(this, Event_Entry, nullptr);
     init_state();
 }
 
@@ -197,7 +197,7 @@ void Hsm<Event>::init_state()
     // perform init events till there are no more transitions
     while (true)
     {
-        m_current_state->on_event(this, Event_Init, nullptr);
+        m_current_state->dispatch(this, Event_Init, nullptr);
         if (m_current_state->inital_state() != nullptr)
         {
             assert(m_next_state == nullptr);
@@ -216,12 +216,12 @@ void Hsm<Event>::init_state()
 }
 
 template <typename Event>
-void Hsm<Event>::on_event(Event const* event)
+void Hsm<Event>::dispatch(Event const* event)
 {
     // try to handle events walking up the inheritance chain if not handled
     for (auto s = m_current_state; s != nullptr; s = s->super_state())
     {
-        auto result = s->on_event(this, to_event_id(*event), event);
+        auto result = s->dispatch(this, to_event_id(*event), event);
         if (result.event_was_handeled())
         {
             if (result.has_transition())
@@ -251,7 +251,7 @@ void Hsm<Event>::enter_from_lca()
     while (*trace != nullptr)
     {
         // retrace the entry
-        (*trace)->on_event(this, Event_Entry, nullptr);
+        (*trace)->dispatch(this, Event_Entry, nullptr);
         --trace;
     }
     m_current_state = m_next_state;
@@ -265,12 +265,12 @@ void Hsm<Event>::exit_to_lca(State<Event>* source, uint8_t levels_to_lca)
     State<Event>* s = m_current_state;
     while (s != source)
     {
-        s->on_event(this, Event_Exit, nullptr);
+        s->dispatch(this, Event_Exit, nullptr);
         s = s->super_state();
     }
     while (levels_to_lca != 0)
     {
-        s->on_event(this, Event_Exit, nullptr);
+        s->dispatch(this, Event_Exit, nullptr);
         s = s->super_state();
         --levels_to_lca;
     }

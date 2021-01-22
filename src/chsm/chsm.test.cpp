@@ -44,46 +44,6 @@ public:
     virtual ~Actions() = default;
 };
 
-class MockActions : public Actions
-{
-public:
-    MOCK_METHOD(void, top_init, (), (override));
-    MOCK_METHOD(void, top_entry, (), (override));
-    MOCK_METHOD(void, top_exit, (), (override));
-    MOCK_METHOD(void, top_e, (), (override));
-
-    MOCK_METHOD(void, s1_init, (), (override));
-    MOCK_METHOD(void, s1_entry, (), (override));
-    MOCK_METHOD(void, s1_exit, (), (override));
-    MOCK_METHOD(void, s1_a, (), (override));
-    MOCK_METHOD(void, s1_b, (), (override));
-    MOCK_METHOD(void, s1_c, (), (override));
-    MOCK_METHOD(void, s1_d, (), (override));
-    MOCK_METHOD(void, s1_f, (), (override));
-
-    MOCK_METHOD(void, s11_entry, (), (override));
-    MOCK_METHOD(void, s11_exit, (), (override));
-    MOCK_METHOD(void, s11_g, (), (override));
-    MOCK_METHOD(void, s11_h, (), (override));
-
-    MOCK_METHOD(void, s2_init, (), (override));
-    MOCK_METHOD(void, s2_entry, (), (override));
-    MOCK_METHOD(void, s2_exit, (), (override));
-    MOCK_METHOD(void, s2_c, (), (override));
-    MOCK_METHOD(void, s2_f, (), (override));
-
-    MOCK_METHOD(void, s21_init, (), (override));
-    MOCK_METHOD(void, s21_entry, (), (override));
-    MOCK_METHOD(void, s21_exit, (), (override));
-    MOCK_METHOD(void, s21_b, (), (override));
-    MOCK_METHOD(void, s21_h, (), (override));
-
-    MOCK_METHOD(void, s211_entry, (), (override));
-    MOCK_METHOD(void, s211_exit, (), (override));
-    MOCK_METHOD(void, s211_d, (), (override));
-    MOCK_METHOD(void, s211_g, (), (override));
-};
-
 struct Event
 {
     int id;
@@ -94,9 +54,9 @@ EventId to_event_id(const Event& event)
     return event.id;
 }
 
-class HsmTest : public Hsm<Event>
+class TestHsm : public Hsm<Event>
 {
-    int m_my_foo {0};
+    int m_foo {0};
 
 protected:
     State<Event> m_top_state;
@@ -108,10 +68,10 @@ protected:
     Actions& m_actions;
 
 public:
-    explicit HsmTest(Actions& actions);
-    [[nodiscard]] int my_foo() const
+    explicit TestHsm(Actions& actions);
+    [[nodiscard]] int foo() const
     {
-        return m_my_foo;
+        return m_foo;
     }
     Result<Event> top_handler(EventId event_id, Event const* event);
     Result<Event> s1_handler(EventId event_id, Event const* event);
@@ -121,7 +81,7 @@ public:
     Result<Event> s211_handler(EventId event_id, Event const* event);
 };
 
-enum HsmTestEvents
+enum TestHsmEvents
 {
     Event_A,
     Event_B,
@@ -133,7 +93,7 @@ enum HsmTestEvents
     Event_H
 };
 
-Result<Event> HsmTest::top_handler(EventId event_id, Event const* /*unused*/)
+Result<Event> TestHsm::top_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -163,7 +123,7 @@ Result<Event> HsmTest::top_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
-Result<Event> HsmTest::s1_handler(EventId event_id, Event const* /*unused*/)
+Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -213,7 +173,7 @@ Result<Event> HsmTest::s1_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
-Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
+Result<Event> TestHsm::s11_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -235,10 +195,10 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
         break;
         case Event_H:
         {
-            if (m_my_foo)
+            if (m_foo)
             {
                 m_actions.s11_h();
-                m_my_foo = 0;
+                m_foo = 0;
             }
             break;
         }
@@ -248,7 +208,7 @@ Result<Event> HsmTest::s11_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
-Result<Event> HsmTest::s2_handler(EventId event_id, Event const* /*unused*/)
+Result<Event> TestHsm::s2_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
@@ -283,7 +243,7 @@ Result<Event> HsmTest::s2_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
-Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
+Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
     {
@@ -309,10 +269,10 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
         }
         case Event_H:
         {
-            if (!m_my_foo)
+            if (!m_foo)
             {
                 m_actions.s21_h();
-                m_my_foo = 1;
+                m_foo = 1;
                 {
                     return Result<Event> {Transition<Event> {m_s21_state}};
                 }
@@ -325,7 +285,7 @@ Result<Event> HsmTest::s21_handler(EventId event_id, Event const* /*event*/)
     return Result<Event> {Handled {}};
 }
 
-Result<Event> HsmTest::s211_handler(EventId event_id, Event const* /*event*/)
+Result<Event> TestHsm::s211_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
     {
@@ -357,25 +317,28 @@ Result<Event> HsmTest::s211_handler(EventId event_id, Event const* /*event*/)
 
 enum StateDemoId : StateId
 {
-    Top,
-    S1,
-    S11,
-    S2,
-    S21,
-    S211,
+    Top_Id,
+    S1_Id,
+    S11_Id,
+    S2_Id,
+    S21_Id,
+    S211_Id,
 };
 
-HsmTest::HsmTest(Actions& actions)
+TestHsm::TestHsm(Actions& actions)
     : Hsm {m_top_state}
-    , m_top_state {Top, nullptr, static_cast<EventHandler<Event>>(&HsmTest::top_handler), &m_s1_state}
-    , m_s1_state {S1, &m_top_state, static_cast<EventHandler<Event>>(&HsmTest::s1_handler), &m_s11_state}
-    , m_s11_state {S11, &m_s1_state, static_cast<EventHandler<Event>>(&HsmTest::s11_handler)}
-    , m_s2_state {S2, &m_top_state, static_cast<EventHandler<Event>>(&HsmTest::s2_handler), &m_s21_state}
-    , m_s21_state {S21, &m_s2_state, static_cast<EventHandler<Event>>(&HsmTest::s21_handler), &m_s211_state}
-    , m_s211_state {S211, &m_s21_state, static_cast<EventHandler<Event>>(&HsmTest::s211_handler)}
+    , m_top_state {Top_Id, nullptr, static_cast<EventHandler<Event>>(&TestHsm::top_handler), &m_s1_state}
+    , m_s1_state {S1_Id, &m_top_state, static_cast<EventHandler<Event>>(&TestHsm::s1_handler), &m_s11_state}
+    , m_s11_state {S11_Id, &m_s1_state, static_cast<EventHandler<Event>>(&TestHsm::s11_handler)}
+    , m_s2_state {S2_Id, &m_top_state, static_cast<EventHandler<Event>>(&TestHsm::s2_handler), &m_s21_state}
+    , m_s21_state {S21_Id, &m_s2_state, static_cast<EventHandler<Event>>(&TestHsm::s21_handler), &m_s211_state}
+    , m_s211_state {S211_Id, &m_s21_state, static_cast<EventHandler<Event>>(&TestHsm::s211_handler)}
     , m_actions {actions}
 {
 }
+
+// Test
+////////////////////////////////////////////////////////////////////////////////
 
 constexpr Event A {Event_A};
 constexpr Event B {Event_B};
@@ -386,29 +349,69 @@ constexpr Event F {Event_F};
 constexpr Event G {Event_G};
 constexpr Event H {Event_H};
 
-class HsmTestFixtureS11 : public ::testing::Test
+class MockActions : public Actions
+{
+public:
+    MOCK_METHOD(void, top_init, (), (override));
+    MOCK_METHOD(void, top_entry, (), (override));
+    MOCK_METHOD(void, top_exit, (), (override));
+    MOCK_METHOD(void, top_e, (), (override));
+
+    MOCK_METHOD(void, s1_init, (), (override));
+    MOCK_METHOD(void, s1_entry, (), (override));
+    MOCK_METHOD(void, s1_exit, (), (override));
+    MOCK_METHOD(void, s1_a, (), (override));
+    MOCK_METHOD(void, s1_b, (), (override));
+    MOCK_METHOD(void, s1_c, (), (override));
+    MOCK_METHOD(void, s1_d, (), (override));
+    MOCK_METHOD(void, s1_f, (), (override));
+
+    MOCK_METHOD(void, s11_entry, (), (override));
+    MOCK_METHOD(void, s11_exit, (), (override));
+    MOCK_METHOD(void, s11_g, (), (override));
+    MOCK_METHOD(void, s11_h, (), (override));
+
+    MOCK_METHOD(void, s2_init, (), (override));
+    MOCK_METHOD(void, s2_entry, (), (override));
+    MOCK_METHOD(void, s2_exit, (), (override));
+    MOCK_METHOD(void, s2_c, (), (override));
+    MOCK_METHOD(void, s2_f, (), (override));
+
+    MOCK_METHOD(void, s21_init, (), (override));
+    MOCK_METHOD(void, s21_entry, (), (override));
+    MOCK_METHOD(void, s21_exit, (), (override));
+    MOCK_METHOD(void, s21_b, (), (override));
+    MOCK_METHOD(void, s21_h, (), (override));
+
+    MOCK_METHOD(void, s211_entry, (), (override));
+    MOCK_METHOD(void, s211_exit, (), (override));
+    MOCK_METHOD(void, s211_d, (), (override));
+    MOCK_METHOD(void, s211_g, (), (override));
+};
+
+class TestHsmFixtureS11 : public ::testing::Test
 {
 protected:
     void SetUp() override
     {
-        m_hsm_test = std::make_unique<HsmTest>(m_actions);
+        m_hsm_test = std::make_unique<TestHsm>(m_actions);
 
         // Initial Transitions
-        EXPECT_EQ(Top, m_hsm_test->state());
+        EXPECT_EQ(Top_Id, m_hsm_test->state_id());
         EXPECT_CALL(m_actions, top_entry());
         EXPECT_CALL(m_actions, top_init());
         EXPECT_CALL(m_actions, s1_entry());
         EXPECT_CALL(m_actions, s1_init());
         EXPECT_CALL(m_actions, s11_entry());
-        m_hsm_test->on_start();
-        EXPECT_EQ(S11, m_hsm_test->state());
+        m_hsm_test->init();
+        EXPECT_EQ(S11_Id, m_hsm_test->state_id());
     }
 
     testing::StrictMock<MockActions> m_actions;
-    std::unique_ptr<HsmTest> m_hsm_test;
+    std::unique_ptr<TestHsm> m_hsm_test;
 };
 
-TEST_F(HsmTestFixtureS11, s11_A)
+TEST_F(TestHsmFixtureS11, s11_A)
 {
     EXPECT_CALL(m_actions, s1_a());
     EXPECT_CALL(m_actions, s11_exit());
@@ -416,20 +419,20 @@ TEST_F(HsmTestFixtureS11, s11_A)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&A);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&A);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_B)
+TEST_F(TestHsmFixtureS11, s11_B)
 {
     EXPECT_CALL(m_actions, s1_b());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&B);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&B);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_C)
+TEST_F(TestHsmFixtureS11, s11_C)
 {
     EXPECT_CALL(m_actions, s1_c());
     EXPECT_CALL(m_actions, s11_exit());
@@ -439,10 +442,11 @@ TEST_F(HsmTestFixtureS11, s11_C)
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&C);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&C);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
-TEST_F(HsmTestFixtureS11, s11_D)
+
+TEST_F(TestHsmFixtureS11, s11_D)
 {
     EXPECT_CALL(m_actions, s1_d());
     EXPECT_CALL(m_actions, s11_exit());
@@ -451,11 +455,11 @@ TEST_F(HsmTestFixtureS11, s11_D)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&D);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&D);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_E)
+TEST_F(TestHsmFixtureS11, s11_E)
 {
     EXPECT_CALL(m_actions, top_e());
     EXPECT_CALL(m_actions, s11_exit());
@@ -463,11 +467,11 @@ TEST_F(HsmTestFixtureS11, s11_E)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&E);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&E);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_F)
+TEST_F(TestHsmFixtureS11, s11_F)
 {
     EXPECT_CALL(m_actions, s1_f());
     EXPECT_CALL(m_actions, s11_exit());
@@ -475,11 +479,11 @@ TEST_F(HsmTestFixtureS11, s11_F)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&F);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&F);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_G)
+TEST_F(TestHsmFixtureS11, s11_G)
 {
     EXPECT_CALL(m_actions, s11_g());
     EXPECT_CALL(m_actions, s11_exit());
@@ -487,35 +491,35 @@ TEST_F(HsmTestFixtureS11, s11_G)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&G);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&G);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS11, s11_H)
+TEST_F(TestHsmFixtureS11, s11_H)
 {
-    EXPECT_EQ(S11, m_hsm_test->state());
-    EXPECT_EQ(0, m_hsm_test->my_foo());
-    m_hsm_test->on_event(&H);
-    EXPECT_EQ(0, m_hsm_test->my_foo());
-    EXPECT_EQ(S11, m_hsm_test->state());
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
+    EXPECT_EQ(0, m_hsm_test->foo());
+    m_hsm_test->dispatch(&H);
+    EXPECT_EQ(0, m_hsm_test->foo());
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-class HsmTestFixtureS211 : public ::testing::Test
+class TestHsmFixtureS211 : public ::testing::Test
 {
 protected:
     void SetUp() override
     {
-        m_hsm_test = std::make_unique<HsmTest>(m_actions);
+        m_hsm_test = std::make_unique<TestHsm>(m_actions);
 
         // Initial Transitions
-        EXPECT_EQ(Top, m_hsm_test->state());
+        EXPECT_EQ(Top_Id, m_hsm_test->state_id());
         EXPECT_CALL(m_actions, top_entry());
         EXPECT_CALL(m_actions, top_init());
         EXPECT_CALL(m_actions, s1_entry());
         EXPECT_CALL(m_actions, s1_init());
         EXPECT_CALL(m_actions, s11_entry());
-        m_hsm_test->on_start();
-        EXPECT_EQ(S11, m_hsm_test->state());
+        m_hsm_test->init();
+        EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 
         // s1-C
         EXPECT_CALL(m_actions, s1_c());
@@ -526,31 +530,31 @@ protected:
         EXPECT_CALL(m_actions, s21_entry());
         EXPECT_CALL(m_actions, s21_init());
         EXPECT_CALL(m_actions, s211_entry());
-        m_hsm_test->on_event(&C);
-        EXPECT_EQ(S211, m_hsm_test->state());
+        m_hsm_test->dispatch(&C);
+        EXPECT_EQ(S211_Id, m_hsm_test->state_id());
     }
 
     // void TearDown() override {}
     testing::StrictMock<MockActions> m_actions;
-    std::unique_ptr<HsmTest> m_hsm_test;
+    std::unique_ptr<TestHsm> m_hsm_test;
 };
 
-TEST_F(HsmTestFixtureS211, s211_A)
+TEST_F(TestHsmFixtureS211, s211_A)
 {
-    m_hsm_test->on_event(&A);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&A);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, s211_B)
+TEST_F(TestHsmFixtureS211, s211_B)
 {
     EXPECT_CALL(m_actions, s21_b());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&B);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&B);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, s211_C)
+TEST_F(TestHsmFixtureS211, s211_C)
 {
     EXPECT_CALL(m_actions, s2_c());
     EXPECT_CALL(m_actions, s211_exit());
@@ -559,21 +563,21 @@ TEST_F(HsmTestFixtureS211, s211_C)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&C);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&C);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, s211_D)
+TEST_F(TestHsmFixtureS211, s211_D)
 {
     EXPECT_CALL(m_actions, s211_d());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->on_event(&D);
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&D);
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, s211_F)
+TEST_F(TestHsmFixtureS211, s211_F)
 {
     EXPECT_CALL(m_actions, s2_f());
     EXPECT_CALL(m_actions, s211_exit());
@@ -581,10 +585,11 @@ TEST_F(HsmTestFixtureS211, s211_F)
     EXPECT_CALL(m_actions, s2_exit());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&F);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&F);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
-TEST_F(HsmTestFixtureS211, s211_G)
+
+TEST_F(TestHsmFixtureS211, s211_G)
 {
     EXPECT_CALL(m_actions, s211_g());
     EXPECT_CALL(m_actions, s211_exit());
@@ -594,37 +599,37 @@ TEST_F(HsmTestFixtureS211, s211_G)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&G);
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&G);
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, s211_H)
+TEST_F(TestHsmFixtureS211, s211_H)
 {
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->my_foo());
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
-    m_hsm_test->on_event(&H);
-    EXPECT_EQ(1, m_hsm_test->my_foo());
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&H);
+    EXPECT_EQ(1, m_hsm_test->foo());
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
-TEST_F(HsmTestFixtureS211, my_foo)
+TEST_F(TestHsmFixtureS211, foo)
 {
-    // set my_foo = 1
+    // set foo = 1
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->my_foo());
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
-    m_hsm_test->on_event(&H);
-    EXPECT_EQ(1, m_hsm_test->my_foo());
-    EXPECT_EQ(S211, m_hsm_test->state());
+    m_hsm_test->dispatch(&H);
+    EXPECT_EQ(1, m_hsm_test->foo());
+    EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 
     // transition to s11
     EXPECT_CALL(m_actions, s211_g());
@@ -635,13 +640,13 @@ TEST_F(HsmTestFixtureS211, my_foo)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->on_event(&G);
+    m_hsm_test->dispatch(&G);
 
-    // my_foo set to 0
-    EXPECT_EQ(S11, m_hsm_test->state());
-    EXPECT_EQ(1, m_hsm_test->my_foo());
+    // foo set to 0
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
+    EXPECT_EQ(1, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s11_h());
-    m_hsm_test->on_event(&H);
-    EXPECT_EQ(0, m_hsm_test->my_foo());
-    EXPECT_EQ(S11, m_hsm_test->state());
+    m_hsm_test->dispatch(&H);
+    EXPECT_EQ(0, m_hsm_test->foo());
+    EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
