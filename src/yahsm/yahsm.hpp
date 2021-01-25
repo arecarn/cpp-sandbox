@@ -144,10 +144,9 @@ struct Tran
         Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
 
         Exit_Stop = TargetBase_Derives_From_CurrentBase,
-        // && Source_Derives_From_Current,
 
         Entry_Stop = Source_Derives_From_Current
-            || (Source_Derives_From_CurrentBase && !Current_Derives_From_Source)
+            || (Source_Derives_From_CurrentBase)
     };
 
     // overloading is used to stop recursion. The more natural template
