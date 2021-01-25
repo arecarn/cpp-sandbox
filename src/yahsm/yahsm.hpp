@@ -143,7 +143,7 @@ struct Tran
 
         Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
 
-        Exit_Stop = TargetBase_Derives_From_CurrentBase,
+        Exit_Stop = TargetBase_Derives_From_CurrentBase || IsSame<CurrentBase, Target>::Value,
 
         Entry_Stop = Source_Derives_From_Current
             || (Source_Derives_From_CurrentBase)

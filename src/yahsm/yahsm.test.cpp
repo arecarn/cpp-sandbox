@@ -493,7 +493,6 @@ TEST_F(TestHsmFixtureS11, s11_A)
 {
     EXPECT_CALL(m_actions, s1_a());
     EXPECT_CALL(m_actions, s11_exit());
-    EXPECT_CALL(m_actions, s1_exit());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -647,7 +646,6 @@ TEST_F(TestHsmFixtureS211, s211_D)
 {
     EXPECT_CALL(m_actions, s211_d());
     EXPECT_CALL(m_actions, s211_exit());
-    EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
@@ -684,7 +682,6 @@ TEST_F(TestHsmFixtureS211, s211_G)
 TEST_F(TestHsmFixtureS211, s211_H)
 {
     EXPECT_CALL(m_actions, s211_exit());
-    EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
@@ -699,7 +696,6 @@ TEST_F(TestHsmFixtureS211, foo)
 {
     // set foo = 1
     EXPECT_CALL(m_actions, s211_exit());
-    EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
