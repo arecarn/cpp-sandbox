@@ -87,6 +87,7 @@ const LeafState<H, Id, B> LeafState<H, Id, B>::Obj;
 template <class D, class B>
 class IsDerivedFrom
 {
+private:
     class Yes
     {
         char m_a[1];
@@ -101,6 +102,18 @@ public:
     static constexpr char Res = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes))
         ? 1
         : 0;
+};
+
+template <class T, class U>
+struct IsSame
+{
+    static constexpr bool Value = false;
+};
+
+template <class T>
+struct IsSame<T, T>
+{
+    static constexpr bool Value = true;
 };
 
 template <bool>
@@ -118,6 +131,10 @@ struct Tran
 
     enum
     { // work out when to terminate template recursion
+        CurrentBase_Is_Target = IsSame<CurrentBase, Target>::Value,
+
+        Current_Is_Source = IsSame<Current, Source>::Value,
+
         TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Res,
 
         Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Res,
@@ -126,8 +143,8 @@ struct Tran
 
         Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
 
-        Exit_Stop = TargetBase_Derives_From_CurrentBase
-            && Source_Derives_From_Current,
+        Exit_Stop = TargetBase_Derives_From_CurrentBase,
+        // && Source_Derives_From_Current,
 
         Entry_Stop = Source_Derives_From_Current
             || (Source_Derives_From_CurrentBase && !Current_Derives_From_Source)

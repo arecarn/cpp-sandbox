@@ -505,7 +505,7 @@ TEST_F(TestHsmFixtureS11, s11_B)
 {
     EXPECT_CALL(m_actions, s1_b());
     EXPECT_CALL(m_actions, s11_exit());
-    EXPECT_CALL(m_actions, s1_exit());
+    // EXPECT_CALL(m_actions, s1_exit());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s11_entry());
     m_hsm_test->dispatch(Event::B);
@@ -626,7 +626,7 @@ TEST_F(TestHsmFixtureS211, s211_A)
 TEST_F(TestHsmFixtureS211, s211_B)
 {
     EXPECT_CALL(m_actions, s21_b());
-    EXPECT_CALL(m_actions, s21_exit());
+    // EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s211_entry());
