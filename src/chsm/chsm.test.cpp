@@ -73,12 +73,24 @@ public:
     {
         return m_foo;
     }
+
     Result<Event> top_handler(EventId event_id, Event const* event);
+    void top_entry();
+
     Result<Event> s1_handler(EventId event_id, Event const* event);
+    void s1_entry();
+
     Result<Event> s11_handler(EventId event_id, Event const* event);
+    void s11_entry();
+
     Result<Event> s2_handler(EventId event_id, Event const* event);
+    void s2_entry();
+
     Result<Event> s21_handler(EventId event_id, Event const* event);
+    void s21_entry();
+
     Result<Event> s211_handler(EventId event_id, Event const* event);
+    void s211_entry();
 };
 
 enum TestHsmEvents
@@ -102,11 +114,6 @@ Result<Event> TestHsm::top_handler(EventId event_id, Event const* /*unused*/)
             m_actions.top_init();
             break;
         }
-        case Event_Entry:
-        {
-            m_actions.top_entry();
-            break;
-        }
         case Event_Exit:
         {
             m_actions.top_exit();
@@ -123,6 +130,11 @@ Result<Event> TestHsm::top_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::top_entry()
+{
+    m_actions.top_entry();
+}
+
 Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
@@ -130,11 +142,6 @@ Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
         case Event_Init:
         {
             m_actions.s1_init();
-            break;
-        }
-        case Event_Entry:
-        {
-            m_actions.s1_entry();
             break;
         }
         case Event_Exit:
@@ -173,15 +180,15 @@ Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s1_entry()
+{
+    m_actions.s1_entry();
+}
+
 Result<Event> TestHsm::s11_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
     {
-        case Event_Entry:
-        {
-            m_actions.s11_entry();
-            break;
-        }
         case Event_Exit:
         {
             m_actions.s11_exit();
@@ -208,6 +215,11 @@ Result<Event> TestHsm::s11_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s11_entry()
+{
+    m_actions.s11_entry();
+}
+
 Result<Event> TestHsm::s2_handler(EventId event_id, Event const* /*unused*/)
 {
     switch (event_id)
@@ -215,11 +227,6 @@ Result<Event> TestHsm::s2_handler(EventId event_id, Event const* /*unused*/)
         case Event_Init:
         {
             m_actions.s2_init();
-            break;
-        }
-        case Event_Entry:
-        {
-            m_actions.s2_entry();
             break;
         }
         case Event_Exit:
@@ -243,6 +250,11 @@ Result<Event> TestHsm::s2_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s2_entry()
+{
+    m_actions.s2_entry();
+}
+
 Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
@@ -250,11 +262,6 @@ Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
         case Event_Init:
         {
             m_actions.s21_init();
-            break;
-        }
-        case Event_Entry:
-        {
-            m_actions.s21_entry();
             break;
         }
         case Event_Exit:
@@ -285,15 +292,15 @@ Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s21_entry()
+{
+    m_actions.s21_entry();
+}
+
 Result<Event> TestHsm::s211_handler(EventId event_id, Event const* /*event*/)
 {
     switch (event_id)
     {
-        case Event_Entry:
-        {
-            m_actions.s211_entry();
-            break;
-        }
         case Event_Exit:
         {
             m_actions.s211_exit();
@@ -315,6 +322,11 @@ Result<Event> TestHsm::s211_handler(EventId event_id, Event const* /*event*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s211_entry()
+{
+    m_actions.s211_entry();
+}
+
 enum StateDemoId : StateId
 {
     Top_Id,
@@ -325,17 +337,53 @@ enum StateDemoId : StateId
     S211_Id,
 };
 
+// clang-format off
 TestHsm::TestHsm(Actions& actions)
     : Hsm {m_top_state}
-    , m_top_state {Top_Id, nullptr, static_cast<EventHandler<Event>>(&TestHsm::top_handler), &m_s1_state}
-    , m_s1_state {S1_Id, &m_top_state, static_cast<EventHandler<Event>>(&TestHsm::s1_handler), &m_s11_state}
-    , m_s11_state {S11_Id, &m_s1_state, static_cast<EventHandler<Event>>(&TestHsm::s11_handler)}
-    , m_s2_state {S2_Id, &m_top_state, static_cast<EventHandler<Event>>(&TestHsm::s2_handler), &m_s21_state}
-    , m_s21_state {S21_Id, &m_s2_state, static_cast<EventHandler<Event>>(&TestHsm::s21_handler), &m_s211_state}
-    , m_s211_state {S211_Id, &m_s21_state, static_cast<EventHandler<Event>>(&TestHsm::s211_handler)}
+    , m_top_state {
+        Top_Id,
+        nullptr,
+        static_cast<EventHandler<Event>>(&TestHsm::top_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::top_entry),
+        &m_s1_state
+    }
+    , m_s1_state {
+        S1_Id,
+        &m_top_state,
+        static_cast<EventHandler<Event>>(&TestHsm::s1_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::s1_entry),
+        &m_s11_state
+    }
+    , m_s11_state {
+        S11_Id,
+        &m_s1_state,
+        static_cast<EventHandler<Event>>(&TestHsm::s11_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::s11_entry)
+    }
+    , m_s2_state {
+        S2_Id,
+        &m_top_state,
+        static_cast<EventHandler<Event>>(&TestHsm::s2_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::s2_entry),
+        &m_s21_state
+    }
+    , m_s21_state {
+        S21_Id,
+        &m_s2_state,
+        static_cast<EventHandler<Event>>(&TestHsm::s21_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::s21_entry),
+        &m_s211_state
+    }
+    , m_s211_state {
+        S211_Id,
+        &m_s21_state,
+        static_cast<EventHandler<Event>>(&TestHsm::s211_handler),
+        static_cast<EntryHandler<Event>>(&TestHsm::s211_entry)
+    }
     , m_actions {actions}
 {
 }
+// clang-format on
 
 // Test
 ////////////////////////////////////////////////////////////////////////////////

@@ -101,6 +101,15 @@ private:
 template <typename Event>
 using EventHandler = Result<Event> (Hsm<Event>::*)(EventId id, const Event*);
 
+template <typename Event>
+using EntryHandler = void (Hsm<Event>::*)();
+
+template <typename Event>
+using ExitHandler = void (Hsm<Event>::*)();
+
+template <typename Event>
+using InitHandler = void (Hsm<Event>::*)();
+
 // State
 ////////////////////////////////////////////////////////////////////////////////
 template <typename Event>
@@ -111,6 +120,7 @@ public:
         StateId id,
         State* super_state,
         EventHandler<Event> event_handler,
+        EntryHandler<Event> entry_handler,
         State* inital_state = nullptr);
 
     [[nodiscard]] StateId id() const
@@ -120,6 +130,11 @@ public:
     Result<Event> dispatch(Hsm<Event>* hsm, EventId id, Event const* event)
     {
         return (hsm->*m_event_handler)(id, event);
+    }
+
+    void entry(Hsm<Event>* hsm)
+    {
+        return (hsm->*m_entry_handler)();
     }
     State* inital_state() const
     {
@@ -133,6 +148,7 @@ public:
 private:
     State* const m_super_state;
     EventHandler<Event> m_event_handler;
+    EntryHandler<Event> m_entry_handler;
     const StateId m_id;
     State* const m_inital_state;
 };
@@ -142,9 +158,11 @@ State<Event>::State(
     StateId id,
     State* super_state,
     EventHandler<Event> event_handler,
+    EntryHandler<Event> entry_handler,
     State* inital_state)
     : m_super_state(super_state)
     , m_event_handler(event_handler)
+    , m_entry_handler(entry_handler)
     , m_id(id)
     , m_inital_state(inital_state)
 {
@@ -187,7 +205,7 @@ Hsm<Event>::Hsm(State<Event>& inital_state)
 template <typename Event>
 void Hsm<Event>::init()
 {
-    m_current_state->dispatch(this, Event_Entry, nullptr);
+    m_current_state->entry(this);
     init_state();
 }
 
@@ -251,7 +269,7 @@ void Hsm<Event>::enter_from_lca()
     while (*trace != nullptr)
     {
         // retrace the entry
-        (*trace)->dispatch(this, Event_Entry, nullptr);
+        (*trace)->entry(this);
         --trace;
     }
     m_current_state = m_next_state;
