@@ -33,6 +33,7 @@ state Top {
             S21 -> S21: B / if !foo: foo = 1
             state S211 {
                 S211 -u-> Top: G
+                S211 -u-> S21: D
             }
         }
     }
