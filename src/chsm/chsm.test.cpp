@@ -44,6 +44,19 @@ public:
     virtual ~Actions() = default;
 };
 
+enum TestHsmEvents : int
+{
+    Event_A,
+    Event_B,
+    Event_C,
+    Event_D,
+    Event_E,
+    Event_F,
+    Event_G,
+    Event_H,
+    Event_Invalid,
+};
+
 struct Event
 {
     int id;
@@ -52,7 +65,7 @@ struct Event
 class TestHsm : public Hsm
 {
     int m_foo {0};
-    Event m_event;
+    Event m_event {Event_Invalid};
 
 protected:
     State m_top_state;
@@ -72,7 +85,7 @@ public:
         handle();
     }
 
-    Event event()
+    [[nodiscard]] Event event() const
     {
         return m_event;
     }
@@ -111,18 +124,6 @@ public:
     void s211_exit();
 };
 
-enum TestHsmEvents
-{
-    Event_A,
-    Event_B,
-    Event_C,
-    Event_D,
-    Event_E,
-    Event_F,
-    Event_G,
-    Event_H
-};
-
 // Top
 ////////////////////////////////////////////////////////////////////////////////
 Result TestHsm::top_handler()
@@ -140,14 +141,14 @@ Result TestHsm::top_handler()
     return Result {Handled {}};
 }
 
-void TestHsm::top_entry()
-{
-    m_actions.top_entry();
-}
-
 void TestHsm::top_init()
 {
     m_actions.top_init();
+}
+
+void TestHsm::top_entry()
+{
+    m_actions.top_entry();
 }
 
 void TestHsm::top_exit()
@@ -266,14 +267,14 @@ Result TestHsm::s2_handler()
     return Result {Handled {}};
 }
 
-void TestHsm::s2_entry()
-{
-    m_actions.s2_entry();
-}
-
 void TestHsm::s2_init()
 {
     m_actions.s2_init();
+}
+
+void TestHsm::s2_entry()
+{
+    m_actions.s2_entry();
 }
 
 void TestHsm::s2_exit()

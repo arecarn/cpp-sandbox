@@ -186,7 +186,7 @@ State::State(
 class Hsm
 {
 public:
-    explicit Hsm(State& inital);
+    explicit Hsm(State& inital_state);
     void init(); /// enter and start the top state
     void handle();
     [[nodiscard]] StateId state_id() const
@@ -195,14 +195,14 @@ public:
     }
 
 private:
-    uint8_t levels_to_lca(State* source, State* target);
+    static uint8_t levels_to_lca(State* source, State* target);
     void exit_to_lca(State* source, uint8_t levels_to_lca);
     void enter_from_lca();
     void init_state();
 
     State* m_current_state; /// current state
     State* m_next_state = nullptr; /// the next state if transition taken otherwise a nullptr
-    State* m_entry_path[Max_State_Nesting];
+    State* m_entry_path[Max_State_Nesting] = {nullptr};
 };
 
 /// HSM constructor
