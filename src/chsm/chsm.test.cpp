@@ -49,14 +49,10 @@ struct Event
     int id;
 };
 
-EventId to_event_id(const Event& event)
-{
-    return event.id;
-}
-
 class TestHsm : public Hsm<Event>
 {
     int m_foo {0};
+    Event m_event;
 
 protected:
     State<Event> m_top_state;
@@ -69,28 +65,50 @@ protected:
 
 public:
     explicit TestHsm(Actions& actions);
+
+    void dispatch(Event event)
+    {
+        m_event = event;
+        handle();
+    }
+
+    Event event()
+    {
+        return m_event;
+    }
+
     [[nodiscard]] int foo() const
     {
         return m_foo;
     }
 
-    Result<Event> top_handler(EventId event_id, Event const* event);
+    Result<Event> top_handler();
     void top_entry();
+    void top_init();
+    void top_exit();
 
-    Result<Event> s1_handler(EventId event_id, Event const* event);
+    Result<Event> s1_handler();
     void s1_entry();
+    void s1_init();
+    void s1_exit();
 
-    Result<Event> s11_handler(EventId event_id, Event const* event);
+    Result<Event> s11_handler();
     void s11_entry();
+    void s11_exit();
 
-    Result<Event> s2_handler(EventId event_id, Event const* event);
+    Result<Event> s2_handler();
     void s2_entry();
+    void s2_init();
+    void s2_exit();
 
-    Result<Event> s21_handler(EventId event_id, Event const* event);
+    Result<Event> s21_handler();
     void s21_entry();
+    void s21_init();
+    void s21_exit();
 
-    Result<Event> s211_handler(EventId event_id, Event const* event);
+    Result<Event> s211_handler();
     void s211_entry();
+    void s211_exit();
 };
 
 enum TestHsmEvents
@@ -105,20 +123,12 @@ enum TestHsmEvents
     Event_H
 };
 
-Result<Event> TestHsm::top_handler(EventId event_id, Event const* /*unused*/)
+// Top
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::top_handler()
 {
-    switch (event_id)
+    switch (event().id)
     {
-        case Event_Init:
-        {
-            m_actions.top_init();
-            break;
-        }
-        case Event_Exit:
-        {
-            m_actions.top_exit();
-            break;
-        }
         case Event_E:
         {
             m_actions.top_e();
@@ -135,20 +145,22 @@ void TestHsm::top_entry()
     m_actions.top_entry();
 }
 
-Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
+void TestHsm::top_init()
 {
-    switch (event_id)
+    m_actions.top_init();
+}
+
+void TestHsm::top_exit()
+{
+    m_actions.top_exit();
+}
+
+// S1
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::s1_handler()
+{
+    switch (event().id)
     {
-        case Event_Init:
-        {
-            m_actions.s1_init();
-            break;
-        }
-        case Event_Exit:
-        {
-            m_actions.s1_exit();
-            break;
-        }
         case Event_A:
         {
             m_actions.s1_a();
@@ -180,20 +192,27 @@ Result<Event> TestHsm::s1_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s1_init()
+{
+    m_actions.s1_init();
+}
+
 void TestHsm::s1_entry()
 {
     m_actions.s1_entry();
 }
 
-Result<Event> TestHsm::s11_handler(EventId event_id, Event const* /*unused*/)
+void TestHsm::s1_exit()
 {
-    switch (event_id)
+    m_actions.s1_exit();
+}
+
+// S11
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::s11_handler()
+{
+    switch (event().id)
     {
-        case Event_Exit:
-        {
-            m_actions.s11_exit();
-            break;
-        }
         case Event_G:
         {
             m_actions.s11_g();
@@ -215,25 +234,22 @@ Result<Event> TestHsm::s11_handler(EventId event_id, Event const* /*unused*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s11_exit()
+{
+    m_actions.s11_exit();
+}
+
 void TestHsm::s11_entry()
 {
     m_actions.s11_entry();
 }
 
-Result<Event> TestHsm::s2_handler(EventId event_id, Event const* /*unused*/)
+// S2
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::s2_handler()
 {
-    switch (event_id)
+    switch (event().id)
     {
-        case Event_Init:
-        {
-            m_actions.s2_init();
-            break;
-        }
-        case Event_Exit:
-        {
-            m_actions.s2_exit();
-            break;
-        }
         case Event_C:
         {
             m_actions.s2_c();
@@ -255,20 +271,22 @@ void TestHsm::s2_entry()
     m_actions.s2_entry();
 }
 
-Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
+void TestHsm::s2_init()
 {
-    switch (event_id)
+    m_actions.s2_init();
+}
+
+void TestHsm::s2_exit()
+{
+    m_actions.s2_exit();
+}
+
+// S21
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::s21_handler()
+{
+    switch (event().id)
     {
-        case Event_Init:
-        {
-            m_actions.s21_init();
-            break;
-        }
-        case Event_Exit:
-        {
-            m_actions.s21_exit();
-            break;
-        }
         case Event_B:
         {
             m_actions.s21_b();
@@ -292,20 +310,27 @@ Result<Event> TestHsm::s21_handler(EventId event_id, Event const* /*event*/)
     return Result<Event> {Handled {}};
 }
 
+void TestHsm::s21_init()
+{
+    m_actions.s21_init();
+}
+
 void TestHsm::s21_entry()
 {
     m_actions.s21_entry();
 }
 
-Result<Event> TestHsm::s211_handler(EventId event_id, Event const* /*event*/)
+void TestHsm::s21_exit()
 {
-    switch (event_id)
+    m_actions.s21_exit();
+}
+
+// S211
+////////////////////////////////////////////////////////////////////////////////
+Result<Event> TestHsm::s211_handler()
+{
+    switch (event().id)
     {
-        case Event_Exit:
-        {
-            m_actions.s211_exit();
-            break;
-        }
         case Event_D:
         {
             m_actions.s211_d();
@@ -327,6 +352,11 @@ void TestHsm::s211_entry()
     m_actions.s211_entry();
 }
 
+void TestHsm::s211_exit()
+{
+    m_actions.s211_exit();
+}
+
 enum StateDemoId : StateId
 {
     Top_Id,
@@ -344,41 +374,53 @@ TestHsm::TestHsm(Actions& actions)
         Top_Id,
         nullptr,
         static_cast<EventHandler<Event>>(&TestHsm::top_handler),
+        static_cast<InitHandler<Event>>(&TestHsm::top_init),
         static_cast<EntryHandler<Event>>(&TestHsm::top_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::top_exit),
         &m_s1_state
     }
     , m_s1_state {
         S1_Id,
         &m_top_state,
         static_cast<EventHandler<Event>>(&TestHsm::s1_handler),
+        static_cast<InitHandler<Event>>(&TestHsm::s1_init),
         static_cast<EntryHandler<Event>>(&TestHsm::s1_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::s1_exit),
         &m_s11_state
     }
     , m_s11_state {
         S11_Id,
         &m_s1_state,
         static_cast<EventHandler<Event>>(&TestHsm::s11_handler),
-        static_cast<EntryHandler<Event>>(&TestHsm::s11_entry)
+        InitHandler<Event>{nullptr},
+        static_cast<EntryHandler<Event>>(&TestHsm::s11_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::s11_exit)
     }
     , m_s2_state {
         S2_Id,
         &m_top_state,
         static_cast<EventHandler<Event>>(&TestHsm::s2_handler),
+        static_cast<InitHandler<Event>>(&TestHsm::s2_init),
         static_cast<EntryHandler<Event>>(&TestHsm::s2_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::s2_exit),
         &m_s21_state
     }
     , m_s21_state {
         S21_Id,
         &m_s2_state,
         static_cast<EventHandler<Event>>(&TestHsm::s21_handler),
+        static_cast<InitHandler<Event>>(&TestHsm::s21_init),
         static_cast<EntryHandler<Event>>(&TestHsm::s21_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::s21_exit),
         &m_s211_state
     }
     , m_s211_state {
         S211_Id,
         &m_s21_state,
         static_cast<EventHandler<Event>>(&TestHsm::s211_handler),
-        static_cast<EntryHandler<Event>>(&TestHsm::s211_entry)
+        InitHandler<Event>{nullptr},
+        static_cast<EntryHandler<Event>>(&TestHsm::s211_entry),
+        static_cast<ExitHandler<Event>>(&TestHsm::s211_exit)
     }
     , m_actions {actions}
 {
@@ -467,7 +509,7 @@ TEST_F(TestHsmFixtureS11, s11_A)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&A);
+    m_hsm_test->dispatch(A);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -476,7 +518,7 @@ TEST_F(TestHsmFixtureS11, s11_B)
     EXPECT_CALL(m_actions, s1_b());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&B);
+    m_hsm_test->dispatch(B);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -490,7 +532,7 @@ TEST_F(TestHsmFixtureS11, s11_C)
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&C);
+    m_hsm_test->dispatch(C);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -503,7 +545,7 @@ TEST_F(TestHsmFixtureS11, s11_D)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&D);
+    m_hsm_test->dispatch(D);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -515,7 +557,7 @@ TEST_F(TestHsmFixtureS11, s11_E)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&E);
+    m_hsm_test->dispatch(E);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -527,7 +569,7 @@ TEST_F(TestHsmFixtureS11, s11_F)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&F);
+    m_hsm_test->dispatch(F);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -539,7 +581,7 @@ TEST_F(TestHsmFixtureS11, s11_G)
     EXPECT_CALL(m_actions, s2_entry());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&G);
+    m_hsm_test->dispatch(G);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -547,7 +589,7 @@ TEST_F(TestHsmFixtureS11, s11_H)
 {
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
     EXPECT_EQ(0, m_hsm_test->foo());
-    m_hsm_test->dispatch(&H);
+    m_hsm_test->dispatch(H);
     EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
@@ -578,7 +620,7 @@ protected:
         EXPECT_CALL(m_actions, s21_entry());
         EXPECT_CALL(m_actions, s21_init());
         EXPECT_CALL(m_actions, s211_entry());
-        m_hsm_test->dispatch(&C);
+        m_hsm_test->dispatch(C);
         EXPECT_EQ(S211_Id, m_hsm_test->state_id());
     }
 
@@ -589,7 +631,7 @@ protected:
 
 TEST_F(TestHsmFixtureS211, s211_A)
 {
-    m_hsm_test->dispatch(&A);
+    m_hsm_test->dispatch(A);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -598,7 +640,7 @@ TEST_F(TestHsmFixtureS211, s211_B)
     EXPECT_CALL(m_actions, s21_b());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&B);
+    m_hsm_test->dispatch(B);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -611,7 +653,7 @@ TEST_F(TestHsmFixtureS211, s211_C)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&C);
+    m_hsm_test->dispatch(C);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -621,7 +663,7 @@ TEST_F(TestHsmFixtureS211, s211_D)
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    m_hsm_test->dispatch(&D);
+    m_hsm_test->dispatch(D);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
 
@@ -633,7 +675,7 @@ TEST_F(TestHsmFixtureS211, s211_F)
     EXPECT_CALL(m_actions, s2_exit());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&F);
+    m_hsm_test->dispatch(F);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -647,7 +689,7 @@ TEST_F(TestHsmFixtureS211, s211_G)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&G);
+    m_hsm_test->dispatch(G);
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }
 
@@ -660,7 +702,7 @@ TEST_F(TestHsmFixtureS211, s211_H)
     EXPECT_CALL(m_actions, s211_entry());
     EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
-    m_hsm_test->dispatch(&H);
+    m_hsm_test->dispatch(H);
     EXPECT_EQ(1, m_hsm_test->foo());
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 }
@@ -675,7 +717,7 @@ TEST_F(TestHsmFixtureS211, foo)
     EXPECT_CALL(m_actions, s211_entry());
     EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
-    m_hsm_test->dispatch(&H);
+    m_hsm_test->dispatch(H);
     EXPECT_EQ(1, m_hsm_test->foo());
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
 
@@ -688,13 +730,13 @@ TEST_F(TestHsmFixtureS211, foo)
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
-    m_hsm_test->dispatch(&G);
+    m_hsm_test->dispatch(G);
 
     // foo set to 0
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
     EXPECT_EQ(1, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s11_h());
-    m_hsm_test->dispatch(&H);
+    m_hsm_test->dispatch(H);
     EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_EQ(S11_Id, m_hsm_test->state_id());
 }

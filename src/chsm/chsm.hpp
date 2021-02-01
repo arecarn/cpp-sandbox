@@ -15,10 +15,6 @@ class State;
 using EventId = int32_t;
 using StateId = int32_t;
 
-[[maybe_unused]] constexpr EventId Event_Init {-1};
-[[maybe_unused]] constexpr EventId Event_Entry {-2};
-[[maybe_unused]] constexpr EventId Event_Exit {-3};
-
 // Result
 ////////////////////////////////////////////////////////////////////////////////
 class Unhandled
@@ -99,16 +95,16 @@ private:
 // EventHandler
 ////////////////////////////////////////////////////////////////////////////////
 template <typename Event>
-using EventHandler = Result<Event> (Hsm<Event>::*)(EventId id, const Event*);
+using EventHandler = Result<Event> (Hsm<Event>::*)();
 
 template <typename Event>
 using EntryHandler = void (Hsm<Event>::*)();
 
 template <typename Event>
-using ExitHandler = void (Hsm<Event>::*)();
+using InitHandler = void (Hsm<Event>::*)();
 
 template <typename Event>
-using InitHandler = void (Hsm<Event>::*)();
+using ExitHandler = void (Hsm<Event>::*)();
 
 // State
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,22 +116,44 @@ public:
         StateId id,
         State* super_state,
         EventHandler<Event> event_handler,
+        EntryHandler<Event> init_handler,
         EntryHandler<Event> entry_handler,
+        EntryHandler<Event> exit_handler,
         State* inital_state = nullptr);
 
     [[nodiscard]] StateId id() const
     {
         return m_id;
     }
-    Result<Event> dispatch(Hsm<Event>* hsm, EventId id, Event const* event)
+    Result<Event> handle(Hsm<Event>* hsm)
     {
-        return (hsm->*m_event_handler)(id, event);
+        return (hsm->*m_event_handler)();
     }
 
     void entry(Hsm<Event>* hsm)
     {
-        return (hsm->*m_entry_handler)();
+        if (m_entry_handler != nullptr)
+        {
+            (hsm->*m_entry_handler)();
+        }
     }
+
+    void init(Hsm<Event>* hsm)
+    {
+        if (m_init_handler != nullptr)
+        {
+            (hsm->*m_init_handler)();
+        }
+    }
+
+    void exit(Hsm<Event>* hsm)
+    {
+        if (m_exit_handler != nullptr)
+        {
+            (hsm->*m_exit_handler)();
+        }
+    }
+
     State* inital_state() const
     {
         return m_inital_state;
@@ -148,7 +166,9 @@ public:
 private:
     State* const m_super_state;
     EventHandler<Event> m_event_handler;
+    InitHandler<Event> m_init_handler;
     EntryHandler<Event> m_entry_handler;
+    ExitHandler<Event> m_exit_handler;
     const StateId m_id;
     State* const m_inital_state;
 };
@@ -158,11 +178,15 @@ State<Event>::State(
     StateId id,
     State* super_state,
     EventHandler<Event> event_handler,
+    InitHandler<Event> init_handler,
     EntryHandler<Event> entry_handler,
+    ExitHandler<Event> exit_handler,
     State* inital_state)
     : m_super_state(super_state)
     , m_event_handler(event_handler)
+    , m_init_handler(init_handler)
     , m_entry_handler(entry_handler)
+    , m_exit_handler(exit_handler)
     , m_id(id)
     , m_inital_state(inital_state)
 {
@@ -176,7 +200,7 @@ class Hsm
 public:
     explicit Hsm(State<Event>& inital);
     void init(); /// enter and start the top state
-    void dispatch(Event const* event);
+    void handle();
     [[nodiscard]] StateId state_id() const
     {
         return m_current_state->id();
@@ -215,7 +239,7 @@ void Hsm<Event>::init_state()
     // perform init events till there are no more transitions
     while (true)
     {
-        m_current_state->dispatch(this, Event_Init, nullptr);
+        m_current_state->init(this);
         if (m_current_state->inital_state() != nullptr)
         {
             assert(m_next_state == nullptr);
@@ -234,12 +258,12 @@ void Hsm<Event>::init_state()
 }
 
 template <typename Event>
-void Hsm<Event>::dispatch(Event const* event)
+void Hsm<Event>::handle()
 {
     // try to handle events walking up the inheritance chain if not handled
     for (auto s = m_current_state; s != nullptr; s = s->super_state())
     {
-        auto result = s->dispatch(this, to_event_id(*event), event);
+        auto result = s->handle(this);
         if (result.event_was_handeled())
         {
             if (result.has_transition())
@@ -283,12 +307,12 @@ void Hsm<Event>::exit_to_lca(State<Event>* source, uint8_t levels_to_lca)
     State<Event>* s = m_current_state;
     while (s != source)
     {
-        s->dispatch(this, Event_Exit, nullptr);
+        s->exit(this);
         s = s->super_state();
     }
     while (levels_to_lca != 0)
     {
-        s->dispatch(this, Event_Exit, nullptr);
+        s->exit(this);
         s = s->super_state();
         --levels_to_lca;
     }
