@@ -49,18 +49,18 @@ struct Event
     int id;
 };
 
-class TestHsm : public Hsm<Event>
+class TestHsm : public Hsm
 {
     int m_foo {0};
     Event m_event;
 
 protected:
-    State<Event> m_top_state;
-    State<Event> m_s1_state;
-    State<Event> m_s11_state;
-    State<Event> m_s2_state;
-    State<Event> m_s21_state;
-    State<Event> m_s211_state;
+    State m_top_state;
+    State m_s1_state;
+    State m_s11_state;
+    State m_s2_state;
+    State m_s21_state;
+    State m_s211_state;
     Actions& m_actions;
 
 public:
@@ -82,31 +82,31 @@ public:
         return m_foo;
     }
 
-    Result<Event> top_handler();
+    Result top_handler();
     void top_entry();
     void top_init();
     void top_exit();
 
-    Result<Event> s1_handler();
+    Result s1_handler();
     void s1_entry();
     void s1_init();
     void s1_exit();
 
-    Result<Event> s11_handler();
+    Result s11_handler();
     void s11_entry();
     void s11_exit();
 
-    Result<Event> s2_handler();
+    Result s2_handler();
     void s2_entry();
     void s2_init();
     void s2_exit();
 
-    Result<Event> s21_handler();
+    Result s21_handler();
     void s21_entry();
     void s21_init();
     void s21_exit();
 
-    Result<Event> s211_handler();
+    Result s211_handler();
     void s211_entry();
     void s211_exit();
 };
@@ -125,19 +125,19 @@ enum TestHsmEvents
 
 // Top
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::top_handler()
+Result TestHsm::top_handler()
 {
     switch (event().id)
     {
         case Event_E:
         {
             m_actions.top_e();
-            return Result<Event> {Transition<Event> {m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::top_entry()
@@ -157,39 +157,39 @@ void TestHsm::top_exit()
 
 // S1
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::s1_handler()
+Result TestHsm::s1_handler()
 {
     switch (event().id)
     {
         case Event_A:
         {
             m_actions.s1_a();
-            return Result<Event> {Transition<Event> {m_s1_state}};
+            return Result {Transition {m_s1_state}};
         }
         case Event_B:
         {
             m_actions.s1_b();
-            return Result<Event> {Transition<Event> {m_s11_state}};
+            return Result {Transition {m_s11_state}};
         }
         case Event_C:
         {
             m_actions.s1_c();
-            return Result<Event> {Transition<Event> {m_s2_state}};
+            return Result {Transition {m_s2_state}};
         }
         case Event_D:
         {
             m_actions.s1_d();
-            return Result<Event> {Transition<Event> {m_top_state}};
+            return Result {Transition {m_top_state}};
         }
         case Event_F:
         {
             m_actions.s1_f();
-            return Result<Event> {Transition<Event> {m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s1_init()
@@ -209,14 +209,14 @@ void TestHsm::s1_exit()
 
 // S11
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::s11_handler()
+Result TestHsm::s11_handler()
 {
     switch (event().id)
     {
         case Event_G:
         {
             m_actions.s11_g();
-            return Result<Event> {Transition<Event> {m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         break;
         case Event_H:
@@ -229,9 +229,9 @@ Result<Event> TestHsm::s11_handler()
             break;
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s11_exit()
@@ -246,24 +246,24 @@ void TestHsm::s11_entry()
 
 // S2
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::s2_handler()
+Result TestHsm::s2_handler()
 {
     switch (event().id)
     {
         case Event_C:
         {
             m_actions.s2_c();
-            return Result<Event> {Transition<Event> {m_s1_state}};
+            return Result {Transition {m_s1_state}};
         }
         case Event_F:
         {
             m_actions.s2_f();
-            return Result<Event> {Transition<Event> {m_s11_state}};
+            return Result {Transition {m_s11_state}};
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s2_entry()
@@ -283,14 +283,14 @@ void TestHsm::s2_exit()
 
 // S21
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::s21_handler()
+Result TestHsm::s21_handler()
 {
     switch (event().id)
     {
         case Event_B:
         {
             m_actions.s21_b();
-            return Result<Event> {Transition<Event> {m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         case Event_H:
         {
@@ -299,15 +299,15 @@ Result<Event> TestHsm::s21_handler()
                 m_actions.s21_h();
                 m_foo = 1;
                 {
-                    return Result<Event> {Transition<Event> {m_s21_state}};
+                    return Result {Transition {m_s21_state}};
                 }
             }
             break;
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s21_init()
@@ -327,24 +327,24 @@ void TestHsm::s21_exit()
 
 // S211
 ////////////////////////////////////////////////////////////////////////////////
-Result<Event> TestHsm::s211_handler()
+Result TestHsm::s211_handler()
 {
     switch (event().id)
     {
         case Event_D:
         {
             m_actions.s211_d();
-            return Result<Event> {Transition<Event> {m_s21_state}};
+            return Result {Transition {m_s21_state}};
         }
         case Event_G:
         {
             m_actions.s211_g();
-            return Result<Event> {Transition<Event> {m_top_state}};
+            return Result {Transition {m_top_state}};
         }
         default:
-            return Result<Event> {Unhandled {}};
+            return Result {Unhandled {}};
     }
-    return Result<Event> {Handled {}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s211_entry()
@@ -373,54 +373,54 @@ TestHsm::TestHsm(Actions& actions)
     , m_top_state {
         Top_Id,
         nullptr,
-        static_cast<EventHandler<Event>>(&TestHsm::top_handler),
-        static_cast<InitHandler<Event>>(&TestHsm::top_init),
-        static_cast<EntryHandler<Event>>(&TestHsm::top_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::top_exit),
+        static_cast<EventHandler>(&TestHsm::top_handler),
+        static_cast<InitHandler>(&TestHsm::top_init),
+        static_cast<EntryHandler>(&TestHsm::top_entry),
+        static_cast<ExitHandler>(&TestHsm::top_exit),
         &m_s1_state
     }
     , m_s1_state {
         S1_Id,
         &m_top_state,
-        static_cast<EventHandler<Event>>(&TestHsm::s1_handler),
-        static_cast<InitHandler<Event>>(&TestHsm::s1_init),
-        static_cast<EntryHandler<Event>>(&TestHsm::s1_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::s1_exit),
+        static_cast<EventHandler>(&TestHsm::s1_handler),
+        static_cast<InitHandler>(&TestHsm::s1_init),
+        static_cast<EntryHandler>(&TestHsm::s1_entry),
+        static_cast<ExitHandler>(&TestHsm::s1_exit),
         &m_s11_state
     }
     , m_s11_state {
         S11_Id,
         &m_s1_state,
-        static_cast<EventHandler<Event>>(&TestHsm::s11_handler),
-        InitHandler<Event>{nullptr},
-        static_cast<EntryHandler<Event>>(&TestHsm::s11_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::s11_exit)
+        static_cast<EventHandler>(&TestHsm::s11_handler),
+        InitHandler{nullptr},
+        static_cast<EntryHandler>(&TestHsm::s11_entry),
+        static_cast<ExitHandler>(&TestHsm::s11_exit)
     }
     , m_s2_state {
         S2_Id,
         &m_top_state,
-        static_cast<EventHandler<Event>>(&TestHsm::s2_handler),
-        static_cast<InitHandler<Event>>(&TestHsm::s2_init),
-        static_cast<EntryHandler<Event>>(&TestHsm::s2_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::s2_exit),
+        static_cast<EventHandler>(&TestHsm::s2_handler),
+        static_cast<InitHandler>(&TestHsm::s2_init),
+        static_cast<EntryHandler>(&TestHsm::s2_entry),
+        static_cast<ExitHandler>(&TestHsm::s2_exit),
         &m_s21_state
     }
     , m_s21_state {
         S21_Id,
         &m_s2_state,
-        static_cast<EventHandler<Event>>(&TestHsm::s21_handler),
-        static_cast<InitHandler<Event>>(&TestHsm::s21_init),
-        static_cast<EntryHandler<Event>>(&TestHsm::s21_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::s21_exit),
+        static_cast<EventHandler>(&TestHsm::s21_handler),
+        static_cast<InitHandler>(&TestHsm::s21_init),
+        static_cast<EntryHandler>(&TestHsm::s21_entry),
+        static_cast<ExitHandler>(&TestHsm::s21_exit),
         &m_s211_state
     }
     , m_s211_state {
         S211_Id,
         &m_s21_state,
-        static_cast<EventHandler<Event>>(&TestHsm::s211_handler),
-        InitHandler<Event>{nullptr},
-        static_cast<EntryHandler<Event>>(&TestHsm::s211_entry),
-        static_cast<ExitHandler<Event>>(&TestHsm::s211_exit)
+        static_cast<EventHandler>(&TestHsm::s211_handler),
+        InitHandler{nullptr},
+        static_cast<EntryHandler>(&TestHsm::s211_entry),
+        static_cast<ExitHandler>(&TestHsm::s211_exit)
     }
     , m_actions {actions}
 {

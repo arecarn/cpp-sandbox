@@ -6,13 +6,10 @@
 
 constexpr uint8_t Max_State_Nesting = 255;
 
-template <typename Event>
 class Hsm;
 
-template <typename Event>
 class State;
 
-using EventId = int32_t;
 using StateId = int32_t;
 
 // Result
@@ -25,27 +22,25 @@ class Handled
 {
 };
 
-template <typename Event>
 class Transition
 {
 public:
     Transition() = default;
 
-    explicit Transition(State<Event>& target)
+    explicit Transition(State& target)
         : m_target {&target}
     {
     }
 
-    State<Event>* target() const
+    State* target() const
     {
         return m_target;
     }
 
 private:
-    State<Event>* const m_target {nullptr};
+    State* const m_target {nullptr};
 };
 
-template <typename Event>
 class Result
 {
 public:
@@ -66,7 +61,7 @@ public:
     {
     }
 
-    explicit Result(Transition<Event> transition)
+    explicit Result(Transition transition)
         : m_state {State::Transition}
         , m_transition {transition}
     {
@@ -82,55 +77,50 @@ public:
         return m_state == State::Transition;
     }
 
-    [[nodiscard]] Transition<Event>& transition()
+    [[nodiscard]] Transition& transition()
     {
         return m_transition;
     }
 
 private:
     State m_state = State::Unhandled;
-    Transition<Event> m_transition;
+    Transition m_transition;
 };
 
 // EventHandler
 ////////////////////////////////////////////////////////////////////////////////
-template <typename Event>
-using EventHandler = Result<Event> (Hsm<Event>::*)();
+using EventHandler = Result (Hsm::*)();
 
-template <typename Event>
-using EntryHandler = void (Hsm<Event>::*)();
+using EntryHandler = void (Hsm::*)();
 
-template <typename Event>
-using InitHandler = void (Hsm<Event>::*)();
+using InitHandler = void (Hsm::*)();
 
-template <typename Event>
-using ExitHandler = void (Hsm<Event>::*)();
+using ExitHandler = void (Hsm::*)();
 
 // State
 ////////////////////////////////////////////////////////////////////////////////
-template <typename Event>
 class State
 {
 public:
     State(
         StateId id,
         State* super_state,
-        EventHandler<Event> event_handler,
-        EntryHandler<Event> init_handler,
-        EntryHandler<Event> entry_handler,
-        EntryHandler<Event> exit_handler,
+        EventHandler event_handler,
+        EntryHandler init_handler,
+        EntryHandler entry_handler,
+        EntryHandler exit_handler,
         State* inital_state = nullptr);
 
     [[nodiscard]] StateId id() const
     {
         return m_id;
     }
-    Result<Event> handle(Hsm<Event>* hsm)
+    Result handle(Hsm* hsm)
     {
         return (hsm->*m_event_handler)();
     }
 
-    void entry(Hsm<Event>* hsm)
+    void entry(Hsm* hsm)
     {
         if (m_entry_handler != nullptr)
         {
@@ -138,7 +128,7 @@ public:
         }
     }
 
-    void init(Hsm<Event>* hsm)
+    void init(Hsm* hsm)
     {
         if (m_init_handler != nullptr)
         {
@@ -146,7 +136,7 @@ public:
         }
     }
 
-    void exit(Hsm<Event>* hsm)
+    void exit(Hsm* hsm)
     {
         if (m_exit_handler != nullptr)
         {
@@ -165,22 +155,21 @@ public:
 
 private:
     State* const m_super_state;
-    EventHandler<Event> m_event_handler;
-    InitHandler<Event> m_init_handler;
-    EntryHandler<Event> m_entry_handler;
-    ExitHandler<Event> m_exit_handler;
+    EventHandler m_event_handler;
+    InitHandler m_init_handler;
+    EntryHandler m_entry_handler;
+    ExitHandler m_exit_handler;
     const StateId m_id;
     State* const m_inital_state;
 };
 
-template <typename Event>
-State<Event>::State(
+State::State(
     StateId id,
     State* super_state,
-    EventHandler<Event> event_handler,
-    InitHandler<Event> init_handler,
-    EntryHandler<Event> entry_handler,
-    ExitHandler<Event> exit_handler,
+    EventHandler event_handler,
+    InitHandler init_handler,
+    EntryHandler entry_handler,
+    ExitHandler exit_handler,
     State* inital_state)
     : m_super_state(super_state)
     , m_event_handler(event_handler)
@@ -194,11 +183,10 @@ State<Event>::State(
 
 // Hierarchical State Machine
 ////////////////////////////////////////////////////////////////////////////////
-template <typename Event>
 class Hsm
 {
 public:
-    explicit Hsm(State<Event>& inital);
+    explicit Hsm(State& inital);
     void init(); /// enter and start the top state
     void handle();
     [[nodiscard]] StateId state_id() const
@@ -207,34 +195,30 @@ public:
     }
 
 private:
-    uint8_t levels_to_lca(State<Event>* source, State<Event>* target);
-    void exit_to_lca(State<Event>* source, uint8_t levels_to_lca);
+    uint8_t levels_to_lca(State* source, State* target);
+    void exit_to_lca(State* source, uint8_t levels_to_lca);
     void enter_from_lca();
     void init_state();
 
-    State<Event>* m_current_state; /// current state
-    State<Event>* m_next_state = nullptr; /// the next state if transition taken otherwise a nullptr
-    State<Event>* m_source_state = nullptr; /// source state during last transition
-    State<Event>* m_entry_path[Max_State_Nesting];
+    State* m_current_state; /// current state
+    State* m_next_state = nullptr; /// the next state if transition taken otherwise a nullptr
+    State* m_entry_path[Max_State_Nesting];
 };
 
 /// HSM constructor
-template <typename Event>
-Hsm<Event>::Hsm(State<Event>& inital_state)
+Hsm::Hsm(State& inital_state)
     : m_current_state {&inital_state}
 {
 }
 
 /// enters and starts the top state
-template <typename Event>
-void Hsm<Event>::init()
+void Hsm::init()
 {
     m_current_state->entry(this);
     init_state();
 }
 
-template <typename Event>
-void Hsm<Event>::init_state()
+void Hsm::init_state()
 {
     // perform init events till there are no more transitions
     while (true)
@@ -257,8 +241,7 @@ void Hsm<Event>::init_state()
     }
 }
 
-template <typename Event>
-void Hsm<Event>::handle()
+void Hsm::handle()
 {
     // try to handle events walking up the inheritance chain if not handled
     for (auto s = m_current_state; s != nullptr; s = s->super_state())
@@ -280,12 +263,11 @@ void Hsm<Event>::handle()
     }
 }
 
-template <typename Event>
-void Hsm<Event>::enter_from_lca()
+void Hsm::enter_from_lca()
 {
-    State<Event>** trace = m_entry_path;
+    State** trace = m_entry_path;
     *trace = nullptr;
-    for (State<Event>* s = m_next_state; s != m_current_state; s = s->super_state())
+    for (State* s = m_next_state; s != m_current_state; s = s->super_state())
     {
         ++trace;
         *trace = s; // record path to target
@@ -301,10 +283,9 @@ void Hsm<Event>::enter_from_lca()
 }
 
 /// exit current states and all super states up to least common ancestor
-template <typename Event>
-void Hsm<Event>::exit_to_lca(State<Event>* source, uint8_t levels_to_lca)
+void Hsm::exit_to_lca(State* source, uint8_t levels_to_lca)
 {
-    State<Event>* s = m_current_state;
+    State* s = m_current_state;
     while (s != source)
     {
         s->exit(this);
@@ -319,11 +300,10 @@ void Hsm<Event>::exit_to_lca(State<Event>* source, uint8_t levels_to_lca)
     m_current_state = s;
 }
 
-template <typename Event>
-uint8_t Hsm<Event>::levels_to_lca(State<Event>* source, State<Event>* target)
+uint8_t Hsm::levels_to_lca(State* source, State* target)
 {
-    State<Event>* s;
-    State<Event>* t;
+    State* s;
+    State* t;
     uint8_t levels_to_lca = 0;
     if (source == target)
     {
