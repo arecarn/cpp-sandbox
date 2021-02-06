@@ -143,19 +143,18 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	# run CMake to generate and configure the build scripts
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json; \
 	cd $(BUILD_PREFIX); \
-	cmake ../.. $(CMAKE_OPTIONS); \
+	cmake ../.. $(CMAKE_OPTIONS);
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
-# Note: when no targets are passed from the commanding the special variable $@
-# is "Makefile" so we need to angle this odd case differently.
 %: $(BUILD_PREFIX)/$(BUILD_FILE)
 	@set -o xtrace; \
 	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cmake --build $(BUILD_PREFIX) --target $@ -- $(JOB_FLAG) ${a}; \
+	cmake --build $(BUILD_PREFIX) --target $@ -- $(JOB_FLAG) ${a};
 
-# All the Makefiles read themselves get matched if a target exists for them, so
-# they will get matched by a Match anything target %:. This target is here
-# to prevent the %: Match-anything target from matching, and do nothing.
+# All the Makefiles read themselves and get matched if a target exists for them,
+# so they will get matched by a Match anything target %:. This target is here to
+# prevent the %: Match-anything target from matching, and instead and do
+# nothing.
 Makefile:
 	;
 
