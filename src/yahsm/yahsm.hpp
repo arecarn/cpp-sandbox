@@ -70,15 +70,15 @@ struct LeafState : B
 
     virtual void handler(H& h) const { handle(h, *this); }
     [[nodiscard]] virtual unsigned id() const { return Id; }
-    static void init(H& h) { h.next(Obj); } // don't specialize this
+    static void init(H& h) { h.state(State); } // don't specialize this
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
 
-    static const LeafState Obj; // only the leaf states have instances
+    static const LeafState State; // only the leaf states have instances
 };
 
 template <typename H, unsigned Id, typename B>
-const LeafState<H, Id, B> LeafState<H, Id, B>::Obj;
+const LeafState<H, Id, B> LeafState<H, Id, B>::State;
 
 // Transition
 ////////////////////////////////////////////////////////////////////////////////

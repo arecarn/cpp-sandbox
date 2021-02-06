@@ -83,13 +83,13 @@ enum StateId : unsigned int
 };
 
 // clang-format off
-//                    <hsm,          id, parent state>
-using Top   = CompState<TestHsm, Top_Id     /*none*/>;
+//                    <hsm,          id, parent state>;
+using Top  = CompState<TestHsm,  Top_Id      /*none*/>;
 using S1   = CompState<TestHsm,   S1_Id,          Top>;
-using S11  = LeafState<TestHsm,  S11_Id,          S1>;
+using S11  = LeafState<TestHsm,  S11_Id,           S1>;
 using S2   = CompState<TestHsm,   S2_Id,          Top>;
-using S21  = CompState<TestHsm,  S21_Id,          S2>;
-using S211 = LeafState<TestHsm, S211_Id,         S21>;
+using S21  = CompState<TestHsm,  S21_Id,           S2>;
+using S211 = LeafState<TestHsm, S211_Id,          S21>;
 // clang-format on
 
 enum class Event
@@ -122,7 +122,7 @@ public:
         Top::init(*this);
     }
 
-    void next(const TopState<TestHsm>& state)
+    void state(const TopState<TestHsm>& state)
     {
         m_state = &state;
     }
@@ -493,6 +493,7 @@ TEST_F(TestHsmFixtureS11, s11_A)
 {
     EXPECT_CALL(m_actions, s1_a());
     EXPECT_CALL(m_actions, s11_exit());
+    // EXPECT_CALL(m_actions, s1_exit()); // BUG: missing
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -647,7 +648,7 @@ TEST_F(TestHsmFixtureS211, s211_D)
     EXPECT_CALL(m_actions, s211_d());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_init());
-    EXPECT_CALL(m_actions, s21_entry());
+    EXPECT_CALL(m_actions, s21_entry()); // BUG: shouldn't be here
     EXPECT_CALL(m_actions, s211_entry());
     m_hsm_test->dispatch(Event::D);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
@@ -681,11 +682,12 @@ TEST_F(TestHsmFixtureS211, s211_G)
 
 TEST_F(TestHsmFixtureS211, s211_H)
 {
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s211_exit());
+    // EXPECT_CALL(m_actions, s21_exit()); // BUG: missing
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
     m_hsm_test->dispatch(Event::H);
     EXPECT_EQ(1, m_hsm_test->foo());
@@ -695,11 +697,12 @@ TEST_F(TestHsmFixtureS211, s211_H)
 TEST_F(TestHsmFixtureS211, foo)
 {
     // set foo = 1
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s211_exit());
+    // EXPECT_CALL(m_actions, s21_exit()); // BUG: missing
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
     m_hsm_test->dispatch(Event::H);
     EXPECT_EQ(1, m_hsm_test->foo());
