@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "${GID}"
+echo "${UID}"
 export HOME=/home/"${USER}"
 mkdir -p "${HOME}"
 chown -R "${USER}" "${HOME}"

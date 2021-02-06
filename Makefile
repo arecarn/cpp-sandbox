@@ -185,6 +185,22 @@ docker-clean-build:
 UID=$(shell id -u)
 GID=$(shell id -g)
 
+.PHONY: docker-up
+docker-up:
+	export UID=${UID}; \
+	export GID=${GID}; \
+	docker-compose up -d
+
+.PHONY: docker-run
+docker-run:
+	export UID=${UID}; \
+	export GID=${GID}; \
+	docker-compose run dev
+
+.PHONY: docker-down
+docker-down:
+	docker-compose down
+
 .PHONY: docker-run
 docker-run:
 	docker run \
