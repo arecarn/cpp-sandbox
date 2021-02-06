@@ -15,7 +15,7 @@ state Top {
         S1 --> S11: B
         S1 --> S2: C
         S1 --> Top: D
-        S1 --> S221: F
+        S1 --> S211: F
 
         [*] ---> S11
         state S11 {
@@ -26,11 +26,12 @@ state Top {
 
     state S2 {
         [*] ---> S21
-        S2 --> S1: C
+        S2 -u-> S1: C
         S2 --> S11: F
         state S21 {
             [*] ---> S211
-            S21 -> S21: B / if !foo: foo = 1
+            S21 --> S211: B
+            S21 --> S21: H / if !foo: foo = 1
             state S211 {
                 S211 -u-> Top: G
                 S211 -u-> S21: D

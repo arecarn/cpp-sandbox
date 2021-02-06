@@ -696,12 +696,12 @@ TEST_F(TestHsmFixtureS211, s211_G)
 
 TEST_F(TestHsmFixtureS211, s211_H)
 {
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
     m_hsm_test->dispatch(H);
     EXPECT_EQ(1, m_hsm_test->foo());
@@ -711,12 +711,12 @@ TEST_F(TestHsmFixtureS211, s211_H)
 TEST_F(TestHsmFixtureS211, foo)
 {
     // set foo = 1
+    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s21_entry());
     EXPECT_CALL(m_actions, s21_init());
     EXPECT_CALL(m_actions, s211_entry());
-    EXPECT_EQ(0, m_hsm_test->foo());
     EXPECT_CALL(m_actions, s21_h());
     m_hsm_test->dispatch(H);
     EXPECT_EQ(1, m_hsm_test->foo());
