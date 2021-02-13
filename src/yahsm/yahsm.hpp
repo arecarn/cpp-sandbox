@@ -126,6 +126,7 @@ struct Tran
 {
     using Host = typename Current::Host;
     using CurrentBase = typename Current::Base;
+    using CurrentBasesBase = typename Current::Base::Base;
     using SourceBase = typename Source::Base;
     using TargetBase = typename Target::Base;
 
@@ -143,7 +144,10 @@ struct Tran
 
         Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
 
-        Exit_Stop = TargetBase_Derives_From_CurrentBase || IsSame<CurrentBase, Target>::Value,
+        Exit_Stop = TargetBase_Derives_From_CurrentBase
+            || (IsDerivedFrom<Source, Target>::Res
+                && !IsSame<Source, Target>::Value
+                && !IsDerivedFrom<CurrentBasesBase, Target>::Res),
 
         Entry_Stop = Source_Derives_From_Current
             || (Source_Derives_From_CurrentBase)
