@@ -99,7 +99,7 @@ private:
     static Yes test(B*); // undefined
     static No test(...); // undefined
 public:
-    static constexpr char Res = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes))
+    static constexpr char Value = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes))
         ? 1
         : 0;
 };
@@ -136,18 +136,18 @@ struct Tran
 
         Current_Is_Source = IsSame<Current, Source>::Value,
 
-        TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Res,
+        TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Value,
 
-        Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Res,
+        Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Value,
 
-        Source_Derives_From_Current = IsDerivedFrom<Source, Current>::Res,
+        Source_Derives_From_Current = IsDerivedFrom<Source, Current>::Value,
 
-        Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Res,
+        Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Value,
 
         Exit_Stop = TargetBase_Derives_From_CurrentBase
-            || (IsDerivedFrom<Source, Target>::Res
+            || (IsDerivedFrom<Source, Target>::Value
                 && !IsSame<Source, Target>::Value
-                && !IsDerivedFrom<CurrentBasesBase, Target>::Res),
+                && !IsDerivedFrom<CurrentBasesBase, Target>::Value),
 
         Entry_Stop = Source_Derives_From_Current
             || (Source_Derives_From_CurrentBase)
