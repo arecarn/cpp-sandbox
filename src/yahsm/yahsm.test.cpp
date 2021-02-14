@@ -532,8 +532,7 @@ TEST_F(TestHsmFixtureS11, s11_D)
     EXPECT_CALL(m_actions, s1_d());
     EXPECT_CALL(m_actions, s11_exit());
     EXPECT_CALL(m_actions, s1_exit());
-    EXPECT_CALL(m_actions, top_entry()); // BUG this call shouldn't be here
-    EXPECT_CALL(m_actions, top_init()); // BUG?
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -653,7 +652,6 @@ TEST_F(TestHsmFixtureS211, s211_D)
     EXPECT_CALL(m_actions, s211_d());
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_init());
-    EXPECT_CALL(m_actions, s21_entry()); // BUG: this call shouldn't be here
     EXPECT_CALL(m_actions, s211_entry());
     m_hsm_test->dispatch(Event::D);
     EXPECT_EQ(S211_Id, m_hsm_test->state_id());
@@ -677,8 +675,7 @@ TEST_F(TestHsmFixtureS211, s211_G)
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s2_exit());
-    EXPECT_CALL(m_actions, top_entry()); // BUG this call shouldn't be here
-    EXPECT_CALL(m_actions, top_init()); // BUG?
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());
@@ -719,8 +716,7 @@ TEST_F(TestHsmFixtureS211, foo)
     EXPECT_CALL(m_actions, s211_exit());
     EXPECT_CALL(m_actions, s21_exit());
     EXPECT_CALL(m_actions, s2_exit());
-    EXPECT_CALL(m_actions, top_entry()); // BUG this call shouldn't be here
-    EXPECT_CALL(m_actions, top_init()); // BUG?
+    EXPECT_CALL(m_actions, top_init());
     EXPECT_CALL(m_actions, s1_entry());
     EXPECT_CALL(m_actions, s1_init());
     EXPECT_CALL(m_actions, s11_entry());

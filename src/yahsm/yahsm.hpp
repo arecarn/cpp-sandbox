@@ -132,25 +132,25 @@ struct Tran
 
     enum
     { // work out when to terminate template recursion
-        CurrentBase_Is_Target = IsSame<CurrentBase, Target>::Value,
-
-        Current_Is_Source = IsSame<Current, Source>::Value,
-
-        TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Value,
-
-        Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Value,
-
+        Source_Is_Target = IsSame<Source, Target>::Value,
+        Source_Derives_From_Target = IsDerivedFrom<Source, Target>::Value,
         Source_Derives_From_Current = IsDerivedFrom<Source, Current>::Value,
-
-        Current_Derives_From_Source = IsDerivedFrom<Current, Source>::Value,
+        Source_Derives_From_CurrentBase = IsDerivedFrom<Source, CurrentBase>::Value,
+        TargetBase_Derives_From_CurrentBase = IsDerivedFrom<TargetBase, CurrentBase>::Value,
+        CurrentBaseBase_Derives_From_Target = IsDerivedFrom<CurrentBasesBase, Target>::Value,
 
         Exit_Stop = TargetBase_Derives_From_CurrentBase
-            || (IsDerivedFrom<Source, Target>::Value
-                && !IsSame<Source, Target>::Value
-                && !IsDerivedFrom<CurrentBasesBase, Target>::Value),
+            || (Source_Derives_From_Target
+                && !Source_Is_Target
+                && !CurrentBaseBase_Derives_From_Target),
 
+        // When Current starts as the Target, determine where the entry
+        // functions should begin
         Entry_Stop = Source_Derives_From_Current
-            || (Source_Derives_From_CurrentBase)
+            || Source_Derives_From_CurrentBase,
+
+        Entry_Start = Source_Derives_From_Target
+            && !Source_Is_Target
     };
 
     // overloading is used to stop recursion. The more natural template
@@ -180,7 +180,7 @@ struct Tran
 
     ~Tran()
     {
-        Tran<Target, Source, Target>::entry_actions(m_host, Bool<false>());
+        Tran<Target, Source, Target>::entry_actions(m_host, Bool<Entry_Start>());
         Target::init(m_host);
     }
 
