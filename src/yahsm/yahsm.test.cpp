@@ -1,33 +1,6 @@
 #include "yahsm.hpp"
-#include <cstdio>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-// Hsm
-////////////////////////////////////////////////////////////////////////////////
-
-// Implements the following state machine from Miro Samek's
-// Practical Statecharts in C/C++
-//
-// |-init-----------------------------------------------------|
-// |                          top                             |
-// |----------------------------------------------------------|
-// |                                                          |
-// |    |-init-----------|        |-------------------------| |
-// |    |       s1       |---c--->|            s2           | |
-// |    |----------------|<--c----|-------------------------| |
-// |    |                |        |                         | |
-// |<-d-| |-init-------| |        | |-init----------------| | |
-// |    | |     s11    |<----f----| |          s21        | | |
-// | /--| |------------| |        | |---------------------| | |
-// | a  | |            | |        | |                     | | |
-// | \->| |            |------g--------->|-init------|    | | |
-// |    | |____________| |        | |-b->|    s211   |---g--->|
-// |    |----b---^       |------f------->|           |    | | |
-// |    |________________|        | |<-d-|___________|<--e----|
-// |                              | |_____________________| | |
-// |                              |_________________________| |
-// |__________________________________________________________|
 
 class Actions
 {
@@ -74,16 +47,16 @@ class TestHsm;
 
 enum StateId : unsigned int
 {
-    Top_Id, // 0
-    S1_Id, // 1
-    S11_Id, // 2
-    S2_Id, // 3
-    S21_Id, // 4
+    Top_Id, //  0
+    S1_Id, //   1
+    S11_Id, //  2
+    S2_Id, //   3
+    S21_Id, //  4
     S211_Id, // 5
 };
 
 // clang-format off
-//                    <hsm,          id, parent state>;
+//                    <host,         id, parent state>;
 using Top  = CompState<TestHsm,  Top_Id      /*none*/>;
 using S1   = CompState<TestHsm,   S1_Id,          Top>;
 using S11  = LeafState<TestHsm,  S11_Id,           S1>;
@@ -171,8 +144,8 @@ inline void Top::handle(TestHsm& h, const Current& c) const
     {
         case Event::E:
         {
-            Tran<Current, This, S211> t(h);
             h.actions().top_e();
+            Tran<Current, This, S211> t(h);
             return;
         }
         default:
@@ -204,32 +177,32 @@ inline void S1::handle(TestHsm& h, const Current& c) const
     {
         case Event::A:
         {
-            Tran<Current, This, S1> t(h);
             h.actions().s1_a();
+            Tran<Current, This, S1> t(h);
             return;
         }
         case Event::B:
         {
-            Tran<Current, This, S11> t(h);
             h.actions().s1_b();
+            Tran<Current, This, S11> t(h);
             return;
         }
         case Event::C:
         {
-            Tran<Current, This, S2> t(h);
             h.actions().s1_c();
+            Tran<Current, This, S2> t(h);
             return;
         }
         case Event::D:
         {
-            Tran<Current, This, Top> t(h);
             h.actions().s1_d();
+            Tran<Current, This, Top> t(h);
             return;
         }
         case Event::F:
         {
-            Tran<Current, This, S211> t(h);
             h.actions().s1_f();
+            Tran<Current, This, S211> t(h);
             return;
         }
         default:
@@ -267,8 +240,8 @@ inline void S11::handle(TestHsm& h, const Current& c) const
     {
         case Event::G:
         {
-            Tran<Current, This, S211> t(h);
             h.actions().s11_g();
+            Tran<Current, This, S211> t(h);
             return;
         }
         case Event::H:
@@ -314,14 +287,14 @@ inline void S2::handle(TestHsm& h, const Current& c) const
     {
         case Event::C:
         {
-            Tran<Current, This, S1> t(h);
             h.actions().s2_c();
+            Tran<Current, This, S1> t(h);
             return;
         }
         case Event::F:
         {
-            Tran<Current, This, S11> t(h);
             h.actions().s2_f();
+            Tran<Current, This, S11> t(h);
             return;
         }
         default:
@@ -359,15 +332,15 @@ inline void S21::handle(TestHsm& h, const Current& c) const
     {
         case Event::B:
         {
-            Tran<Current, This, S211> t(h);
             h.actions().s21_b();
+            Tran<Current, This, S211> t(h);
             return;
         }
         case Event::H:
             if (!h.foo())
             {
-                Tran<Current, This, S21> t(h);
                 h.actions().s21_h();
+                Tran<Current, This, S21> t(h);
                 h.foo(1);
                 return;
             }
@@ -400,14 +373,14 @@ inline void S211::handle(TestHsm& h, const Current& c) const
     {
         case Event::D:
         {
-            Tran<Current, This, S21> t(h);
             h.actions().s211_d();
+            Tran<Current, This, S21> t(h);
             return;
         }
         case Event::G:
         {
-            Tran<Current, This, Top> t(h);
             h.actions().s211_g();
+            Tran<Current, This, Top> t(h);
             return;
         }
         default:
