@@ -1,7 +1,6 @@
 #ifndef HIERARCHICAL_STATE_MACHINE
 #define HIERARCHICAL_STATE_MACHINE
 
-#include <cassert>
 #include <cstdint>
 
 constexpr uint8_t Max_State_Nesting = 255;
@@ -32,7 +31,7 @@ public:
     {
     }
 
-    State* target() const
+    [[nodiscard]] State* target() const
     {
         return m_target;
     }
@@ -83,7 +82,7 @@ public:
     }
 
 private:
-    State m_state = State::Unhandled;
+    State m_state;
     Transition m_transition;
 };
 
@@ -91,11 +90,31 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 using EventHandler = Result (Hsm::*)();
 
-using EntryHandler = void (Hsm::*)();
+template <typename T>
+EventHandler event_handler(T member_function)
+{
+    return static_cast<EventHandler>(member_function);
+}
 
-using InitHandler = void (Hsm::*)();
+using Handler = void (Hsm::*)();
 
-using ExitHandler = void (Hsm::*)();
+template <typename T>
+Handler entry_handler(T member_function)
+{
+    return static_cast<Handler>(member_function);
+}
+
+template <typename T>
+Handler exit_handler(T member_function)
+{
+    return static_cast<Handler>(member_function);
+}
+
+template <typename T>
+Handler init_handler(T member_function)
+{
+    return static_cast<Handler>(member_function);
+}
 
 // State
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,9 +125,9 @@ public:
         StateId id,
         State* super_state,
         EventHandler event_handler,
-        EntryHandler init_handler,
-        EntryHandler entry_handler,
-        EntryHandler exit_handler,
+        Handler init_handler,
+        Handler entry_handler,
+        Handler exit_handler,
         State* inital_state = nullptr);
 
     [[nodiscard]] StateId id() const
@@ -144,11 +163,11 @@ public:
         }
     }
 
-    State* inital_state() const
+    [[nodiscard]] State* inital_state() const
     {
         return m_inital_state;
     }
-    State* super_state() const
+    [[nodiscard]] State* super_state() const
     {
         return m_super_state;
     }
@@ -156,30 +175,12 @@ public:
 private:
     State* const m_super_state;
     EventHandler m_event_handler;
-    InitHandler m_init_handler;
-    EntryHandler m_entry_handler;
-    ExitHandler m_exit_handler;
+    Handler m_init_handler;
+    Handler m_entry_handler;
+    Handler m_exit_handler;
     const StateId m_id;
     State* const m_inital_state;
 };
-
-State::State(
-    StateId id,
-    State* super_state,
-    EventHandler event_handler,
-    InitHandler init_handler,
-    EntryHandler entry_handler,
-    ExitHandler exit_handler,
-    State* inital_state)
-    : m_super_state(super_state)
-    , m_event_handler(event_handler)
-    , m_init_handler(init_handler)
-    , m_entry_handler(entry_handler)
-    , m_exit_handler(exit_handler)
-    , m_id(id)
-    , m_inital_state(inital_state)
-{
-}
 
 // Hierarchical State Machine
 ////////////////////////////////////////////////////////////////////////////////
@@ -204,124 +205,5 @@ private:
     State* m_next_state = nullptr; /// the next state if transition taken otherwise a nullptr
     State* m_entry_path[Max_State_Nesting] = {nullptr};
 };
-
-/// HSM constructor
-Hsm::Hsm(State& inital_state)
-    : m_current_state {&inital_state}
-{
-}
-
-/// enters and starts the top state
-void Hsm::init()
-{
-    m_current_state->entry(this);
-    init_state();
-}
-
-void Hsm::init_state()
-{
-    // perform init events till there are no more transitions
-    while (true)
-    {
-        m_current_state->init(this);
-        if (m_current_state->inital_state() != nullptr)
-        {
-            assert(m_next_state == nullptr);
-            m_next_state = m_current_state->inital_state();
-        }
-
-        if (m_next_state != nullptr)
-        {
-            enter_from_lca();
-        }
-        else
-        {
-            break;
-        }
-    }
-}
-
-void Hsm::handle()
-{
-    // try to handle events walking up the inheritance chain if not handled
-    for (auto s = m_current_state; s != nullptr; s = s->super_state())
-    {
-        auto result = s->handle(this);
-        if (result.event_was_handeled())
-        {
-            if (result.has_transition())
-            {
-                assert(m_next_state == nullptr);
-                m_next_state = result.transition().target();
-                auto levels = levels_to_lca(s, m_next_state);
-                exit_to_lca(s, levels);
-                enter_from_lca();
-                init_state();
-            }
-            break;
-        }
-    }
-}
-
-void Hsm::enter_from_lca()
-{
-    State** trace = m_entry_path;
-    *trace = nullptr;
-    for (State* s = m_next_state; s != m_current_state; s = s->super_state())
-    {
-        ++trace;
-        *trace = s; // record path to target
-    }
-    while (*trace != nullptr)
-    {
-        // retrace the entry
-        (*trace)->entry(this);
-        --trace;
-    }
-    m_current_state = m_next_state;
-    m_next_state = nullptr;
-}
-
-/// exit current states and all super states up to least common ancestor
-void Hsm::exit_to_lca(State* source, uint8_t levels_to_lca)
-{
-    State* s = m_current_state;
-    while (s != source)
-    {
-        s->exit(this);
-        s = s->super_state();
-    }
-    while (levels_to_lca != 0)
-    {
-        s->exit(this);
-        s = s->super_state();
-        --levels_to_lca;
-    }
-    m_current_state = s;
-}
-
-uint8_t Hsm::levels_to_lca(State* source, State* target)
-{
-    State* s;
-    State* t;
-    uint8_t levels_to_lca = 0;
-    if (source == target)
-    {
-        return 1;
-    }
-    for (s = source;
-         s != nullptr;
-         ++levels_to_lca, s = s->super_state())
-    {
-        for (t = target; t; t = t->super_state())
-        {
-            if (s == t)
-            {
-                return levels_to_lca;
-            }
-        }
-    }
-    return 0;
-}
 
 #endif // HIERARCHICAL_STATE_MACHINE

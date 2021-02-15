@@ -374,54 +374,54 @@ TestHsm::TestHsm(Actions& actions)
     , m_top_state {
         Top_Id,
         nullptr,
-        static_cast<EventHandler>(&TestHsm::top_handler),
-        static_cast<InitHandler>(&TestHsm::top_init),
-        static_cast<EntryHandler>(&TestHsm::top_entry),
-        static_cast<ExitHandler>(&TestHsm::top_exit),
+        event_handler(&TestHsm::top_handler),
+        init_handler(&TestHsm::top_init),
+        entry_handler(&TestHsm::top_entry),
+        exit_handler(&TestHsm::top_exit),
         &m_s1_state
     }
     , m_s1_state {
         S1_Id,
         &m_top_state,
-        static_cast<EventHandler>(&TestHsm::s1_handler),
-        static_cast<InitHandler>(&TestHsm::s1_init),
-        static_cast<EntryHandler>(&TestHsm::s1_entry),
-        static_cast<ExitHandler>(&TestHsm::s1_exit),
+        event_handler(&TestHsm::s1_handler),
+        init_handler(&TestHsm::s1_init),
+        entry_handler(&TestHsm::s1_entry),
+        exit_handler(&TestHsm::s1_exit),
         &m_s11_state
     }
     , m_s11_state {
         S11_Id,
         &m_s1_state,
-        static_cast<EventHandler>(&TestHsm::s11_handler),
-        InitHandler{nullptr},
-        static_cast<EntryHandler>(&TestHsm::s11_entry),
-        static_cast<ExitHandler>(&TestHsm::s11_exit)
+        event_handler(&TestHsm::s11_handler),
+        init_handler(nullptr),
+        entry_handler(&TestHsm::s11_entry),
+        exit_handler(&TestHsm::s11_exit)
     }
     , m_s2_state {
         S2_Id,
         &m_top_state,
-        static_cast<EventHandler>(&TestHsm::s2_handler),
-        static_cast<InitHandler>(&TestHsm::s2_init),
-        static_cast<EntryHandler>(&TestHsm::s2_entry),
-        static_cast<ExitHandler>(&TestHsm::s2_exit),
+        event_handler(&TestHsm::s2_handler),
+        init_handler(&TestHsm::s2_init),
+        entry_handler(&TestHsm::s2_entry),
+        exit_handler(&TestHsm::s2_exit),
         &m_s21_state
     }
     , m_s21_state {
         S21_Id,
         &m_s2_state,
-        static_cast<EventHandler>(&TestHsm::s21_handler),
-        static_cast<InitHandler>(&TestHsm::s21_init),
-        static_cast<EntryHandler>(&TestHsm::s21_entry),
-        static_cast<ExitHandler>(&TestHsm::s21_exit),
+        event_handler(&TestHsm::s21_handler),
+        init_handler(&TestHsm::s21_init),
+        entry_handler(&TestHsm::s21_entry),
+        exit_handler(&TestHsm::s21_exit),
         &m_s211_state
     }
     , m_s211_state {
         S211_Id,
         &m_s21_state,
-        static_cast<EventHandler>(&TestHsm::s211_handler),
-        InitHandler{nullptr},
-        static_cast<EntryHandler>(&TestHsm::s211_entry),
-        static_cast<ExitHandler>(&TestHsm::s211_exit)
+        event_handler(&TestHsm::s211_handler),
+        init_handler(nullptr),
+        entry_handler(&TestHsm::s211_entry),
+        exit_handler(&TestHsm::s211_exit)
     }
     , m_actions {actions}
 {
