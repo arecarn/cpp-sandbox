@@ -1,6 +1,3 @@
-#ifndef YAHSM_HPP
-#define YAHSM_HPP
-
 // This code based on the code from the following article:
 // Yet Another Hierarchical State Machine
 // by Stefan Heinzmann
@@ -15,6 +12,12 @@
 
 // Top State, Composite State and Leaf State
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef YAHSM_HPP
+#define YAHSM_HPP
+
+#include <cstdint>
+
+using StateId = uint32_t;
 
 template <typename H>
 struct TopState
@@ -23,14 +26,14 @@ struct TopState
     using Base = void;
 
     virtual void handler(Host&) const = 0;
-    [[nodiscard]] virtual unsigned id() const = 0;
+    [[nodiscard]] virtual StateId id() const = 0;
     virtual ~TopState() = default;
 };
 
-template <typename H, unsigned Id, typename B>
+template <typename H, StateId Id, typename B>
 struct CompState;
 
-template <typename H, unsigned Id, typename B = CompState<H, 0, TopState<H>>>
+template <typename H, StateId Id, typename B = CompState<H, 0, TopState<H>>>
 struct CompState : B
 {
     using Base = B;
@@ -58,7 +61,7 @@ struct CompState<H, 0, TopState<H>> : TopState<H>
     static void exit(H& /*unused*/) { }
 };
 
-template <typename H, unsigned Id, typename B = CompState<H, 0, TopState<H>>>
+template <typename H, StateId Id, typename B = CompState<H, 0, TopState<H>>>
 struct LeafState : B
 {
     using Host = H;
@@ -69,7 +72,7 @@ struct LeafState : B
     void handle(H& h, const Current& c) const { Base::handle(h, c); }
 
     virtual void handler(H& h) const { handle(h, *this); }
-    [[nodiscard]] virtual unsigned id() const { return Id; }
+    [[nodiscard]] virtual StateId id() const { return Id; }
     static void init(H& h) { h.state(State); } // don't specialize this
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
@@ -77,7 +80,7 @@ struct LeafState : B
     static const LeafState State; // only the leaf states have instances
 };
 
-template <typename H, unsigned Id, typename B>
+template <typename H, StateId Id, typename B>
 const LeafState<H, Id, B> LeafState<H, Id, B>::State;
 
 // Transition
@@ -218,19 +221,19 @@ public:
         m_state = &state;
     }
 
-    [[nodiscard]] unsigned int state_id() const
+    [[nodiscard]] StateId state_id() const
     {
         return m_state->id();
     }
 
     void handle()
     {
-        m_state->handler(*static_cast<DerivedHsm*>(this));
+        m_state->handler(static_cast<DerivedHsm&>(*this));
     }
 
     void init()
     {
-        InitalStateSetup<InitialState> i {*static_cast<DerivedHsm*>(this)};
+        InitalStateSetup<InitialState> i {static_cast<DerivedHsm&>(*this)};
     }
 
 private:

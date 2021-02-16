@@ -45,7 +45,7 @@ public:
 
 class TestHsm;
 
-enum StateId : unsigned int
+enum Id : StateId
 {
     Top_Id, //  0
     S1_Id, //   1
