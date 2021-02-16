@@ -99,9 +99,7 @@ private:
     static Yes test(B*); // undefined
     static No test(...); // undefined
 public:
-    static constexpr char Value = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes))
-        ? 1
-        : 0;
+    static constexpr bool Value = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes));
 };
 
 template <class T, class U>
