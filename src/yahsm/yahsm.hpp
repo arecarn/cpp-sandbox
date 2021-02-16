@@ -1,7 +1,7 @@
 #ifndef YAHSM_HPP
 #define YAHSM_HPP
 
-// This code is from:
+// This code based on the code from the following article:
 // Yet Another Hierarchical State Machine
 // by Stefan Heinzmann
 // Overload issue 64 December 2004
