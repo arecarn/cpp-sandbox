@@ -208,4 +208,35 @@ private:
     Host& m_host;
 };
 
+// Hsm
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename DerivedHsm, typename InitialState>
+class Hsm
+{
+public:
+    void state(const TopState<DerivedHsm>& state)
+    {
+        m_state = &state;
+    }
+
+    [[nodiscard]] unsigned int state_id() const
+    {
+        return m_state->id();
+    }
+
+    void handle()
+    {
+        m_state->handler(*static_cast<DerivedHsm*>(this));
+    }
+
+    void init()
+    {
+        InitalStateSetup<InitialState> i {*static_cast<DerivedHsm*>(this)};
+    }
+
+private:
+    const TopState<DerivedHsm>* m_state {nullptr};
+};
+
 #endif // YAHSM_HPP

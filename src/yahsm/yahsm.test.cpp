@@ -78,22 +78,12 @@ enum class Event
     None,
 };
 
-class TestHsm
+class TestHsm : public Hsm<TestHsm, Top>
 {
 public:
     explicit TestHsm(Actions& actions)
         : m_actions {actions}
     {
-    }
-
-    void init()
-    {
-        InitalStateSetup<Top> i {*this};
-    }
-
-    void state(const TopState<TestHsm>& state)
-    {
-        m_state = &state;
     }
 
     [[nodiscard]] Event event() const
@@ -104,7 +94,7 @@ public:
     void dispatch(Event event)
     {
         m_event = event;
-        m_state->handler(*this);
+        handle();
     }
 
     void foo(int i)
@@ -117,18 +107,12 @@ public:
         return m_foo;
     }
 
-    [[nodiscard]] unsigned int state_id() const
-    {
-        return m_state->id();
-    }
-
     Actions& actions()
     {
         return m_actions;
     }
 
 private:
-    const TopState<TestHsm>* m_state {nullptr};
     Event m_event {Event::None};
     int m_foo {0};
     Actions& m_actions;
