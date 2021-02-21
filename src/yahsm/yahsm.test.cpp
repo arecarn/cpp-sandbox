@@ -56,13 +56,13 @@ enum Id : StateId
 };
 
 // clang-format off
-//                    <host,         id, parent state>;
-using Top  = CompState<TestHsm,  Top_Id      /*none*/>;
-using S1   = CompState<TestHsm,   S1_Id,          Top>;
-using S11  = LeafState<TestHsm,  S11_Id,           S1>;
-using S2   = CompState<TestHsm,   S2_Id,          Top>;
-using S21  = CompState<TestHsm,  S21_Id,           S2>;
-using S211 = LeafState<TestHsm, S211_Id,          S21>;
+//                        <   host,      id, parent state>;
+using Top      = CompState<TestHsm,  Top_Id      /*none*/>;
+using   S1     = CompState<TestHsm,   S1_Id,          Top>;
+using     S11  = LeafState<TestHsm,  S11_Id,           S1>;
+using   S2     = CompState<TestHsm,   S2_Id,          Top>;
+using     S21  = CompState<TestHsm,  S21_Id,           S2>;
+using     S211 = LeafState<TestHsm, S211_Id,          S21>;
 // clang-format on
 
 enum class Event
