@@ -28,4 +28,4 @@ jobs:
         with:
           submodules: recursive
       - name: Build & Test All Targets
-        run: make full
+        run: make full USE_DOCKER=0
