@@ -58,7 +58,7 @@ export UID=$(shell id -u)
 export GID=$(shell id -g)
 
 USE_DOCKER ?= $(shell ./tools/not_running_in_docker)
-DOCKER_CMD = docker-compose run dev bash
+DOCKER_CMD = docker-compose run --rm dev bash
 ifeq ($(USE_DOCKER),1)
     define docker_cmd
         $(DOCKER_CMD) -c '$(1)'
