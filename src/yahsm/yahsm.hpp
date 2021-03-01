@@ -50,8 +50,8 @@ struct CompState : B
     void handle(H& h, const Current& c) const { Base::handle(h, c); }
 
     static void init(H& /*unused*/); // no implementation
-    static void entry(H& /*unused*/) { }
-    static void exit(H& /*unused*/) { }
+    static void entry(H& /*unused*/) {}
+    static void exit(H& /*unused*/) {}
 
     CompState& operator=(const CompState&) = delete;
     CompState(CompState&&) noexcept = delete;
@@ -69,11 +69,11 @@ struct CompState<H, 0, TopState<H>> : TopState<H>
     using This = CompState<H, 0, Base>;
 
     template <typename Current>
-    void handle(H& /*unused*/, const Current& /*unused*/) const { }
+    void handle(H& /*unused*/, const Current& /*unused*/) const {}
 
     static void init(H& /*unused*/); // no implementation
-    static void entry(H& /*unused*/) { }
-    static void exit(H& /*unused*/) { }
+    static void entry(H& /*unused*/) {}
+    static void exit(H& /*unused*/) {}
 
     CompState& operator=(const CompState&) = delete;
     CompState(CompState&&) noexcept = delete;
@@ -97,8 +97,8 @@ struct LeafState : B
     virtual void handler(H& h) const { handle(h, *this); }
     [[nodiscard]] virtual StateId id() const { return Id; }
     static void init(H& h) { h.state(State); } // don't specialize this
-    static void entry(H& /*unused*/) { }
-    static void exit(H& /*unused*/) { }
+    static void entry(H& /*unused*/) {}
+    static void exit(H& /*unused*/) {}
 
     static const LeafState State; // only the leaf states have instances
 
@@ -161,7 +161,7 @@ struct Tran
     // overloading is used to stop recursion. The more natural template
     // specialization method would require to specialize the inner template
     // without specializing the outer one, which is forbidden.
-    static void exit_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+    static void exit_actions(Host& /*unused*/, Bool<true> /*unused*/) {}
 
     static void exit_actions(Host& h, Bool<false> /*unused*/)
     {
@@ -169,7 +169,7 @@ struct Tran
         Tran<CurrentBase, Source, Target>::exit_actions(h, Bool<Exit_Stop>());
     }
 
-    static void entry_actions(Host& /*unused*/, Bool<true> /*unused*/) { }
+    static void entry_actions(Host& /*unused*/, Bool<true> /*unused*/) {}
 
     static void entry_actions(Host& h, Bool<false> /*unused*/)
     {
@@ -209,8 +209,8 @@ private:
 
         Exit_Stop = TargetBase_Derives_From_CurrentBase
             || (Source_Derives_From_Target
-                && !Source_Is_Target
-                && !CurrentBaseBase_Derives_From_Target),
+                   && !Source_Is_Target
+                   && !CurrentBaseBase_Derives_From_Target),
 
         // When Current starts as the Target, determine where the entry
         // functions should begin
@@ -260,8 +260,7 @@ public:
         m_state = &state;
     }
 
-    [[nodiscard]] StateId state_id() const
-    {
+    [[nodiscard]] StateId state_id() const {
         return m_state->id();
     }
 
@@ -272,7 +271,7 @@ public:
 
     void init()
     {
-        InitalStateSetup<InitialState> i {static_cast<DerivedHsm&>(*this)};
+        InitalStateSetup<InitialState> i{static_cast<DerivedHsm&>(*this)};
     }
 
     Hsm() = default;
@@ -286,7 +285,7 @@ private:
     // because it's a friend. This also ensures that DerivedHsm is derived from
     // Hsm.
     friend DerivedHsm;
-    const TopState<DerivedHsm>* m_state {nullptr};
+    const TopState<DerivedHsm>* m_state{nullptr};
 };
 
 #endif // YAHSM_HPP

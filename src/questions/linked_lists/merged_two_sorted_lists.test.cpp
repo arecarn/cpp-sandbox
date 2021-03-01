@@ -43,7 +43,7 @@ TEST(merged_two_sorted_lists, when_lists_are_equal)
 TEST(merged_two_sorted_lists, when_one_list_is_empty)
 {
     auto l1 = make_list({1, 2, 3, 4, 5});
-    auto l2 = make_list(std::initializer_list<int> {});
+    auto l2 = make_list(std::initializer_list<int>{});
 
     auto result = merged_two_sorted_lists(l1, l2);
     auto expected = make_list({1, 2, 3, 4, 5});

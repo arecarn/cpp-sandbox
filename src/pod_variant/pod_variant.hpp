@@ -66,8 +66,8 @@ struct MaxAlignment<T>
 template <typename... Ts>
 class PodVariant
 {
-    std::size_t m_curr_type {};
-    alignas(MaxAlignment<Ts...>::Value) char m_data[MaxSize<Ts...>::Value] {}; //NOLINT
+    std::size_t m_curr_type{};
+    alignas(MaxAlignment<Ts...>::Value) char m_data[MaxSize<Ts...>::Value]{}; //NOLINT
 
 public:
     PodVariant() = default;

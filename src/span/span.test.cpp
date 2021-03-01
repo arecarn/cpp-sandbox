@@ -9,9 +9,9 @@ TEST(span, static)
     constexpr int C_Array_Size = 5;
     int c_array[C_Array_Size] = {0, 1, 2, 3, 4};
 
-    Span<int> c_array_span {c_array};
+    Span<int> c_array_span{c_array};
 
-    Span<int> array_span {array};
+    Span<int> array_span{array};
 
     int j = 0;
     for (auto i : c_array_span)

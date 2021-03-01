@@ -5,7 +5,7 @@ std::string to_string(int a_int)
 {
     std::string result;
 
-    int i {a_int};
+    int i{a_int};
     do
     {
         int num = abs(i % 10);

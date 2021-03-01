@@ -28,7 +28,7 @@ T kth_to_last(std::forward_list<T> list, size_t kth)
 
 TEST(kth_to_last, test)
 {
-    std::forward_list<int> fl {1, 2, 3, 4};
+    std::forward_list<int> fl{1, 2, 3, 4};
     ASSERT_EQ(4, kth_to_last(fl, 0));
     ASSERT_EQ(3, kth_to_last(fl, 1));
 }

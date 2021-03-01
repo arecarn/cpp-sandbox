@@ -38,24 +38,24 @@ void remove_dupes(std::forward_list<T>& list)
 
 TEST(remove_dupes, test)
 {
-    std::forward_list<int> fl {1, 1, 2, 2, 3, 3};
+    std::forward_list<int> fl{1, 1, 2, 2, 3, 3};
     remove_dupes(fl);
-    std::forward_list<int> fle {1, 2, 3};
+    std::forward_list<int> fle{1, 2, 3};
     ASSERT_EQ(fl, fle);
 }
 
 TEST(remove_dupes, with_a_single_element)
 {
-    std::forward_list<int> fl {1};
+    std::forward_list<int> fl{1};
     remove_dupes(fl);
-    std::forward_list<int> fle {1};
+    std::forward_list<int> fle{1};
     ASSERT_EQ(fl, fle);
 }
 
 TEST(remove_dupes, when_empty)
 {
-    std::forward_list<int> fl {};
+    std::forward_list<int> fl{};
     remove_dupes(fl);
-    std::forward_list<int> fle {};
+    std::forward_list<int> fle{};
     ASSERT_EQ(fl, fle);
 }

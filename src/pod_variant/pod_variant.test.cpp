@@ -20,7 +20,7 @@ char g_x[X_Size];
 
 TEST(test, test) // NOLINT
 {
-    PodVariant<char, Dub> u {'a'};
+    PodVariant<char, Dub> u{'a'};
     ASSERT_EQ(u.as<char>(), 'a');
     std::cout << "<<<<" << alignof(PodVariant<char, Dub>) << ">>>>"
               << "\n";

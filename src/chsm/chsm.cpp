@@ -27,7 +27,7 @@ State::State(
 
 /// HSM constructor
 Hsm::Hsm(State& inital_state)
-    : m_current_state {&inital_state}
+    : m_current_state{&inital_state}
 {
 }
 

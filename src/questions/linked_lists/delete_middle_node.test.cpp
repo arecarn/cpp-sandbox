@@ -41,24 +41,24 @@ void delete_middle_node(std::forward_list<T>& list)
 
 TEST(delete_middle_node, general_case)
 {
-    std::forward_list<int> fl {1, 2, 3, 4, 5};
+    std::forward_list<int> fl{1, 2, 3, 4, 5};
     delete_middle_node(fl);
-    std::forward_list<int> fle {1, 2, 4, 5};
+    std::forward_list<int> fle{1, 2, 4, 5};
     ASSERT_EQ(fl, fle);
 }
 
 TEST(delete_middle_node, with_a_single_element)
 {
-    std::forward_list<int> fl {1};
+    std::forward_list<int> fl{1};
     delete_middle_node(fl);
-    std::forward_list<int> fle {};
+    std::forward_list<int> fle{};
     ASSERT_EQ(fl, fle);
 }
 
 TEST(delete_middle_node, when_empty)
 {
-    std::forward_list<int> fl {};
+    std::forward_list<int> fl{};
     delete_middle_node(fl);
-    std::forward_list<int> fle {};
+    std::forward_list<int> fle{};
     ASSERT_EQ(fl, fle);
 }

@@ -12,16 +12,16 @@ public:
     // Construct with C array
     template <typename ArrayT, size_t TSize>
     constexpr explicit Span(ArrayT (&array)[TSize])
-        : m_begin {array}
-        , m_end {array + TSize}
+        : m_begin{array}
+        , m_end{array + TSize}
     {
     }
 
     // Construct with array<T,size> or types with a .data() and .size() members
     template <typename TArray>
     constexpr explicit Span(TArray& array)
-        : m_begin {array.data()}
-        , m_end {array.data() + array.size()}
+        : m_begin{array.data()}
+        , m_end{array.data() + array.size()}
     {
     }
 

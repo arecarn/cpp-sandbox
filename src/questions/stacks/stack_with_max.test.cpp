@@ -44,7 +44,7 @@ void StackWithMax::pop()
 {
     if (m_data.empty())
     {
-        throw std::out_of_range {"empty"};
+        throw std::out_of_range{"empty"};
     }
 
     if (m_data.top() == m_max_with_count.top().max)
@@ -66,7 +66,7 @@ int StackWithMax::peek()
 {
     if (m_data.empty())
     {
-        throw std::out_of_range {"empty"};
+        throw std::out_of_range{"empty"};
     }
     return m_data.top();
 }
@@ -75,7 +75,7 @@ int StackWithMax::max()
 {
     if (m_data.empty())
     {
-        throw std::out_of_range {"empty"};
+        throw std::out_of_range{"empty"};
     }
     return m_max_with_count.top().max;
 }
