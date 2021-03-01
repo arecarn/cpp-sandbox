@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if (awk -F/ '$2 == "docker"' /proc/self/cgroup | read -r _);
+    then echo 0
+    else echo 1
+fi

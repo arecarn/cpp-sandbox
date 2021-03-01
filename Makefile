@@ -1,5 +1,5 @@
 # get the normalized current directory
-THIS_DIR := $(shell pwd)
+THIS_DIR := .
 
 BUILD_TYPES := Debug Release luasan tsan
 # Default to a Debug build. If you want to enable debugging flags, run
@@ -54,14 +54,24 @@ else
    $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
 endif
 
+export UID=$(shell id -u)
+export GID=$(shell id -g)
+
+USE_DOCKER ?= $(shell ./tools/not_running_in_docker)
+DOCKER_CMD = docker-compose run dev bash
+ifeq ($(USE_DOCKER),1)
+    define docker_cmd
+        $(DOCKER_CMD) -c '$(1)'
+    endef
+else
+    define docker_cmd
+        $(1)
+    endef
+endif
 
 
-.PHONY: all
-all: $(BUILD_PREFIX)/$(BUILD_FILE)
-	@set -o xtrace; \
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cmake --build $(BUILD_PREFIX) --target all -- $(JOB_FLAG) ${a} && \
-	cmake --build $(BUILD_PREFIX) --target test ${ta};
+.PHONY: default
+default: all ctest
 
 define build_type_template =
 $(1):
@@ -95,12 +105,6 @@ h:
 	@echo '    Runs ctest'
 	@echo '    e.g.'
 	@echo '    $$make ctest a="-R target.test"'
-	@echo
-	@echo 'cmd a="<shell command>"'
-	@echo '    Runs a abitrary shell command in the build directory specified'
-	@echo '    by the BT.'
-	@echo '    e.g.'
-	@echo '    $$make cmd a="ctest -R target.test"'
 	@echo
 	@echo 'OPTIONS:'
 	@echo
@@ -141,15 +145,18 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	# allow this to fail when not in a git repo
 	git config core.hooksPath .githooks || true
 	# run CMake to generate and configure the build scripts
-	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json; \
-	cd $(BUILD_PREFIX); \
-	cmake ../.. $(CMAKE_OPTIONS);
+	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json
+	$(call docker_cmd,\
+		cd $(BUILD_PREFIX); \
+		cmake ../.. $(CMAKE_OPTIONS)
+	)
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
 %: $(BUILD_PREFIX)/$(BUILD_FILE)
-	@set -o xtrace; \
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cmake --build $(BUILD_PREFIX) --target $@ -- $(JOB_FLAG) ${a};
+	$(call docker_cmd,\
+		export CTEST_OUTPUT_ON_FAILURE=1; \
+		cmake --build $(BUILD_PREFIX) --target $@ -- $(JOB_FLAG) ${a} \
+	)
 
 # All the Makefiles read themselves and get matched if a target exists for them,
 # so they will get matched by a Match anything target %:. This target is here to
@@ -158,81 +165,17 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 Makefile:
 	;
 
-.PHONY: cmd
-cmd: $(BUILD_PREFIX)/$(BUILD_FILE)
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cd $(BUILD_PREFIX); \
-	${a};
-
-
 .PHONY: ctest
 ctest:
-	export CTEST_OUTPUT_ON_FAILURE=1; \
-	cd $(BUILD_PREFIX); \
-	ctest ${a};
-
-
-DOCKER_IMAGE_NAME ?= c-and-cpp-env
-
-.PHONY: docker-build
-docker-build:
-	docker build --tag $(DOCKER_IMAGE_NAME) .
-
-.PHONY: docker-clean-build
-docker-clean-build:
-	docker build --no-cache --tag $(DOCKER_IMAGE_NAME) .
-
-UID=$(shell id -u)
-GID=$(shell id -g)
-
-.PHONY: docker-up
-docker-up:
-	export UID=${UID}; \
-	export GID=${GID}; \
-	docker-compose up -d
+	$(call docker_cmd,\
+		cd $(BUILD_PREFIX);\
+		ctest ${a}\
+	)
 
 .PHONY: docker-run
 docker-run:
-	export UID=${UID}; \
-	export GID=${GID}; \
-	docker-compose run dev
+	$(DOCKER_CMD)
 
 .PHONY: docker-down
 docker-down:
 	docker-compose down
-
-.PHONY: docker-run
-docker-run:
-	docker run \
-	--name $(DOCKER_IMAGE_NAME) \
-	--volume ${PWD}:${PWD} \
-	--workdir=${PWD} \
-	--tty \
-	--interactive \
-	--detach \
-	--rm \
-	--volume="/etc/group:/etc/group:ro" \
-	--volume="/etc/passwd:/etc/passwd:ro" \
-	--volume="/etc/shadow:/etc/shadow:ro" \
-	--env="DISPLAY" \
-	--net=host \
-	--env GID=$$GID \
-	--env UID=$$UID \
-	--env USER=$$USER \
-	$(DOCKER_IMAGE_NAME)
-
-
-.PHONY: docker-setup
-docker-setup: docker-build docker-run
-
-.PHONY: docker-attach
-docker-attach:
-	docker attach $(DOCKER_IMAGE_NAME)
-
-.PHONY: docker-stop
-docker-stop:
-	docker stop $(DOCKER_IMAGE_NAME)
-
-.PHONY: docker-exec
-docker-exec:
-	docker exec $(DOCKER_IMAGE_NAME) /bin/sh -c "${a}"
