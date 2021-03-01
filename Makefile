@@ -148,7 +148,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 	ln -sf $(BUILD_PREFIX)/compile_commands.json compile_commands.json
 	$(call docker_cmd,\
 		cd $(BUILD_PREFIX); \
-		cmake ../.. $(CMAKE_OPTIONS)
+		cmake ../.. $(CMAKE_OPTIONS) \
 	)
 
 # Other (custom) targets are passed through to the cmake-generated $(BUILD_FILE)
