@@ -38,7 +38,3 @@ RUN apt install -y \
 RUN python3.8 -m pip install \
         cmake \
         gersemi
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/bin/bash"]

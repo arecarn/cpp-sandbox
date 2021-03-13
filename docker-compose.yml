@@ -1,18 +1,33 @@
 ---
 version: "3.3"
 services:
+  # container name
   dev:
+
+    # keep stdin open even if not attached
     stdin_open: true
+
+    # allocate a pseudo-tty
     tty: true
+
+    # build Dockerfile in the same directory as this file
     build: .
-    working_dir: ${PWD}
+
+    # mount the current directory inside the container
     volumes:
       - ${PWD}:${PWD}
-      - /etc/group:/etc/group:ro
-      - /etc/passwd:/etc/passwd:ro
-      - /etc/shadow:/etc/shadow:ro
+
+    # when entering the container stay in the current directory
+    working_dir: ${PWD}
+
+    # container environment variables
     environment:
       - DISPLAY=${DISPLAY}
       - GID=${GID}
       - UID=${UID}
       - USER=${USER}
+
+    # start a bash session
+    command: ["bash"]
+
+    entrypoint: ${PWD}/entrypoint.sh

@@ -172,10 +172,14 @@ ctest:
 		ctest ${a}\
 	)
 
-.PHONY: docker-run
-docker-run:
+.PHONY: docker-shell
+docker-shell:
 	$(DOCKER_CMD)
 
 .PHONY: docker-down
 docker-down:
 	docker-compose down
+
+.PHONY: docker-build
+docker-build:
+	docker-compose build
