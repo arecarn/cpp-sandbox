@@ -11,7 +11,7 @@ services:
     tty: true
 
     # build Dockerfile in the same directory as this file
-    build: .
+    build: tools/docker/Dockerfile
 
     # mount the current directory inside the container
     volumes:
@@ -30,4 +30,4 @@ services:
     # start a bash session
     command: ["bash"]
 
-    entrypoint: ${PWD}/entrypoint.sh
+    entrypoint: ${PWD}/tools/docker/entrypoint.sh
