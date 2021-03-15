@@ -369,59 +369,61 @@ enum StateDemoId : StateId
 
 // clang-format off
 TestHsm::TestHsm(Actions& actions)
-    : Hsm {m_top_state}
+    : Hsm {InitalState{&m_top_state}}
     , m_top_state {
         Top_Id,
-        nullptr,
-        event_handler(&TestHsm::top_handler),
-        init_handler(&TestHsm::top_init),
-        entry_handler(&TestHsm::top_entry),
-        exit_handler(&TestHsm::top_exit),
-        &m_s1_state
+        SuperState{},
+        EventHandler{&TestHsm::top_handler},
+        InitHandler{&TestHsm::top_init},
+        EntryHandler{&TestHsm::top_entry},
+        ExitHandler{&TestHsm::top_exit},
+        InitalState{&m_s1_state}
     }
-    , m_s1_state {
-        S1_Id,
-        &m_top_state,
-        event_handler(&TestHsm::s1_handler),
-        init_handler(&TestHsm::s1_init),
-        entry_handler(&TestHsm::s1_entry),
-        exit_handler(&TestHsm::s1_exit),
-        &m_s11_state
-    }
-    , m_s11_state {
-        S11_Id,
-        &m_s1_state,
-        event_handler(&TestHsm::s11_handler),
-        init_handler(nullptr),
-        entry_handler(&TestHsm::s11_entry),
-        exit_handler(&TestHsm::s11_exit)
-    }
-    , m_s2_state {
-        S2_Id,
-        &m_top_state,
-        event_handler(&TestHsm::s2_handler),
-        init_handler(&TestHsm::s2_init),
-        entry_handler(&TestHsm::s2_entry),
-        exit_handler(&TestHsm::s2_exit),
-        &m_s21_state
-    }
-    , m_s21_state {
-        S21_Id,
-        &m_s2_state,
-        event_handler(&TestHsm::s21_handler),
-        init_handler(&TestHsm::s21_init),
-        entry_handler(&TestHsm::s21_entry),
-        exit_handler(&TestHsm::s21_exit),
-        &m_s211_state
-    }
-    , m_s211_state {
-        S211_Id,
-        &m_s21_state,
-        event_handler(&TestHsm::s211_handler),
-        init_handler(nullptr),
-        entry_handler(&TestHsm::s211_entry),
-        exit_handler(&TestHsm::s211_exit)
-    }
+        , m_s1_state {
+            S1_Id,
+            SuperState{&m_top_state},
+            EventHandler{&TestHsm::s1_handler},
+            InitHandler{&TestHsm::s1_init},
+            EntryHandler{&TestHsm::s1_entry},
+            ExitHandler{&TestHsm::s1_exit},
+            InitalState{&m_s11_state}
+        }
+            , m_s11_state {
+                S11_Id,
+                SuperState{&m_s1_state},
+                EventHandler{&TestHsm::s11_handler},
+                InitHandler{},
+                EntryHandler{&TestHsm::s11_entry},
+                ExitHandler{&TestHsm::s11_exit},
+                InitalState{}
+            }
+        , m_s2_state {
+            S2_Id,
+            SuperState{&m_top_state},
+            EventHandler{&TestHsm::s2_handler},
+            InitHandler{&TestHsm::s2_init},
+            EntryHandler{&TestHsm::s2_entry},
+            ExitHandler{&TestHsm::s2_exit},
+            InitalState{&m_s21_state}
+        }
+            , m_s21_state {
+                S21_Id,
+                SuperState{&m_s2_state},
+                EventHandler{&TestHsm::s21_handler},
+                InitHandler{&TestHsm::s21_init},
+                EntryHandler{&TestHsm::s21_entry},
+                ExitHandler{&TestHsm::s21_exit},
+                InitalState{&m_s211_state}
+            }
+                , m_s211_state {
+                    S211_Id,
+                    SuperState{&m_s21_state},
+                    EventHandler{&TestHsm::s211_handler},
+                    InitHandler{},
+                    EntryHandler{&TestHsm::s211_entry},
+                    ExitHandler{&TestHsm::s211_exit},
+                    InitalState{}
+                }
     , m_actions {actions}
 {
 }

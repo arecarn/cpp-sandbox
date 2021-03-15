@@ -4,21 +4,22 @@
 
 // State
 ////////////////////////////////////////////////////////////////////////////////
+
 State::State(
     StateId id,
-    State* super_state,
+    SuperState super_state,
     EventHandler event_handler,
-    Handler init_handler,
-    Handler entry_handler,
-    Handler exit_handler,
-    State* inital_state)
-    : m_super_state(super_state)
-    , m_event_handler(event_handler)
-    , m_init_handler(init_handler)
-    , m_entry_handler(entry_handler)
-    , m_exit_handler(exit_handler)
-    , m_id(id)
-    , m_inital_state(inital_state)
+    InitHandler init_handler,
+    EntryHandler entry_handler,
+    ExitHandler exit_handler,
+    InitalState inital_state)
+    : m_super_state{super_state.value()}
+    , m_event_handler{event_handler.value()}
+    , m_init_handler{init_handler.value()}
+    , m_entry_handler{entry_handler.value()}
+    , m_exit_handler{exit_handler.value()}
+    , m_id{id}
+    , m_inital_state{inital_state.value()}
 {
 }
 
@@ -26,8 +27,8 @@ State::State(
 ////////////////////////////////////////////////////////////////////////////////
 
 /// HSM constructor
-Hsm::Hsm(State& inital_state)
-    : m_current_state{&inital_state}
+Hsm::Hsm(InitalState inital_state)
+    : m_current_state{inital_state.value()}
 {
 }
 

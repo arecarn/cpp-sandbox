@@ -84,47 +84,67 @@ private:
 
 // EventHandler
 ////////////////////////////////////////////////////////////////////////////////
-using EventHandler = Result (Hsm::*)();
-
-template <typename T>
-EventHandler event_handler(T member_function)
+template <typename T, typename Param>
+class HandlerType
 {
-    return static_cast<EventHandler>(member_function);
-}
+public:
+    template <typename P>
+    explicit HandlerType(P v)
+        : m_value{static_cast<T>(v)}
+    {
+    }
 
-using Handler = void (Hsm::*)();
+    HandlerType() = default;
+    [[nodiscard]] const T& value() const {
+        return m_value;
+    }
 
-template <typename T>
-Handler entry_handler(T member_function)
-{
-    return static_cast<Handler>(member_function);
-}
+    private : const T m_value = {};
+};
 
-template <typename T>
-Handler exit_handler(T member_function)
-{
-    return static_cast<Handler>(member_function);
-}
+using EventHandlerFunction = Result (Hsm::*)();
+using EventHandler = HandlerType<EventHandlerFunction, struct EventHandlerParam>;
 
-template <typename T>
-Handler init_handler(T member_function)
-{
-    return static_cast<Handler>(member_function);
-}
-
+using HandlerFunction = void (Hsm::*)();
+using InitHandler = HandlerType<HandlerFunction, struct InitHandlerParam>;
+using EntryHandler = HandlerType<HandlerFunction, struct EntryHandlerParam>;
+using ExitHandler = HandlerType<HandlerFunction, struct ExitHandlerParam>;
 // State
 ////////////////////////////////////////////////////////////////////////////////
+
+class State;
+
+template <typename T, typename Param>
+class StateType
+{
+public:
+    explicit StateType(T v)
+        : m_value{v}
+    {
+    }
+
+    StateType() = default;
+    [[nodiscard]] const T& value() const {
+        return m_value;
+    }
+
+    private : const T m_value = {};
+};
+
+using InitalState = StateType<State*, struct InitalStateParam>;
+using SuperState = StateType<State*, struct SuperStateParam>;
+
 class State
 {
 public:
     State(
         StateId id,
-        State* super_state,
+        SuperState super_state,
         EventHandler event_handler,
-        Handler init_handler,
-        Handler entry_handler,
-        Handler exit_handler,
-        State* inital_state = nullptr);
+        InitHandler init_handler,
+        EntryHandler entry_handler,
+        ExitHandler exit_handler,
+        InitalState inital_state);
 
     [[nodiscard]] StateId id() const {
         return m_id;
@@ -167,10 +187,10 @@ public:
 
 private:
     State* const m_super_state;
-    EventHandler m_event_handler;
-    Handler m_init_handler;
-    Handler m_entry_handler;
-    Handler m_exit_handler;
+    EventHandlerFunction m_event_handler;
+    HandlerFunction m_init_handler;
+    HandlerFunction m_entry_handler;
+    HandlerFunction m_exit_handler;
     const StateId m_id;
     State* const m_inital_state;
 };
@@ -180,7 +200,7 @@ private:
 class Hsm
 {
 public:
-    explicit Hsm(State& inital_state);
+    explicit Hsm(InitalState inital_state);
     void init(); /// enter and start the top state
     void handle();
     [[nodiscard]] StateId state_id() const {
