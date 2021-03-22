@@ -4,6 +4,9 @@ services:
   # container name
   dev:
 
+    # image that can be pulled
+    image: arecarn/c-and-cpp
+
     # keep stdin open even if not attached
     stdin_open: true
 
