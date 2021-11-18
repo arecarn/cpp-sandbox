@@ -372,57 +372,50 @@ TestHsm::TestHsm(Actions& actions)
     : Hsm {InitalState{&m_top_state}}
     , m_top_state {
         Top_Id,
-        SuperState{},
         EventHandler{&TestHsm::top_handler},
-        InitHandler{&TestHsm::top_init},
         EntryHandler{&TestHsm::top_entry},
         ExitHandler{&TestHsm::top_exit},
-        InitalState{&m_s1_state}
+        Init {InitHandler{&TestHsm::top_init}, InitalState{&m_s1_state}},
     }
         , m_s1_state {
             S1_Id,
-            SuperState{&m_top_state},
             EventHandler{&TestHsm::s1_handler},
-            InitHandler{&TestHsm::s1_init},
             EntryHandler{&TestHsm::s1_entry},
             ExitHandler{&TestHsm::s1_exit},
-            InitalState{&m_s11_state}
+            Init {InitHandler{&TestHsm::s1_init}, InitalState{&m_s11_state}},
+            SuperState{&m_top_state},
         }
             , m_s11_state {
                 S11_Id,
-                SuperState{&m_s1_state},
                 EventHandler{&TestHsm::s11_handler},
-                InitHandler{},
                 EntryHandler{&TestHsm::s11_entry},
                 ExitHandler{&TestHsm::s11_exit},
-                InitalState{}
+                Init{},
+                SuperState{&m_s1_state},
             }
         , m_s2_state {
             S2_Id,
-            SuperState{&m_top_state},
             EventHandler{&TestHsm::s2_handler},
-            InitHandler{&TestHsm::s2_init},
             EntryHandler{&TestHsm::s2_entry},
             ExitHandler{&TestHsm::s2_exit},
-            InitalState{&m_s21_state}
+            Init {InitHandler{&TestHsm::s2_init}, InitalState{&m_s21_state}},
+            SuperState{&m_top_state},
         }
             , m_s21_state {
                 S21_Id,
-                SuperState{&m_s2_state},
                 EventHandler{&TestHsm::s21_handler},
-                InitHandler{&TestHsm::s21_init},
                 EntryHandler{&TestHsm::s21_entry},
                 ExitHandler{&TestHsm::s21_exit},
-                InitalState{&m_s211_state}
+                Init {InitHandler{&TestHsm::s21_init}, InitalState{&m_s211_state}},
+                SuperState{&m_s2_state},
             }
                 , m_s211_state {
                     S211_Id,
-                    SuperState{&m_s21_state},
                     EventHandler{&TestHsm::s211_handler},
-                    InitHandler{},
                     EntryHandler{&TestHsm::s211_entry},
                     ExitHandler{&TestHsm::s211_exit},
-                    InitalState{}
+                    Init {},
+                    SuperState{&m_s21_state},
                 }
     , m_actions {actions}
 {

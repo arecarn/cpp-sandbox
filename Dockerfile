@@ -1,5 +1,4 @@
-FROM ubuntu:18.04
-
+FROM ubuntu:20.04
 
 RUN echo "Updating Ubuntu"
 RUN apt-get update --fix-missing && \
@@ -23,18 +22,17 @@ RUN apt install -y \
         graphviz \
         make \
         ninja-build \
-        python3 \
+        python \
         python3-pip \
         tar \
         unzip \
         libsfml-dev \
-        python3.8
 
 RUN apt install -y \
     x11-apps \
     gosu
 
 
-RUN python3.8 -m pip install \
+RUN python -m pip install \
         cmake \
         gersemi

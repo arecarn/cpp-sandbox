@@ -7,19 +7,18 @@
 
 State::State(
     StateId id,
-    SuperState super_state,
     EventHandler event_handler,
-    InitHandler init_handler,
     EntryHandler entry_handler,
     ExitHandler exit_handler,
-    InitalState inital_state)
+    Init init,
+    SuperState super_state)
     : m_super_state{super_state.value()}
     , m_event_handler{event_handler.value()}
-    , m_init_handler{init_handler.value()}
+    , m_init_handler{init.handler.value()}
     , m_entry_handler{entry_handler.value()}
     , m_exit_handler{exit_handler.value()}
     , m_id{id}
-    , m_inital_state{inital_state.value()}
+    , m_inital_state{init.state.value()}
 {
 }
 

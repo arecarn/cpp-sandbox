@@ -162,8 +162,7 @@ $(BUILD_PREFIX)/$(BUILD_FILE):
 # so they will get matched by a Match anything target %:. This target is here to
 # prevent the %: Match-anything target from matching, and instead and do
 # nothing.
-Makefile:
-	;
+Makefile: ;
 
 .PHONY: ctest
 ctest:

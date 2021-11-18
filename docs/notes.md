@@ -54,6 +54,13 @@ FIFO
 
 ## Binary Heap
 
+### Description
+
+
+can be a min or max heap
+
+  `std::priority_queue<T>`
+
 ### Complexity
 | Algorithm      | Average  | Worst case |
 |----------------|----------|------------|

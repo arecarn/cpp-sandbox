@@ -134,17 +134,22 @@ public:
 using InitalState = StateType<State*, struct InitalStateParam>;
 using SuperState = StateType<State*, struct SuperStateParam>;
 
+struct Init
+{
+    InitHandler handler;
+    InitalState state;
+};
+
 class State
 {
 public:
     State(
         StateId id,
-        SuperState super_state,
         EventHandler event_handler,
-        InitHandler init_handler,
-        EntryHandler entry_handler,
-        ExitHandler exit_handler,
-        InitalState inital_state);
+        EntryHandler entry_handler = EntryHandler{},
+        ExitHandler exit_handler = ExitHandler{},
+        Init init = Init{},
+        SuperState super_state = SuperState{});
 
     [[nodiscard]] StateId id() const {
         return m_id;
