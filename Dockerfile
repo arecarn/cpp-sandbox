@@ -26,7 +26,7 @@ RUN apt install -y \
         python3-pip \
         tar \
         unzip \
-        libsfml-dev \
+        libsfml-dev
 
 RUN apt install -y \
     x11-apps \
