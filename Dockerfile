@@ -22,7 +22,7 @@ RUN apt install -y \
         graphviz \
         make \
         ninja-build \
-        python \
+        python3 \
         python3-pip \
         tar \
         unzip \
@@ -33,6 +33,6 @@ RUN apt install -y \
     gosu
 
 
-RUN python -m pip install \
+RUN python -m pip3 install \
         cmake \
         gersemi

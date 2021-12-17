@@ -172,7 +172,7 @@ ctest:
 	)
 
 .PHONY: docker-shell
-docker-shell:
+shell:
 	$(DOCKER_CMD)
 
 .PHONY: docker-down
