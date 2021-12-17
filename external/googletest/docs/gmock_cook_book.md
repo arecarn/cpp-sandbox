@@ -251,9 +251,9 @@ tests.
 
 ### Mocking Free Functions
 
-It's possible to use gMock to mock a free function (i.e. a C-style function or a
-static method). You just need to rewrite your code to use an interface (abstract
-class).
+It is not possible to directly mock a free function (i.e. a C-style function or
+a static method). If you need to, you can rewrite your code to use an interface
+(abstract class).
 
 Instead of calling a free function (say, `OpenFile`) directly, introduce an
 interface for it and have a concrete subclass that calls the free function:
@@ -268,7 +268,7 @@ class FileInterface {
 class File : public FileInterface {
  public:
   ...
-  virtual bool Open(const char* path, const char* mode) {
+  bool Open(const char* path, const char* mode) override {
      return OpenFile(path, mode);
   }
 };
@@ -512,9 +512,9 @@ The trick is to redispatch the method in the mock class:
 class ScopedMockLog : public LogSink {
  public:
   ...
-  virtual void send(LogSeverity severity, const char* full_filename,
+  void send(LogSeverity severity, const char* full_filename,
                     const char* base_filename, int line, const tm* tm_time,
-                    const char* message, size_t message_len) {
+                    const char* message, size_t message_len) override {
     // We are only interested in the log severity, full file name, and
     // log message.
     Log(severity, full_filename, std::string(message, message_len));
@@ -1084,11 +1084,12 @@ using ::testing::Lt;
 ```
 
 says that `Blah` will be called with arguments `x`, `y`, and `z` where `x < y <
-z`. Note that in this example, it wasn't necessary specify the positional
+z`. Note that in this example, it wasn't necessary to specify the positional
 matchers.
 
 As a convenience and example, gMock provides some matchers for 2-tuples,
-including the `Lt()` matcher above. See [here](#MultiArgMatchers) for the
+including the `Lt()` matcher above. See
+[Multi-argument Matchers](reference/matchers.md#MultiArgMatchers) for the
 complete list.
 
 Note that if you want to pass the arguments to a predicate of your own (e.g.
@@ -1136,59 +1137,17 @@ Matches(AllOf(Ge(0), Le(100), Ne(50)))
 
 ### Using Matchers in googletest Assertions
 
-Since matchers are basically predicates that also know how to describe
-themselves, there is a way to take advantage of them in googletest assertions.
-It's called `ASSERT_THAT` and `EXPECT_THAT`:
-
-```cpp
-  ASSERT_THAT(value, matcher);  // Asserts that value matches matcher.
-  EXPECT_THAT(value, matcher);  // The non-fatal version.
-```
-
-For example, in a googletest test you can write:
-
-```cpp
-#include "gmock/gmock.h"
-
-using ::testing::AllOf;
-using ::testing::Ge;
-using ::testing::Le;
-using ::testing::MatchesRegex;
-using ::testing::StartsWith;
-
-...
-  EXPECT_THAT(Foo(), StartsWith("Hello"));
-  EXPECT_THAT(Bar(), MatchesRegex("Line \\d+"));
-  ASSERT_THAT(Baz(), AllOf(Ge(5), Le(10)));
-```
-
-which (as you can probably guess) executes `Foo()`, `Bar()`, and `Baz()`, and
-verifies that:
-
-*   `Foo()` returns a string that starts with `"Hello"`.
-*   `Bar()` returns a string that matches regular expression `"Line \\d+"`.
-*   `Baz()` returns a number in the range [5, 10].
-
-The nice thing about these macros is that *they read like English*. They
-generate informative messages too. For example, if the first `EXPECT_THAT()`
-above fails, the message will be something like:
-
-```cpp
-Value of: Foo()
-  Actual: "Hi, world!"
-Expected: starts with "Hello"
-```
-
-**Credit:** The idea of `(ASSERT|EXPECT)_THAT` was borrowed from Joe Walnes'
-Hamcrest project, which adds `assertThat()` to JUnit.
+See [`EXPECT_THAT`](reference/assertions.md#EXPECT_THAT) in the Assertions
+Reference.
 
 ### Using Predicates as Matchers
 
-gMock provides a [built-in set](gmock_cheat_sheet.md#MatcherList) of matchers.
-In case you find them lacking, you can use an arbitrary unary predicate function
-or functor as a matcher - as long as the predicate accepts a value of the type
-you want. You do this by wrapping the predicate inside the `Truly()` function,
-for example:
+gMock provides a set of built-in matchers for matching arguments with expected
+values—see the [Matchers Reference](reference/matchers.md) for more information.
+In case you find the built-in set lacking, you can use an arbitrary unary
+predicate function or functor as a matcher - as long as the predicate accepts a
+value of the type you want. You do this by wrapping the predicate inside the
+`Truly()` function, for example:
 
 ```cpp
 using ::testing::Truly;
@@ -1493,7 +1452,7 @@ the pointer is copied. When the last matcher that references the implementation
 object dies, the implementation object will be deleted.
 
 Therefore, if you have some complex matcher that you want to use again and
-again, there is no need to build it everytime. Just assign it to a matcher
+again, there is no need to build it every time. Just assign it to a matcher
 variable and use that variable repeatedly! For example,
 
 ```cpp
@@ -1752,7 +1711,7 @@ the test should reflect our real intent, instead of being overly constraining.
 
 gMock allows you to impose an arbitrary DAG (directed acyclic graph) on the
 calls. One way to express the DAG is to use the
-[After](gmock_cheat_sheet.md#AfterClause) clause of `EXPECT_CALL`.
+[`After` clause](reference/mocking.md#EXPECT_CALL.After) of `EXPECT_CALL`.
 
 Another way is via the `InSequence()` clause (not the same as the `InSequence`
 class), which we borrowed from jMock 2. It's less flexible than `After()`, but
@@ -1795,7 +1754,7 @@ specifies the following DAG (where `s1` is `A -> B`, and `s2` is `A -> C -> D`):
        |
   A ---|
        |
-        +---> C ---> D
+       +---> C ---> D
 ```
 
 This means that A must occur before B and C, and C must occur before D. There's
@@ -2021,6 +1980,7 @@ If the mock method also needs to return a value as well, you can chain
 
 ```cpp
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
@@ -2074,10 +2034,7 @@ class MockRolodex : public Rolodex {
 }
 ...
   MockRolodex rolodex;
-  vector<string> names;
-  names.push_back("George");
-  names.push_back("John");
-  names.push_back("Thomas");
+  vector<string> names = {"George", "John", "Thomas"};
   EXPECT_CALL(rolodex, GetNames(_))
       .WillOnce(SetArrayArgument<0>(names.begin(), names.end()));
 ```
@@ -2645,7 +2602,7 @@ efficient. When the last action that references the implementation object dies,
 the implementation object will be deleted.
 
 If you have some complex action that you want to use again and again, you may
-not have to build it from scratch everytime. If the action doesn't have an
+not have to build it from scratch every time. If the action doesn't have an
 internal state (i.e. if it always does the same thing no matter how many times
 it has been called), you can assign it to an action variable and use that
 variable repeatedly. For example:
@@ -2705,17 +2662,9 @@ behavior nondeterministic. A better way is to use gMock actions and
 `Notification` objects to force your asynchronous test to behave synchronously.
 
 ```cpp
-using ::testing::DoAll;
-using ::testing::InvokeWithoutArgs;
-using ::testing::Return;
-
 class MockEventDispatcher : public EventDispatcher {
   MOCK_METHOD(bool, DispatchEvent, (int32), (override));
 };
-
-ACTION_P(Notify, notification) {
-  notification->Notify();
-}
 
 TEST(EventQueueTest, EnqueueEventTest) {
   MockEventDispatcher mock_event_dispatcher;
@@ -2724,7 +2673,7 @@ TEST(EventQueueTest, EnqueueEventTest) {
   const int32 kEventId = 321;
   absl::Notification done;
   EXPECT_CALL(mock_event_dispatcher, DispatchEvent(kEventId))
-      .WillOnce(Notify(&done));
+      .WillOnce([&done] { done.Notify(); });
 
   event_queue.EnqueueEvent(kEventId);
   done.WaitForNotification();
@@ -3023,31 +2972,21 @@ indicate whether the verification was successful (`true` for yes), so you can
 wrap that function call inside a `ASSERT_TRUE()` if there is no point going
 further when the verification has failed.
 
-### Using Check Points {#UsingCheckPoints}
+Do not set new expectations after verifying and clearing a mock after its use.
+Setting expectations after code that exercises the mock has undefined behavior.
+See [Using Mocks in Tests](gmock_for_dummies.md#using-mocks-in-tests) for more
+information.
 
-Sometimes you may want to "reset" a mock object at various check points in your
-test: at each check point, you verify that all existing expectations on the mock
-object have been satisfied, and then you set some new expectations on it as if
-it's newly created. This allows you to work with a mock object in "phases" whose
-sizes are each manageable.
+### Using Checkpoints {#UsingCheckPoints}
 
-One such scenario is that in your test's `SetUp()` function, you may want to put
-the object you are testing into a certain state, with the help from a mock
-object. Once in the desired state, you want to clear all expectations on the
-mock, such that in the `TEST_F` body you can set fresh expectations on it.
+Sometimes you might want to test a mock object's behavior in phases whose sizes
+are each manageable, or you might want to set more detailed expectations about
+which API calls invoke which mock functions.
 
-As you may have figured out, the `Mock::VerifyAndClearExpectations()` function
-we saw in the previous recipe can help you here. Or, if you are using
-`ON_CALL()` to set default actions on the mock object and want to clear the
-default actions as well, use `Mock::VerifyAndClear(&mock_object)` instead. This
-function does what `Mock::VerifyAndClearExpectations(&mock_object)` does and
-returns the same `bool`, **plus** it clears the `ON_CALL()` statements on
-`mock_object` too.
-
-Another trick you can use to achieve the same effect is to put the expectations
-in sequences and insert calls to a dummy "check-point" function at specific
-places. Then you can verify that the mock function calls do happen at the right
-time. For example, if you are exercising code:
+A technique you can use is to put the expectations in a sequence and insert
+calls to a dummy "checkpoint" function at specific places. Then you can verify
+that the mock function calls do happen at the right time. For example, if you
+are exercising the code:
 
 ```cpp
   Foo(1);
@@ -3056,7 +2995,7 @@ time. For example, if you are exercising code:
 ```
 
 and want to verify that `Foo(1)` and `Foo(3)` both invoke `mock.Bar("a")`, but
-`Foo(2)` doesn't invoke anything. You can write:
+`Foo(2)` doesn't invoke anything, you can write:
 
 ```cpp
 using ::testing::MockFunction;
@@ -3082,10 +3021,10 @@ TEST(FooTest, InvokesBarCorrectly) {
 }
 ```
 
-The expectation spec says that the first `Bar("a")` must happen before check
-point "1", the second `Bar("a")` must happen after check point "2", and nothing
-should happen between the two check points. The explicit check points make it
-easy to tell which `Bar("a")` is called by which call to `Foo()`.
+The expectation spec says that the first `Bar("a")` call must happen before
+checkpoint "1", the second `Bar("a")` call must happen after checkpoint "2", and
+nothing should happen between the two checkpoints. The explicit checkpoints make
+it clear which `Bar("a")` is called by which call to `Foo()`.
 
 ### Mocking Destructors
 
@@ -3379,7 +3318,7 @@ or,
 ```cpp
   using ::testing::Not;
   ...
-  // Verifies that two values are divisible by 7.
+  // Verifies that a value is divisible by 7 and the other is not.
   EXPECT_THAT(some_expression, IsDivisibleBy7());
   EXPECT_THAT(some_other_expression, Not(IsDivisibleBy7()));
 ```
@@ -3704,7 +3643,7 @@ class NotNullMatcher {
   }
 
   // Describes the property of a value matching this matcher.
-  void DescribeTo(std::ostream& os) const { *os << "is not NULL"; }
+  void DescribeTo(std::ostream* os) const { *os << "is not NULL"; }
 
   // Describes the property of a value NOT matching this matcher.
   void DescribeNegationTo(std::ostream* os) const { *os << "is NULL"; }
@@ -4250,7 +4189,7 @@ This implementation class does *not* need to inherit from any particular class.
 What matters is that it must have a `Perform()` method template. This method
 template takes the mock function's arguments as a tuple in a **single**
 argument, and returns the result of the action. It can be either `const` or not,
-but must be invokable with exactly one template argument, which is the result
+but must be invocable with exactly one template argument, which is the result
 type. In other words, you must be able to call `Perform<R>(args)` where `R` is
 the mock function's return type and `args` is its arguments in a tuple.
 
