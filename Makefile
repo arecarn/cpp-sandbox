@@ -1,6 +1,14 @@
 # get the normalized current directory
 THIS_DIR := .
 
+COMPILERS := g++ clang++
+COMPILER ?= g++
+ifneq ($(filter $(COMPILER),$(COMPILERS)),)
+    $(info $(COMPILER) exists in $(COMPILERS))
+else
+    $(error $(COMPILER) is not a valid COMPILER value it should be one of the following: $(COMPILER))
+endif
+
 BUILD_TYPES := Debug Release luasan tsan
 # Default to a Debug build. If you want to enable debugging flags, run
 # "make BT=Release"
@@ -16,7 +24,7 @@ BUILD_TYPE_LOWER := $(shell echo $(BT) | tr A-Z a-z)
 BUILD_DIR ?= build
 
 # Figure out where to build the software. Use BUILD_PREFIX if it was passed in.
-BUILD_PREFIX ?= $(THIS_DIR)/$(BUILD_DIR)/$(BUILD_TYPE_LOWER)
+BUILD_PREFIX ?= $(THIS_DIR)/$(BUILD_DIR)/$(BUILD_TYPE_LOWER)_$(COMPILER)
 
 BUILD_TOOL ?= ninja
 ifneq "$(BUILD_TOOL)" "ninja"
@@ -38,17 +46,8 @@ JOB_FLAG := $(filter -j%, $(subst -j ,-j,$(shell ps T | grep "^\s*$(BUILD_TOOL_P
 
 INSTALL_PREFIX ?= $(shell echo $(THIS_DIR)/$(BUILD_DIR)/$(BUILD_TYPE_LOWER)/install )
 
-# Default to a Debug build. If you want to enable debugging flags, run
-# "make BT=Release"
-CLANG_TIDY_FIX ?= OFF
-ifneq "$(CLANG_TIDY_FIX)" "ON"
-    ifneq "$(CLANG_TIDY_FIX)" "OFF"
-        $(error Bad CLANG_TIDY_FIX value "$(CLANG_TIDY_FIX)" please use "ON" or "OFF")
-    endif
-endif
-
 ifeq "$(CMAKE_OPTIONS)" ""
-    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCLANG_TIDY_FIX=$(CLANG_TIDY_FIX) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BT)
+    CMAKE_OPTIONS := -G $(CMAKE_GENERATOR) -DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) -DCMAKE_BUILD_TYPE=$(BT) -DCMAKE_CXX_COMPILER=$(COMPILER)
 else
    # force cmake to be re-run if we change the cmake options
    $(shell rm $(BUILD_PREFIX)/$(BUILD_FILE))
@@ -74,19 +73,21 @@ endif
 default: all ctest
 
 define build_type_template =
-$(1):
+$(1)-$(2):
 	@set -o xtrace; \
-	make BT=$(1)
+	make BT=$(1) COMPILER=$(2)
 endef
 
 $(foreach bt, $(BUILD_TYPES), \
-    $(eval \
-        $(call build_type_template,$(bt)) \
+    $(foreach comp, $(COMPILERS), \
+        $(eval \
+            $(call build_type_template,$(bt),$(comp)) \
+        ) \
     ) \
 )
 
 .PHONY: full
-full: $(BUILD_TYPES)
+full: $(foreach bt, $(BUILD_TYPES), $(addprefix $(bt)-, $(COMPILERS)))
 
 
 .PHONY: h
