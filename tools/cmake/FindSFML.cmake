@@ -119,8 +119,8 @@ if(SFML_FIND_VERSION AND SFML_INCLUDE_DIR)
     endif()
     math(
         EXPR
-        SFML_REQUESTED_VERSION
-        "${SFML_FIND_VERSION_MAJOR} * 10000 + ${SFML_FIND_VERSION_MINOR} * 100 + ${SFML_FIND_VERSION_PATCH}"
+            SFML_REQUESTED_VERSION
+            "${SFML_FIND_VERSION_MAJOR} * 10000 + ${SFML_FIND_VERSION_MINOR} * 100 + ${SFML_FIND_VERSION_PATCH}"
     )
 
     # if we could extract them, compare with the requested version number
@@ -128,8 +128,8 @@ if(SFML_FIND_VERSION AND SFML_INCLUDE_DIR)
         # transform version numbers to an integer
         math(
             EXPR
-            SFML_VERSION
-            "${SFML_VERSION_MAJOR} * 10000 + ${SFML_VERSION_MINOR} * 100 + ${SFML_VERSION_PATCH}"
+                SFML_VERSION
+                "${SFML_VERSION_MAJOR} * 10000 + ${SFML_VERSION_MINOR} * 100 + ${SFML_VERSION_PATCH}"
         )
 
         # compare them
@@ -159,73 +159,49 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
         # release library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
 
         # debug library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}-d
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}-d
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
     else()
         # static release library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_RELEASE
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}-s
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}-s
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
 
         # static debug library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_STATIC_DEBUG
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}-s-d
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}-s-d
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
 
         # dynamic release library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_RELEASE
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
 
         # dynamic debug library
         find_library(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DYNAMIC_DEBUG
-            NAMES
-            ${FIND_SFML_COMPONENT_NAME}-d
-            PATH_SUFFIXES
-            lib64
-            lib
-            PATHS
-            ${FIND_SFML_PATHS}
+            NAMES ${FIND_SFML_COMPONENT_NAME}-d
+            PATH_SUFFIXES lib64 lib
+            PATHS ${FIND_SFML_PATHS}
         )
 
         # choose the entries that fit the requested link type
@@ -256,8 +232,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
 
     if(
         SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
-        OR
-        SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
+        OR SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
     )
         # library found
         set(SFML_${FIND_SFML_COMPONENT_UPPER}_FOUND TRUE)
@@ -265,8 +240,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
         # if both are found, set SFML_XXX_LIBRARY to contain both
         if(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
-            AND
-            SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
+            AND SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
         )
             set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY
                 debug
@@ -279,8 +253,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
         # if only one debug/release variant is found, set the other to be equal to the found one
         if(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
-            AND
-            NOT SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
+            AND NOT SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
         )
             # debug and not release
             set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
@@ -292,8 +265,7 @@ foreach(FIND_SFML_COMPONENT ${SFML_FIND_COMPONENTS})
         endif()
         if(
             SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_RELEASE
-            AND
-            NOT SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
+            AND NOT SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
         )
             # release and not debug
             set(SFML_${FIND_SFML_COMPONENT_UPPER}_LIBRARY_DEBUG
@@ -353,12 +325,9 @@ if(SFML_STATIC_LIBRARIES)
         # No lookup in environment variables (PATH on Windows), as they may contain wrong library versions
         find_library(
             ${output}
-            NAMES
-            ${ARGN}
-            PATHS
-            ${FIND_SFML_PATHS}
-            PATH_SUFFIXES
-            lib
+            NAMES ${ARGN}
+            PATHS ${FIND_SFML_PATHS}
+            PATH_SUFFIXES lib
             NO_SYSTEM_ENVIRONMENT_PATH
         )
         if(${${output}} STREQUAL "${output}-NOTFOUND")

@@ -4,7 +4,7 @@ THIS_DIR := .
 COMPILERS := g++ clang++
 COMPILER ?= g++
 ifneq ($(filter $(COMPILER),$(COMPILERS)),)
-    $(info $(COMPILER) exists in $(COMPILERS))
+    $(info Using Comiler: $(COMPILER))
 else
     $(error $(COMPILER) is not a valid COMPILER value it should be one of the following: $(COMPILER))
 endif
@@ -14,7 +14,7 @@ BUILD_TYPES := Debug Release luasan tsan
 # "make BT=Release"
 BT ?= Debug
 ifneq ($(filter $(BT),$(BUILD_TYPES)),)
-    $(info $(BT) exists in $(BUILD_TYPES))
+    $(info Using BUILD_TYPES: $(BT))
 else
     $(error $(BT) is not a valid BT value it should be one of the following: $(BUILD_TYPES))
 endif

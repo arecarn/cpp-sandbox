@@ -37,6 +37,23 @@ if(DOXYGEN_FOUND)
 endif()
 
 ################################################################################
+#  cppcheck Static Analysis Target
+################################################################################
+list(APPEND CPPCHECK_OTHER_ARGS
+    "--force"
+    "--enable=all"
+    "--inconclusive"
+    "--force"
+    "--inline-suppr"
+    "--project=${PROJECT_SOURCE_DIR}/compile_commands.json"
+)
+set(APPEND CPPCHECK_EXCLUDES
+    "${CMAKE_SOURCE_DIR}/excludes"
+)
+find_package(Cppcheck)
+
+
+################################################################################
 # Clang Format Source Formatting Target
 ################################################################################
 include(clang_format)
