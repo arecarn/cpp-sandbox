@@ -33,6 +33,6 @@ RUN apt install -y \
     gosu
 
 
-RUN python -m pip3 install \
+RUN python3 -m pip install \
         cmake \
         gersemi
