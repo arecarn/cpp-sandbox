@@ -12,13 +12,13 @@ State::State(
     ExitHandler exit_handler,
     Init init,
     SuperState super_state)
-    : m_super_state{super_state.value()}
-    , m_event_handler{event_handler.value()}
-    , m_init_handler{init.handler.value()}
-    , m_entry_handler{entry_handler.value()}
-    , m_exit_handler{exit_handler.value()}
-    , m_id{id}
-    , m_inital_state{init.state.value()}
+    : m_super_state {super_state.value()}
+    , m_event_handler {event_handler.value()}
+    , m_init_handler {init.handler.value()}
+    , m_entry_handler {entry_handler.value()}
+    , m_exit_handler {exit_handler.value()}
+    , m_id {id}
+    , m_inital_state {init.state.value()}
 {
 }
 
@@ -27,7 +27,7 @@ State::State(
 
 /// HSM constructor
 Hsm::Hsm(InitalState inital_state)
-    : m_current_state{inital_state.value()}
+    : m_current_state {inital_state.value()}
 {
 }
 

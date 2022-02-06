@@ -119,11 +119,12 @@ public:
         return m_data[j];
     }
 
-    [[nodiscard]] size_t size() const {
+    [[nodiscard]] size_t size() const
+    {
         return m_size;
     }
 
-        [[nodiscard]] bool empty() const
+    [[nodiscard]] bool empty() const
     {
         return m_size == 0;
     }
@@ -134,12 +135,12 @@ public:
     }
 
 private:
-    static constexpr size_t Capacity{N};
-    static constexpr size_t Max_Index{N - 1};
-    value_type m_data[N]{};
-    int32_t m_back{0};
-    int32_t m_front{-1};
-    size_t m_size{0};
+    static constexpr size_t Capacity {N};
+    static constexpr size_t Max_Index {N - 1};
+    value_type m_data[N] {};
+    int32_t m_back {0};
+    int32_t m_front {-1};
+    size_t m_size {0};
 };
 
 #endif // RINGBUFFER_HPP

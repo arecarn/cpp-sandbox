@@ -4,7 +4,7 @@
 TEST(basic, pizza)
 {
     constexpr int N = 5;
-    Value v{N};
+    Value v {N};
     ASSERT_EQ(*v.as_int(), N);
 
     constexpr int K = 6;

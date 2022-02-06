@@ -42,27 +42,27 @@ void dutch_national_flag(std::vector<T>& v, size_t pivot_index)
 
 TEST(dutch_national_flag, one)
 {
-    constexpr size_t Pivot{1};
-    std::vector<int> input{0, 1, 2, 0, 2, 1, 1};
+    constexpr size_t Pivot {1};
+    std::vector<int> input {0, 1, 2, 0, 2, 1, 1};
     dutch_national_flag(input, Pivot);
-    const std::vector<int> expected{0, 0, 1, 1, 1, 2, 2};
+    const std::vector<int> expected {0, 0, 1, 1, 1, 2, 2};
     ASSERT_EQ(input, expected);
 }
 
 TEST(dutch_national_flag, two)
 {
-    constexpr size_t Pivot{2};
-    std::vector<int> input{0, 1, 2, 0, 2, 1, 1};
+    constexpr size_t Pivot {2};
+    std::vector<int> input {0, 1, 2, 0, 2, 1, 1};
     dutch_national_flag(input, Pivot);
-    const std::vector<int> expected{0, 1, 0, 1, 1, 2, 2};
+    const std::vector<int> expected {0, 1, 0, 1, 1, 2, 2};
     ASSERT_EQ(input, expected);
 }
 
 TEST(dutch_national_flag, zero)
 {
-    constexpr size_t Pivot{0};
-    std::vector<int> input{0, 1, 2, 0, 2, 1, 1};
+    constexpr size_t Pivot {0};
+    std::vector<int> input {0, 1, 2, 0, 2, 1, 1};
     dutch_national_flag(input, Pivot);
-    const std::vector<int> expected{0, 0, 2, 2, 1, 1, 1};
+    const std::vector<int> expected {0, 0, 2, 2, 1, 1, 1};
     ASSERT_EQ(input, expected);
 }

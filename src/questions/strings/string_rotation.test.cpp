@@ -31,7 +31,7 @@ bool string_rotation(std::string s1, std::string s2)
             {
                 return is_substring(
                     s2,
-                    std::string_view{s1}.substr(match_count));
+                    std::string_view {s1}.substr(match_count));
             }
         }
         else

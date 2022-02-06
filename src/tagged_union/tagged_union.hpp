@@ -32,7 +32,8 @@ public:
 private:
     Tag m_tag = Int;
 
-    union {
+    union
+    {
         int i;
         float f;
     };

@@ -27,16 +27,17 @@ public:
     Transition() = default;
 
     explicit Transition(State& target)
-        : m_target{&target} {}
+        : m_target {&target}
+    {
+    }
 
-              [[nodiscard]] State
-        * target() const
+    [[nodiscard]] State* target() const
     {
         return m_target;
     }
 
 private:
-    State* const m_target{nullptr};
+    State* const m_target {nullptr};
 };
 
 class Result
@@ -50,29 +51,32 @@ public:
     };
 
     explicit Result(Unhandled /*unused*/)
-        : m_state{State::Unhandled}
+        : m_state {State::Unhandled}
     {
     }
 
     explicit Result(Handled /*unused*/)
-        : m_state{State::Handled}
+        : m_state {State::Handled}
     {
     }
 
     explicit Result(Transition transition)
-        : m_state{State::Transition}
-        , m_transition{transition} {}
+        : m_state {State::Transition}
+        , m_transition {transition}
+    {
+    }
 
-              [[nodiscard]] bool event_was_handeled() const
+    [[nodiscard]] bool event_was_handeled() const
     {
         return m_state == State::Handled || m_state == State::Transition;
     }
 
-    [[nodiscard]] bool has_transition() const {
+    [[nodiscard]] bool has_transition() const
+    {
         return m_state == State::Transition;
     }
 
-        [[nodiscard]] Transition& transition()
+    [[nodiscard]] Transition& transition()
     {
         return m_transition;
     }
@@ -90,16 +94,18 @@ class HandlerType
 public:
     template <typename P>
     explicit HandlerType(P v)
-        : m_value{static_cast<T>(v)}
+        : m_value {static_cast<T>(v)}
     {
     }
 
     HandlerType() = default;
-    [[nodiscard]] const T& value() const {
+    [[nodiscard]] const T& value() const
+    {
         return m_value;
     }
 
-    private : const T m_value = {};
+private:
+    const T m_value = {};
 };
 
 using EventHandlerFunction = Result (Hsm::*)();
@@ -119,16 +125,18 @@ class StateType
 {
 public:
     explicit StateType(T v)
-        : m_value{v}
+        : m_value {v}
     {
     }
 
     StateType() = default;
-    [[nodiscard]] const T& value() const {
+    [[nodiscard]] const T& value() const
+    {
         return m_value;
     }
 
-    private : const T m_value = {};
+private:
+    const T m_value = {};
 };
 
 using InitalState = StateType<State*, struct InitalStateParam>;
@@ -146,14 +154,16 @@ public:
     State(
         StateId id,
         EventHandler event_handler,
-        EntryHandler entry_handler = EntryHandler{},
-        ExitHandler exit_handler = ExitHandler{},
-        Init init = Init{},
-        SuperState super_state = SuperState{});
+        EntryHandler entry_handler = EntryHandler {},
+        ExitHandler exit_handler = ExitHandler {},
+        Init init = Init {},
+        SuperState super_state = SuperState {});
 
-    [[nodiscard]] StateId id() const {
+    [[nodiscard]] StateId id() const
+    {
         return m_id;
-    } Result handle(Hsm* hsm)
+    }
+    Result handle(Hsm* hsm)
     {
         return (hsm->*m_event_handler)();
     }
@@ -182,10 +192,11 @@ public:
         }
     }
 
-    [[nodiscard]] State* inital_state() const {
+    [[nodiscard]] State* inital_state() const
+    {
         return m_inital_state;
     }
-        [[nodiscard]] State* super_state() const
+    [[nodiscard]] State* super_state() const
     {
         return m_super_state;
     }
@@ -208,11 +219,13 @@ public:
     explicit Hsm(InitalState inital_state);
     void init(); /// enter and start the top state
     void handle();
-    [[nodiscard]] StateId state_id() const {
+    [[nodiscard]] StateId state_id() const
+    {
         return m_current_state->id();
     }
 
-    private : static uint8_t levels_to_lca(State* source, State* target);
+private:
+    static uint8_t levels_to_lca(State* source, State* target);
     void exit_to_lca(State* source, uint8_t levels_to_lca);
     void enter_from_lca();
     void init_state();

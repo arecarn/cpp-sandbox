@@ -4,7 +4,7 @@
 
 TEST(array, static)
 {
-    const Array<int, 3> array{0, 1, 2};
+    const Array<int, 3> array {0, 1, 2};
 
     int j = 0;
     for (auto i : array)

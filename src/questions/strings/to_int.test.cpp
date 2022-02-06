@@ -59,14 +59,14 @@
 int to_int(std::string s)
 {
     int result = 0;
-    size_t i{0};
+    size_t i {0};
 
     while (s[i] == ' ' || s[i] == '\t')
     {
         i++;
     }
 
-    int sign{1};
+    int sign {1};
     if (s[i] == '-')
     {
         sign = -1;

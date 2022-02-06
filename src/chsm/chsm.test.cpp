@@ -64,8 +64,8 @@ struct Event
 
 class TestHsm : public Hsm
 {
-    int m_foo{0};
-    Event m_event{Event_Invalid};
+    int m_foo {0};
+    Event m_event {Event_Invalid};
 
 protected:
     State m_top_state;
@@ -85,11 +85,12 @@ public:
         handle();
     }
 
-    [[nodiscard]] Event event() const {
+    [[nodiscard]] Event event() const
+    {
         return m_event;
     }
 
-        [[nodiscard]] int foo() const
+    [[nodiscard]] int foo() const
     {
         return m_foo;
     }
@@ -132,12 +133,12 @@ Result TestHsm::top_handler()
         case Event_E:
         {
             m_actions.top_e();
-            return Result{Transition{m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::top_init()
@@ -164,32 +165,32 @@ Result TestHsm::s1_handler()
         case Event_A:
         {
             m_actions.s1_a();
-            return Result{Transition{m_s1_state}};
+            return Result {Transition {m_s1_state}};
         }
         case Event_B:
         {
             m_actions.s1_b();
-            return Result{Transition{m_s11_state}};
+            return Result {Transition {m_s11_state}};
         }
         case Event_C:
         {
             m_actions.s1_c();
-            return Result{Transition{m_s2_state}};
+            return Result {Transition {m_s2_state}};
         }
         case Event_D:
         {
             m_actions.s1_d();
-            return Result{Transition{m_top_state}};
+            return Result {Transition {m_top_state}};
         }
         case Event_F:
         {
             m_actions.s1_f();
-            return Result{Transition{m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s1_init()
@@ -216,7 +217,7 @@ Result TestHsm::s11_handler()
         case Event_G:
         {
             m_actions.s11_g();
-            return Result{Transition{m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         break;
         case Event_H:
@@ -229,9 +230,9 @@ Result TestHsm::s11_handler()
             break;
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s11_exit()
@@ -253,17 +254,17 @@ Result TestHsm::s2_handler()
         case Event_C:
         {
             m_actions.s2_c();
-            return Result{Transition{m_s1_state}};
+            return Result {Transition {m_s1_state}};
         }
         case Event_F:
         {
             m_actions.s2_f();
-            return Result{Transition{m_s11_state}};
+            return Result {Transition {m_s11_state}};
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s2_init()
@@ -290,7 +291,7 @@ Result TestHsm::s21_handler()
         case Event_B:
         {
             m_actions.s21_b();
-            return Result{Transition{m_s211_state}};
+            return Result {Transition {m_s211_state}};
         }
         case Event_H:
         {
@@ -299,15 +300,15 @@ Result TestHsm::s21_handler()
                 m_actions.s21_h();
                 m_foo = 1;
                 {
-                    return Result{Transition{m_s21_state}};
+                    return Result {Transition {m_s21_state}};
                 }
             }
             break;
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s21_init()
@@ -334,17 +335,17 @@ Result TestHsm::s211_handler()
         case Event_D:
         {
             m_actions.s211_d();
-            return Result{Transition{m_s21_state}};
+            return Result {Transition {m_s21_state}};
         }
         case Event_G:
         {
             m_actions.s211_g();
-            return Result{Transition{m_top_state}};
+            return Result {Transition {m_top_state}};
         }
         default:
-            return Result{Unhandled{}};
+            return Result {Unhandled {}};
     }
-    return Result{Handled{}};
+    return Result {Handled {}};
 }
 
 void TestHsm::s211_entry()
@@ -425,14 +426,14 @@ TestHsm::TestHsm(Actions& actions)
 // Test
 ////////////////////////////////////////////////////////////////////////////////
 
-constexpr Event A{Event_A};
-constexpr Event B{Event_B};
-constexpr Event C{Event_C};
-constexpr Event D{Event_D};
-constexpr Event E{Event_E};
-constexpr Event F{Event_F};
-constexpr Event G{Event_G};
-constexpr Event H{Event_H};
+constexpr Event A {Event_A};
+constexpr Event B {Event_B};
+constexpr Event C {Event_C};
+constexpr Event D {Event_D};
+constexpr Event E {Event_E};
+constexpr Event F {Event_F};
+constexpr Event G {Event_G};
+constexpr Event H {Event_H};
 
 class MockActions : public Actions
 {

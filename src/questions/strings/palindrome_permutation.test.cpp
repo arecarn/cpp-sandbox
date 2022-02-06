@@ -13,7 +13,7 @@
 
 bool palindrome_permutation(const std::string& str)
 {
-    std::unordered_map<char, int> count{};
+    std::unordered_map<char, int> count {};
 
     auto is_char = [](char c) {
         return (c > 'a' && c < 'z') || (c > 'A' && c < 'Z');

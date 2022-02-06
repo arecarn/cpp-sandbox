@@ -82,9 +82,11 @@ class TestHsm : public Hsm<TestHsm, Top>
 {
 public:
     explicit TestHsm(Actions& actions)
-        : m_actions{actions} {}
+        : m_actions {actions}
+    {
+    }
 
-              [[nodiscard]] Event event() const
+    [[nodiscard]] Event event() const
     {
         return m_event;
     }
@@ -100,7 +102,8 @@ public:
         m_foo = i;
     }
 
-    [[nodiscard]] int foo() const {
+    [[nodiscard]] int foo() const
+    {
         return m_foo;
     }
 
@@ -110,8 +113,8 @@ public:
     }
 
 private:
-    Event m_event{Event::None};
-    int m_foo{0};
+    Event m_event {Event::None};
+    int m_foo {0};
     Actions& m_actions;
 };
 
@@ -139,7 +142,7 @@ template <>
 inline void Top::init(TestHsm& h)
 {
     h.actions().top_init();
-    InitalStateSetup<S1> i{h};
+    InitalStateSetup<S1> i {h};
 }
 
 template <>
@@ -195,7 +198,7 @@ inline void S1::handle(TestHsm& h, const Current& c) const
 template <>
 inline void S1::init(TestHsm& h)
 {
-    InitalStateSetup<S11> i{h};
+    InitalStateSetup<S11> i {h};
     h.actions().s1_init();
 }
 
@@ -242,7 +245,7 @@ inline void S11::handle(TestHsm& h, const Current& c) const
 template <>
 inline void S2::init(TestHsm& h)
 {
-    InitalStateSetup<S21> i{h};
+    InitalStateSetup<S21> i {h};
     h.actions().s2_init();
 }
 
@@ -287,7 +290,7 @@ inline void S2::handle(TestHsm& h, const Current& c) const
 template <>
 inline void S21::init(TestHsm& h)
 {
-    InitalStateSetup<S211> i{h};
+    InitalStateSetup<S211> i {h};
     h.actions().s21_init();
 }
 
