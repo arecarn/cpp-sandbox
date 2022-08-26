@@ -6,6 +6,7 @@ include(clang_tidy)
 ################################################################################
 # Subdirectories
 ################################################################################
+add_subdirectory(fixed_vector)
 add_subdirectory(array)
 add_subdirectory(pong)
 add_subdirectory(ringbuffer)
