@@ -13,7 +13,7 @@ public:
     ringbuffer() = default;
     ~ringbuffer() = default;
 
-    bool push_back(const T x)
+    bool push_back(const T& x)
     {
         if (m_size == N)
         {
