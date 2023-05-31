@@ -31,6 +31,7 @@ Prefix Sum
 
 --------------------------------------------------------------------------------
 
+
 # Data Structures
 
 ## Trie
@@ -136,12 +137,15 @@ Breadth First Search
 * AKA level order for a tree
 
 ## Linked List
-
+Techniques:
 * reverse linked list
     * pointer to prev (initially nullptr)
     * pointer to curr (initially head)
     * pointer to next  curr->next
     * while current
+* fast pointer slow pointer
+    * find cycles
+    * find midway point
 
 ```cpp
 Node* reverse(Node* l);
