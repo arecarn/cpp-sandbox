@@ -1,3 +1,4 @@
-add_subdirectory(todo_app)
-add_subdirectory(todo_storage)
-add_subdirectory(todo)
+add_subdirectory(TodoApp)
+add_subdirectory(StoragePort)
+add_subdirectory(TimePort)
+add_subdirectory(Todo)

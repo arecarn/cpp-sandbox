@@ -1,15 +1,14 @@
 #ifndef TODO_APP_HPP
 #define TODO_APP_HPP
 
-#include <todo.hpp>
+#include <Todo.hpp>
 #include <vector>
 
 class TodoApp
 {
 public:
     void add(const std::string& todo);
-    void check(Todo& todo);
-    void uncheck(Todo& todo);
+    void remove(Todo& todo);
     [[nodiscard]] const std::vector<Todo>& list();
 
 private:
