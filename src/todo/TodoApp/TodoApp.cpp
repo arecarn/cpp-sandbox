@@ -2,14 +2,15 @@
 
 void TodoApp::add(const std::string& todo)
 {
-    m_list.emplace_back(todo, 0); // TODO add time port
+    m_list.emplace_back(todo, m_time.now());
 }
 
-void TodoApp::remove(Todo& todo)
+void TodoApp::remove(TodoList::iterator itr)
 {
+    m_list.erase(itr);
 }
 
-const std::vector<Todo>& TodoApp::list()
+const TodoList& TodoApp::list()
 {
     return m_list;
 }

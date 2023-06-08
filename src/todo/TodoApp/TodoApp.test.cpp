@@ -1,3 +1,5 @@
+#include <StorageMock.hpp>
+#include <TimeMock.hpp>
 #include <TodoApp.hpp>
 
 #include <memory>
@@ -27,10 +29,12 @@ class GivenAEmptyList : public testing::Test
 protected:
     void SetUp() override
     {
-        m_todo_app = std::make_unique<TodoApp>();
+        m_todo_app = std::make_unique<TodoApp>(m_time_mock, m_storage_mock);
     }
 
     std::unique_ptr<TodoApp> m_todo_app;
+    TimeMock m_time_mock;
+    StorageMock m_storage_mock;
 };
 
 TEST_F(GivenAEmptyList, add_adds_an_unchecked_todo_to_the_list)
