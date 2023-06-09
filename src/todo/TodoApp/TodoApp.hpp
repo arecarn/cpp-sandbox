@@ -1,7 +1,7 @@
 #ifndef TODO_APP_HPP
 #define TODO_APP_HPP
 
-#include <StorageIntf.hpp>
+#include <PersistenceIntf.hpp>
 #include <TimeIntf.hpp>
 #include <Todo.hpp>
 #include <TodoList.hpp>
@@ -12,7 +12,7 @@ class TodoApp
 public:
     TodoApp(
         TimeIntf& time,
-        StorageIntf& storage)
+        PersistenceIntf& storage)
         : m_time {time}
         , m_storage {storage}
     {
@@ -24,7 +24,7 @@ public:
 
 private:
     TimeIntf& m_time;
-    StorageIntf& m_storage;
+    PersistenceIntf& m_storage;
     TodoList m_list;
 };
 

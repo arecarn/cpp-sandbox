@@ -1,10 +1,10 @@
 #ifndef STORAGE_MOCK_HPP
 #define STORAGE_MOCK_HPP
 
-#include "StorageIntf.hpp"
+#include "PersistenceIntf.hpp"
 #include <gmock/gmock.h>
 
-class StorageMock : public StorageIntf
+class PersistenceMock : public PersistenceIntf
 {
 public:
     MOCK_METHOD(void, write, (const TodoList& list), (override));

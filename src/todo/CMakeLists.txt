@@ -1,5 +1,5 @@
 add_subdirectory(TodoApp)
-add_subdirectory(Storage)
+add_subdirectory(Persistence)
 add_subdirectory(Time)
 add_subdirectory(Todo)
 add_subdirectory(TodoList)

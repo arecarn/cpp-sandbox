@@ -4,7 +4,7 @@
 add_library(TodoApp STATIC TodoApp.cpp)
 target_link_libraries(TodoApp
     PUBLIC
-        StorageIntf
+        PersistenceIntf
     PRIVATE
         Todo
         TodoList
