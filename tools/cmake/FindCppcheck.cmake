@@ -47,16 +47,22 @@ if(CPPCHECK_BIN)
     )
     set(CPPCHECK_BUILD_DIR_ARG
         "--cppcheck-build-dir=${PROJECT_BINARY_DIR}/analysis/cppcheck"
-        CACHE STRING "The build directory to use"
+        CACHE STRING
+        "The build directory to use"
     )
     # Don't show thise errors
     if(EXISTS "${CMAKE_SOURCE_DIR}/.cppcheck_suppressions")
         set(CPPCHECK_SUPPRESSIONS
             "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck_suppressions"
-            CACHE STRING "The suppressions file to use"
+            CACHE STRING
+            "The suppressions file to use"
         )
     else()
-        set(CPPCHECK_SUPPRESSIONS "" CACHE STRING "The suppressions file to use")
+        set(CPPCHECK_SUPPRESSIONS
+            ""
+            CACHE STRING
+            "The suppressions file to use"
+        )
     endif()
 
     # Show these errors but don't fail the build
@@ -64,19 +70,26 @@ if(CPPCHECK_BIN)
     if(EXISTS "${CMAKE_SOURCE_DIR}/.cppcheck_exitcode_suppressions")
         set(CPPCHECK_EXITCODE_SUPPRESSIONS
             "--exitcode-suppressions=${CMAKE_SOURCE_DIR}/.cppcheck_exitcode_suppressions"
-            CACHE STRING "The exitcode suppressions file to use"
+            CACHE STRING
+            "The exitcode suppressions file to use"
         )
     else()
-        set(CPPCHECK_EXITCODE_SUPPRESSIONS ""
-            CACHE STRING "The exitcode suppressions file to use"
+        set(CPPCHECK_EXITCODE_SUPPRESSIONS
+            ""
+            CACHE STRING
+            "The exitcode suppressions file to use"
         )
     endif()
 
-    set(CPPCHECK_ERROR_EXITCODE_ARG "--error-exitcode=1"
-        CACHE STRING "The exitcode to use if an error is found"
+    set(CPPCHECK_ERROR_EXITCODE_ARG
+        "--error-exitcode=1"
+        CACHE STRING
+        "The exitcode to use if an error is found"
     )
-    set(CPPCHECK_CHECKS_ARGS "--enable=warning"
-        CACHE STRING "Arguments for the checks to run"
+    set(CPPCHECK_CHECKS_ARGS
+        "--enable=warning"
+        CACHE STRING
+        "Arguments for the checks to run"
     )
     set(CPPCHECK_OTHER_ARGS "" CACHE STRING "Other arguments")
     set(_CPPCHECK_EXCLUDES)
