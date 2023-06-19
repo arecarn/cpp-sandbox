@@ -30,7 +30,6 @@ RUN apt install -y \
 
 RUN apt install -y \
     x11-apps \
-    gosu
 
 
 RUN python3 -m pip install \

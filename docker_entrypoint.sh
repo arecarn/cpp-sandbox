@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 groupadd \
     --gid "${GID}" \
@@ -17,4 +18,5 @@ export HOME=/home/"${USER}"
 mkdir -p "${HOME}"
 chown -R "${USER}" "${HOME}"
 
-exec gosu "${USER}" "$@"
+echo "Executing $@"
+su ${USER} --session-command "$@"
