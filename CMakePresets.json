@@ -1,0 +1,68 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "FETCHCONTENT_FULLY_DISCONNECTED": true
+            }
+        },
+        {
+            "name": "gcc",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "clang",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
+            "name": "default_env",
+            "environment": {
+                "CXXFLAGS": "-O2 -g3"
+            }
+        },
+        {
+            "name": "address_sanatizer",
+            "environment": {
+                "CXXFLAGS": "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -g -O1"
+            }
+        },
+        {
+            "name": "leak_sanitizer",
+            "environment": {
+                "CXXFLAGS": "-fsanitize=leak -fno-omit-frame-pointer -g -O1"
+            }
+        },
+        {
+            "name": "memory_sanitizer",
+            "environment": {
+                "CXXFLAGS": "-fsanitize=memory -fno-optimize-sibling-calls -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer -g -O2"
+            }
+        },
+        {
+            "name": "undefined_behavior_sanitizer",
+            "environment": {
+                "CXXFLAGS": "-fsanitize=undefined"
+            }
+        }
+
+    ],
+    "buildPresets": [
+        { "name": "gcc"   , "configurePreset": "gcc" },
+        { "name": "clang" , "configurePreset": "clang" }
+    ],
+    "testPresets": [
+        { "name": "gcc"   , "configurePreset": "gcc" },
+        { "name": "clang" , "configurePreset": "clang" }
+    ]
+}

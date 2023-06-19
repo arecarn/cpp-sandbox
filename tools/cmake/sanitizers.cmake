@@ -77,7 +77,7 @@ set(CMAKE_CXX_FLAGS_UBSAN
 )
 
 set(CMAKE_CXX_FLAGS_LUASAN
-    "${MAKE_CXX_FLAGS_LSAN} ${CMAKE_CXX_FLAGS_ASAN} ${CMAKE_CXX_FLAGS_UBSAN}"
+    "${CMAKE_CXX_FLAGS_LSAN} ${CMAKE_CXX_FLAGS_ASAN} ${CMAKE_CXX_FLAGS_UBSAN}"
     CACHE STRING
     "Flags used by the C++ compiler during Multiple Sanitizer builds."
     FORCE

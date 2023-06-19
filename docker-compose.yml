@@ -1,5 +1,5 @@
 ---
-version: "3.3"
+version: "3.7"
 services:
   # container name
   dev:
@@ -8,6 +8,7 @@ services:
     image: arecarn/c-and-cpp
 
     # keep stdin open even if not attached
+    # TODO determine if this is necessary
     stdin_open: true
 
     # allocate a pseudo-tty
@@ -19,18 +20,19 @@ services:
     # mount the current directory inside the container
     volumes:
       - ${PWD}:${PWD}
+      - "${XAUTHORITY:-~/.Xauthority}:/home/${USER}/.Xauthority" # x11 forwarding
 
     # when entering the container stay in the current directory
     working_dir: ${PWD}
 
     # container environment variables
     environment:
-      - DISPLAY=${DISPLAY}
-      - GID=${GID}
-      - UID=${UID}
-      - USER=${USER}
+      - DISPLAY=${DISPLAY} # for X11 forwarding
+      - UID=${UID_VALUE:? Error -> UID_VALUE must be set and exported.}
+      - GID=${GID_VALUE:? Error -> GID_VALUE must be set and exported}
+      - USER=${USER:? Error -> USER must be set and exported}
 
     # start a bash session
-    command: ["bash"]
+    command: /bin/bash
 
-    entrypoint: ${PWD}/entrypoint.sh
+    entrypoint: ${PWD}/docker_entrypoint.sh

@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.10.2)
+
 project(cpp-sandbox)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
+include(compiler_flags)
+add_subdirectory(external)
+
 
 ################################################################################
 # CMake Settings
@@ -13,19 +18,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 ################################################################################
 # C++ Settings
 ################################################################################
-set(CMAKE_CXX_STANDARD 23)
-set(CXX_STANDARD_REQUIRED)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# set(CMAKE_CXX_STANDARD 23)
+# set(CXX_STANDARD_REQUIRED)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 ################################################################################
 # CMake Modules Includes
 ################################################################################
 include(ccache)
 include(sanitizers)
-include(compiler_warnings)
 
 ################################################################################
-#  Doxygen Documentation Target
+# Doxygen Documentation Target
 ################################################################################
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -37,7 +41,7 @@ if(DOXYGEN_FOUND)
 endif()
 
 ################################################################################
-#  cppcheck Static Analysis Target
+# cppcheck Static Analysis Target
 ################################################################################
 list(APPEND CPPCHECK_OTHER_ARGS
     "--force"
@@ -108,5 +112,4 @@ endmacro()
 ################################################################################
 # Subdirectories
 ################################################################################
-add_subdirectory(external)
 add_subdirectory(src)
