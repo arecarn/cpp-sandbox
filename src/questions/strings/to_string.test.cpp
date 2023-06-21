@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <string>
 
+namespace
+{
+
 std::string to_string(int a_int)
 {
     std::string result;
@@ -30,3 +33,5 @@ TEST(to_string, test)
     ASSERT_EQ(to_string(std::numeric_limits<int>::min()), "-2147483648");
     ASSERT_EQ(to_string(std::numeric_limits<int>::max()), "2147483647");
 }
+
+} // namespace

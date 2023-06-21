@@ -13,6 +13,9 @@
 #include <unordered_map>
 #include <vector>
 
+namespace
+{
+
 bool check_permutation(const std::string& s1, const std::string& s2)
 {
     // TODO switch to using a int[128] array
@@ -68,3 +71,5 @@ TEST(check_permutation, test)
         ASSERT_EQ(check_permutation(c.s1, c.s2), c.result);
     }
 }
+
+} // namespace

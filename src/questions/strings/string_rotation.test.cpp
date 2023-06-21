@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 #include <string>
 
+namespace
+{
 bool is_substring(std::string_view s1, std::string_view s2)
 {
     return s1.find(s2) != std::string::npos;
@@ -18,8 +20,8 @@ bool string_rotation(std::string s1, std::string s2)
         return false;
     }
 
-    int match_count = 0;
-    int i = 0;
+    std::size_t match_count = 0;
+    std::size_t i = 0;
 
     while ((i + match_count) < s2.size())
     {
@@ -41,6 +43,7 @@ bool string_rotation(std::string s1, std::string s2)
         }
     }
     return false;
+}
 }
 
 TEST(string_rotation, test1)

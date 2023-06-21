@@ -94,8 +94,8 @@ struct LeafState : B
     template <typename Current>
     void handle(H& h, const Current& c) const { Base::handle(h, c); }
 
-    virtual void handler(H& h) const { handle(h, *this); }
-    [[nodiscard]] virtual StateId id() const { return Id; }
+    void handler(H& h) const override { handle(h, *this); }
+    [[nodiscard]] StateId id() const override { return Id; }
     static void init(H& h) { h.state(State); } // don't specialize this
     static void entry(H& /*unused*/) { }
     static void exit(H& /*unused*/) { }
@@ -133,7 +133,7 @@ private:
     static Yes test(B*); // undefined
     static No test(...); // undefined
 public:
-    static constexpr bool Value = (sizeof(test(static_cast<D*>(0))) == sizeof(Yes));
+    static constexpr bool Value = (sizeof(test(static_cast<D*>(nullptr))) == sizeof(Yes));
 };
 
 template <class T, class U>

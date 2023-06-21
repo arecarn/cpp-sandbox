@@ -14,32 +14,31 @@ static constexpr uint32_t bytes_to_represents_bits(uint32_t number_of_bits)
     return (number_of_bits + add) / 8;
 }
 
-template <typename T>
 class BitReference
 {
 public:
-    BitReference(T& integer, uint8_t bit_pos)
+    BitReference(uint8_t& integer, uint8_t bit_pos)
         : m_integer {integer}
         , m_bit_pos {bit_pos}
     {
     }
 
-    bool operator=(bool value)
+    bool operator=(bool value) // NOLINT(misc-unconventional-assign-operator)
     {
         // assert(bit < Number Orbits)
         const uint8_t b = value ? 1 : 0;
-        m_integer = m_integer & ~(1 << m_bit_pos) | (b << m_bit_pos);
+        m_integer = static_cast<uint8_t>((m_integer & ~(1 << m_bit_pos)) | (b << m_bit_pos));
         return value;
     }
 
     operator bool() const
     {
-        const T mask = 1 << m_bit_pos;
-        return m_integer & mask;
+        const auto mask = static_cast<uint8_t>(1 << m_bit_pos);
+        return (m_integer & mask) != 0;
     }
 
 private:
-    T& m_integer;
+    uint8_t& m_integer;
     uint8_t m_bit_pos;
 };
 
@@ -47,19 +46,18 @@ template <size_t NumberOfBits>
 class Bitset
 {
 public:
-    BitReference<uint8_t> operator[](const size_t bit)
+    BitReference operator[](const size_t bit)
     {
-        const uint32_t i = bit / 8;
-        const uint32_t bit_pos = (bit % 8);
-        const uint8_t mask = 1 << bit_pos;
+        const size_t i {bit / 8};
+        const uint8_t bit_pos {static_cast<uint8_t>(bit % 8)};
 
-        return BitReference<uint8_t>(m_data[i], bit_pos);
+        return BitReference(m_data[i], bit_pos);
     }
 
     bool operator[](const size_t bit) const
     {
         const uint32_t bit_pos = (bit % 8);
-        const uint8_t mask = 1 << bit_pos;
+        const auto mask = static_cast<uint8_t>(1 << bit_pos);
         return m_data[bit / 8] & mask;
     }
 
@@ -69,14 +67,14 @@ public:
         const uint8_t b = value ? 1 : 0;
         const uint32_t i = bit / 8;
         const uint32_t bit_pos = (bit % 8);
-        m_data[i] = m_data[i] & ~(1 << bit_pos) | (b << bit_pos);
+        m_data[i] = (m_data[i] & ~(1 << bit_pos)) | (b << bit_pos);
     }
 
-    bool get(size_t bit) const
+    [[nodiscard]] bool get(size_t bit) const
     {
         // assert(bit < Number Orbits)
         const uint32_t bit_pos = (bit % 8);
-        const uint8_t mask = 1 << bit_pos;
+        const auto mask = static_cast<uint8_t>(1 << bit_pos);
         return m_data[bit / 8] & mask;
     }
 
@@ -88,8 +86,8 @@ public:
     static_assert(NumberOfBits != 0, "Bitset can't represent 0 bits");
 
 private:
-    static constexpr uint32_t kNumBytes {bytes_to_represents_bits(NumberOfBits)};
-    uint8_t m_data[kNumBytes] {};
+    static constexpr uint32_t NumBytes {bytes_to_represents_bits(NumberOfBits)};
+    uint8_t m_data[NumBytes] {};
 };
 
 #endif // BITSET_HP

@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+namespace
+{
 void insert_helper(std::shared_ptr<ListNode<int>>& tail, std::shared_ptr<ListNode<int>>& new_node)
 {
     tail->next = new_node;
@@ -26,6 +28,7 @@ std::shared_ptr<ListNode<int>> merged_two_sorted_lists(std::shared_ptr<ListNode<
         (l1 != nullptr) ? l1 : l2);
 
     return dummy_head->next;
+}
 }
 
 TEST(merged_two_sorted_lists, when_lists_are_equal)

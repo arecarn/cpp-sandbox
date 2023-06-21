@@ -36,6 +36,11 @@ public:
         m_text = std::move(new_text);
     }
 
+    time_t creation_time() const
+    {
+        return m_creation_time;
+    }
+
     void toggle()
     {
         if (m_state == State::Checked)

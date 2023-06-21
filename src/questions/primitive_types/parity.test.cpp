@@ -3,15 +3,18 @@
 #include <cstdint>
 #include <gtest/gtest.h>
 
+namespace
+{
 uint8_t parity(uint64_t word)
 {
-    uint8_t result = 0;
+    uint64_t result = 0;
     while (word != 0)
     {
-        result ^= (word & 1);
+        result ^= word & 1;
         word >>= 1;
     }
-    return result;
+    return static_cast<uint8_t>(result);
+}
 }
 
 TEST(parity, with_odd_bits_return_0)

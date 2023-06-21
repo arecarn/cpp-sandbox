@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+namespace
+{
+
 bool palindrome_permutation(const std::string& str)
 {
     std::unordered_map<char, int> count {};
@@ -60,3 +63,5 @@ TEST(check_permutation, test)
         ASSERT_EQ(palindrome_permutation(c.str), c.result);
     }
 }
+
+} // namespace

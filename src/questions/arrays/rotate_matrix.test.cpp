@@ -14,15 +14,15 @@ void rotate_matrix(std::uint32_t (&matrix)[N][N])
     const int max_layers = N / 2;
     for (int layer = 0; layer < max_layers; layer++)
     {
-        for (int c = 0; c < (N - 1) - (2 * layer); c++)
+        for (int c = 0; c < static_cast<int>(N - 1) - (2 * layer); c++)
         {
             const int top_row = layer;
             const int top_col = layer + c;
             const int right_row = layer + c;
-            const int right_col = N - 1 - layer;
-            const int bottom_row = N - 1 - layer;
-            const int bottom_col = N - 1 - layer - c;
-            const int left_row = N - 1 - layer - c;
+            const int right_col = static_cast<int>(N - 1) - layer;
+            const int bottom_row = static_cast<int>(N - 1) - layer;
+            const int bottom_col = static_cast<int>(N - 1) - layer - c;
+            const int left_row = static_cast<int>(N - 1) - layer - c;
             const int left_col = layer;
 
             // save right

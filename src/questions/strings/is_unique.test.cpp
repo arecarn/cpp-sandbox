@@ -12,9 +12,13 @@
 #include <string>
 #include <vector>
 
+namespace
+{
+
 struct Solution
 {
     virtual bool is_unique(std::string str) = 0;
+    virtual ~Solution() = default;
 };
 
 struct ArraySolution : Solution
@@ -24,12 +28,12 @@ struct ArraySolution : Solution
         constexpr size_t Char_Values = 128; // assuming ASCII
         bool char_seen[Char_Values] = {false};
 
-        for (const auto& c : str)
+        for (const signed char c : str)
         {
-            if (c > Char_Values)
-            {
-                throw std::out_of_range("character is not ASCII");
-            }
+            // if (c > Char_Values)
+            // {
+            //     throw std::out_of_range("character is not ASCII");
+            // }
             if (char_seen[c])
             {
                 return false;
@@ -44,15 +48,15 @@ struct SetSolution : Solution
 {
     bool is_unique(std::string str) override
     {
-        constexpr size_t Char_Values = 128; // assuming ASCII
-        std::set<char> char_seen;
+        // constexpr size_t Char_Values = 128; // assuming ASCII
+        std::set<signed char> char_seen;
 
         for (const auto& c : str)
         {
-            if (c > Char_Values)
-            {
-                throw std::out_of_range("character is not ASCII");
-            }
+            // if (c > Char_Values)
+            // {
+            //     throw std::out_of_range("character is not ASCII");
+            // }
             [[maybe_unused]] auto [_, inserted] = char_seen.insert(c);
             if (!inserted)
             {
@@ -99,3 +103,5 @@ TEST(is_unique, test)
     test(SetSolution {});
     test(ArraySolution {});
 }
+
+} // namespace

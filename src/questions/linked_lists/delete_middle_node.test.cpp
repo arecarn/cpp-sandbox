@@ -19,7 +19,7 @@ void delete_middle_node(std::forward_list<T>& list)
 
     // find size
     int size = 0;
-    for (auto const& i : list)
+    for ([[maybe_unused]] auto const& i : list)
     {
         size++;
     }

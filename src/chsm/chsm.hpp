@@ -105,7 +105,7 @@ public:
     }
 
 private:
-    const T m_value = {};
+    T m_value = {}; // TODO(rcarney making this const seems like an issue)
 };
 
 using EventHandlerFunction = Result (Hsm::*)();

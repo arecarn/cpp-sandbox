@@ -46,6 +46,6 @@ TEST_F(GivenANewTodo, text_can_be_changed)
 
 TEST_F(GivenANewTodo, test_chrono)
 {
-    auto start = std::chrono::system_clock::now();
-    std::time_t end_time = std::chrono::system_clock::to_time_t(start);
+    // auto start = std::chrono::system_clock::now();
+    // std::time_t end_time = std::chrono::system_clock::to_time_t(start);
 }

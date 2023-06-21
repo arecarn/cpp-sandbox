@@ -7,13 +7,14 @@
 #include <iostream>
 #include <string>
 
+std::string string_compression(std::string str);
 std::string string_compression(std::string str)
 {
     std::string compressed_str;
-    int i = 0;
+    std::size_t i = 0;
     while (i < str.size())
     {
-        int j {1};
+        std::size_t j {1};
         compressed_str.push_back(str[i]);
         while (i + j < str.size() && str[i] == str[i + j])
         {
@@ -48,4 +49,4 @@ TEST(string_compression, test)
         std::string actual = string_compression(c.input);
         ASSERT_STREQ(actual.c_str(), c.expected.c_str());
     }
-};
+}
