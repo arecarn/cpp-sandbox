@@ -7,6 +7,7 @@ class TimeIntf
 {
 public:
     virtual time_t now() = 0;
+    virtual ~TimeIntf() = default;
 };
 
 #endif // header guard

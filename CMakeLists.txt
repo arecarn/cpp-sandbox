@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.10.2)
 
 project(cpp-sandbox)
+add_subdirectory(external)
+
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
 include(compiler_flags)
-add_subdirectory(external)
 
 
 ################################################################################

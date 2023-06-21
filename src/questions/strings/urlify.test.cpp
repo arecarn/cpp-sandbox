@@ -13,6 +13,9 @@
 #include <iostream>
 #include <vector>
 
+namespace
+{
+
 void urlify(char* str, int len)
 {
     int index = len - 1;
@@ -50,7 +53,7 @@ struct TestCase
     static constexpr int Buff_Size = 100;
     char str[Buff_Size];
     char result[Buff_Size];
-    size_t len;
+    int len;
 };
 
 TestCase g_test_vector[] = {
@@ -66,4 +69,6 @@ TEST(Urlify, test) // NOLINT
         urlify(c.str, c.len);
         ASSERT_STREQ(c.str, c.result);
     }
-};
+}
+
+} // namespace

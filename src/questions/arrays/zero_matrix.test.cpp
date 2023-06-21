@@ -9,12 +9,12 @@
 template <size_t N>
 void zero_matrix(std::uint32_t (&matrix)[N][N])
 {
-    std::unordered_set<int> zero_rows;
-    std::unordered_set<int> zero_cols;
+    std::unordered_set<size_t> zero_rows;
+    std::unordered_set<size_t> zero_cols;
 
-    for (int row = 0; row < N; ++row)
+    for (size_t row = 0; row < N; ++row)
     {
-        for (int col = 0; col < N; ++col)
+        for (size_t col = 0; col < N; ++col)
         {
             if (matrix[row][col] == 0)
             {
@@ -24,9 +24,9 @@ void zero_matrix(std::uint32_t (&matrix)[N][N])
         }
     }
 
-    for (int row = 0; row < N; ++row)
+    for (size_t row = 0; row < N; ++row)
     {
-        for (int col = 0; col < N; ++col)
+        for (size_t col = 0; col < N; ++col)
         {
             if (zero_cols.find(col) != zero_cols.end()
                 || zero_rows.find(row) != zero_rows.end())

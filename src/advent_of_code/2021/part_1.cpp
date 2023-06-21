@@ -1,10 +1,13 @@
 #include <gtest/gtest.h>
 #include <vector>
 
+namespace
+{
+
 int find_increasing(std::vector<int>& input)
 {
     int result = 0;
-    for (int i = 1; i < input.size(); ++i)
+    for (size_t i = 1; i < input.size(); ++i)
     {
         if (input[i] > input[i - 1])
         {
@@ -2020,3 +2023,5 @@ TEST(test_1, input)
 
     ASSERT_EQ(find_increasing(input), 1121);
 }
+
+} // namespace

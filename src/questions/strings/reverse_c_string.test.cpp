@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+void reverse_c_string(char* str);
 void reverse_c_string(char* str)
 {
     char* start = str;
@@ -48,4 +49,4 @@ TEST(reverse_c_string, test)
         reverse_c_string(c.str);
         ASSERT_STREQ(c.str, c.result);
     }
-};
+}

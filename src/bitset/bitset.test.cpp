@@ -20,11 +20,11 @@ enum Bits
 TEST(array, static)
 {
     Bitset<BitCount> bs;
-    ASSERT_EQ((bool)bs[Bit9], false);
+    ASSERT_EQ(static_cast<bool>(bs[Bit9]), false);
 
     bs[Bit9] = true;
-    ASSERT_EQ((bool)bs[Bit9], true);
+    ASSERT_EQ(static_cast<bool>(bs[Bit9]), true);
 
     bs[Bit9] = false;
-    ASSERT_EQ((bool)bs[Bit9], false);
+    ASSERT_EQ(static_cast<bool>(bs[Bit9]), false);
 }

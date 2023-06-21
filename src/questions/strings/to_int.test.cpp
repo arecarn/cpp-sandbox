@@ -56,6 +56,8 @@
 #include <limits>
 #include <string>
 
+int to_int(std::string s);
+
 int to_int(std::string s)
 {
     int result = 0;

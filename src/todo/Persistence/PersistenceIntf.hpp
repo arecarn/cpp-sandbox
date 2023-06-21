@@ -10,6 +10,7 @@ class PersistenceIntf
 public:
     virtual void write(const TodoList& todo_list) = 0;
     virtual TodoList read() = 0;
+    virtual ~PersistenceIntf() = default;
 };
 
 #endif // header guard

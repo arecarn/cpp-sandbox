@@ -12,9 +12,10 @@
 #include <string>
 #include <vector>
 
-bool one_away(std::string s1, std::string s2)
-{
+bool one_away(std::string s1, std::string s2);
 
+bool one_away(std::string s1, std::string s2) // NOLINT(readability-function-cognitive-complexity)
+{
     if (s1.size() == s2.size())
     {
         if (s1 == s2)
@@ -24,7 +25,7 @@ bool one_away(std::string s1, std::string s2)
 
         // check if only different by one character
         int diff_count = 0;
-        for (int i = 0; i < s1.size(); i++)
+        for (std::size_t i = 0; i < s1.size(); i++)
         {
             if (s1[i] != s2[i])
             {
@@ -42,8 +43,8 @@ bool one_away(std::string s1, std::string s2)
         auto one_needs_rm_or_two_needs_add = [](std::string one, std::string two) {
             if (one.size() + 1 == two.size())
             {
-                int diff_count = 0;
-                for (int i = 0; i < two.size(); i++)
+                std::size_t diff_count = 0;
+                for (std::size_t i = 0; i < two.size(); i++)
                 {
                     if (two[i] != one[i + diff_count])
                     {

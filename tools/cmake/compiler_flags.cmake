@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" FALSE)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 
 if(WARNINGS_AS_ERRORS)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Werror)
