@@ -31,6 +31,7 @@ services:
       - UID=${UID_VALUE:? Error -> UID_VALUE must be set and exported.}
       - GID=${GID_VALUE:? Error -> GID_VALUE must be set and exported}
       - USER=${USER:? Error -> USER must be set and exported}
+      - CCACHE_DIR=${PWD}/.cache
 
     # start a bash session
     command: /bin/bash

@@ -26,9 +26,13 @@ endif
 # $(call word_dot,foo,1) = foo
 word_dot = $(word $2,$(subst ., ,$1))
 
-TEST_ALIASES = \
-    test.gcc \
-    test.clang \
+
+COMPILERS = \
+    gcc \
+    clang \
+
+.PHONY: all
+all: $(addprefix test., $(COMPILERS))
 
 # By default, GNU make removes intermediate files. Since all CMake targets
 # depend on build/%/CMakeCache.txt Make sometimes wants to delete it. To prevent
