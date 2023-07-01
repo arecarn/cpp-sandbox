@@ -6,10 +6,10 @@ find_program(
 
 function(gersemi_add_format_cmake_targets)
     set(options)
-    set(oneValueArgs)
+    set(oneValueArgs FIX_TARGET_NAME CHECK_TARGET_NAME)
     set(multiValueArgs FILES)
     cmake_parse_arguments(
-        ARGS
+        ARG
         "${options}"
         "${oneValueArgs}"
         "${multiValueArgs}"
@@ -17,13 +17,13 @@ function(gersemi_add_format_cmake_targets)
     )
     if(GERSEMI)
         add_custom_target(
-            format_cmake
+            ${ARG_FIX_TARGET_NAME}
             COMMAND ${GERSEMI} -i ${ARGS_FILES}
             COMMENT "Formatting CMake source files"
         )
 
         add_custom_target(
-            format_check_cmake
+            ${ARG_CHECK_TARGET_NAME}
             COMMAND ${GERSEMI} -c ${ARGS_FILES}
             COMMENT "Checking formatting of CMake source files"
         )
