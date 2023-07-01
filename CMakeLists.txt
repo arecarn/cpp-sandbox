@@ -10,18 +10,10 @@ include(compiler_flags)
 ################################################################################
 # CMake Settings
 ################################################################################
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/tools/cmake)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
-
-################################################################################
-# C++ Settings
-################################################################################
-# set(CMAKE_CXX_STANDARD 23)
-# set(CXX_STANDARD_REQUIRED)
-# set(CMAKE_CXX_EXTENSIONS OFF)
 
 ################################################################################
 # CMake Modules Includes
@@ -57,20 +49,36 @@ set(APPEND CPPCHECK_EXCLUDES
 )
 find_package(Cppcheck)
 
+################################################################################
+# Testing Settings
+################################################################################
+enable_testing()
+macro(create_test target)
+    add_test(NAME ${target} COMMAND ${target})
+endmacro()
+
 
 ################################################################################
-# Clang Format Source Formatting Target
+# Subdirectories
 ################################################################################
-include(clang_format)
-file(
-    GLOB_RECURSE C_AND_CPP_SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/src/*.[ch]pp"
-    "${PROJECT_SOURCE_DIR}/src/*.[ch]"
+add_subdirectory(src)
+
+################################################################################
+# clang-format C/C++ formatting
+################################################################################
+include(target_utils)
+get_all_targets(lint_targets "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+include(clang_lint)
+create_clang_tidy_lint_targets(
+    TARGETS ${lint_targets}
+    CHECK_TARGET_NAME clang_tidy_check
+    FIX_TARGET_NAME clang_tidy_fix
 )
-clang_format_add_format_targets(
-    FORMAT_TARGET_NAME "format_c_and_cpp"
-    FORMAT_CHECK_TARGET_NAME "format_check_c_and_cpp"
-    FILES "${C_AND_CPP_SOURCE_FILES}"
+create_clang_format_lint_targets(
+    TARGETS ${lint_targets}
+    CHECK_TARGET_NAME clang_format_check
+    FIX_TARGET_NAME clang_format_fix
 )
 
 ################################################################################
@@ -84,33 +92,17 @@ file(
     GLOB_RECURSE CMAKE_SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/src/*.cmake"
     "${PROJECT_SOURCE_DIR}/tools/*.cmake"
+    "${PROJECT_SOURCE_DIR}/src/CMakeLists.txt"
 )
 gersemi_add_format_cmake_targets(
-    FORMAT_TARGET_NAME "format_cmake"
-    FORMAT_CHECK_TARGET_NAME "format_check_cmake"
+    FIX_TARGET_NAME "format_cmake_fix"
+    CHECK_TARGET_NAME "format_cmake_check"
     FILES "${CMAKE_SOURCE_FILES}"
 )
 
 ################################################################################
 # Custom Targets
 ################################################################################
-if (TARGET format_c_and_cpp OR TARGET format_cmake)
-    add_custom_target(format ALL DEPENDS format_c_and_cpp format_cmake)
-endif()
+add_custom_target(format_fix ALL DEPENDS clang_format_fix format_cmake_fix)
+add_custom_target(format_check DEPENDS clang_format_check format_cmake_check)
 
-if (TARGET format_check_c_and_cpp OR TARGET format_check_cmake)
-    add_custom_target(format_check DEPENDS format_check_c_and_cpp format_check_cmake)
-endif()
-
-################################################################################
-# Testing Settings
-################################################################################
-enable_testing()
-macro(create_test target)
-    add_test(NAME ${target} COMMAND ${target})
-endmacro()
-
-################################################################################
-# Subdirectories
-################################################################################
-add_subdirectory(src)

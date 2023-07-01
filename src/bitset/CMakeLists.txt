@@ -4,7 +4,6 @@
 add_library(bitset INTERFACE)
 target_include_directories(bitset INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
-
 ################################################################################
 # Test
 ################################################################################
