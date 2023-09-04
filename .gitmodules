@@ -1,0 +1,3 @@
+[submodule "src/todo/dependencies/uuid_v4"]
+	path = src/todo/dependencies/uuid_v4
+	url = https://github.com/crashoz/uuid_v4.git

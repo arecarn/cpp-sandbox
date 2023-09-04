@@ -1,10 +1,14 @@
 #ifndef TODO_HPP
 #define TODO_HPP
 
+#include "uuid_v4.h"
 #include <chrono>
 #include <string>
 #include <string_view>
 #include <utility>
+
+UUIDv4::UUIDGenerator<std::mt19937_64> uuidGenerator;
+UUIDv4::UUID uuid = uuidGenerator.getUUID();
 
 class Todo
 {
