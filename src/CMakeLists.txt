@@ -3,6 +3,7 @@
 ################################################################################
 add_subdirectory(advent_of_code/2021)
 add_subdirectory(array)
+add_subdirectory(ObjectPool)
 add_subdirectory(bitset)
 add_subdirectory(chsm)
 add_subdirectory(pod_variant)

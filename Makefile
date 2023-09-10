@@ -56,19 +56,29 @@ build/%/CMakeCache.txt:
 build.%: | build/%/CMakeCache.txt
 	@if [ "$(words $(subst ., ,$*))" = 1 ]; then \
 		$(call run_in_container, \
+			CTEST_OUTPUT_ON_FAILURE=1 \
 			cmake --build --preset $* \
 		); \
 	else \
 		$(call run_in_container, \
+			CTEST_OUTPUT_ON_FAILURE=1 \
 			cmake --build --preset $(call word_dot,$*,1) --target $(call word_dot,$*,2) \
 		); \
 	fi
 
 .SECONDEXPANSION:
 test.%: $(addprefix build., $$*)
-	$(call run_in_container, \
-		ctest --preset $*; \
-	)
+	@if [ "$(words $(subst ., ,$*))" = 1 ]; then \
+		$(call run_in_container, \
+			CTEST_OUTPUT_ON_FAILURE=1 \
+			ctest --preset $* \
+		); \
+	else \
+		$(call run_in_container, \
+			CTEST_OUTPUT_ON_FAILURE=1 \
+			ctest --preset $(call word_dot,$*,1) --tests-regex $(call word_dot,$*,2) \
+		); \
+	fi
 
 
 # All the Makefiles read themselves and get matched if a target exists for them,
