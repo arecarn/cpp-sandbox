@@ -1,17 +1,17 @@
-#ifndef RINGBUFFER_HPP
-#define RINGBUFFER_HPP
+#ifndef RING_BUFFER_HPP
+#define RING_BUFFER_HPP
 
 #include <cstddef>
 #include <cstdint>
 
 template <typename T, size_t N>
-class ringbuffer
+class RingBuffer
 {
 public:
     using value_type = T;
 
-    ringbuffer() = default;
-    ~ringbuffer() = default;
+    RingBuffer() = default;
+    ~RingBuffer() = default;
 
     bool push_back(const T& x)
     {
@@ -124,6 +124,11 @@ public:
         return m_size;
     }
 
+    [[nodiscard]] size_t full() const
+    {
+        return m_size == capacity() ;
+    }
+
     [[nodiscard]] bool empty() const
     {
         return m_size == 0;
@@ -143,4 +148,4 @@ private:
     size_t m_size {0};
 };
 
-#endif // RINGBUFFER_HPP
+#endif // header

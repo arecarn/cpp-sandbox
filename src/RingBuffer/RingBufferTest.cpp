@@ -1,9 +1,9 @@
-#include "ringbuffer.hpp"
+#include "RingBuffer.hpp"
 #include "gtest/gtest.h"
 
-TEST(ringbuffer, push_back)
+TEST(RingBuffer, push_back)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
 
     ASSERT_EQ(rb.capacity(), 3);
     ASSERT_EQ(rb.size(), 0);
@@ -25,9 +25,9 @@ TEST(ringbuffer, push_back)
     ASSERT_EQ(rb.size(), 3);
 }
 
-TEST(ringbuffer, push_front)
+TEST(RingBuffer, push_front)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
 
     ASSERT_EQ(rb.capacity(), 3);
     ASSERT_EQ(rb.size(), 0);
@@ -49,9 +49,9 @@ TEST(ringbuffer, push_front)
     ASSERT_EQ(rb.size(), 3);
 }
 
-TEST(ringbuffer, pop_front)
+TEST(RingBuffer, pop_front)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
     rb.push_back(1);
     rb.push_back(2);
     rb.push_back(3);
@@ -69,9 +69,9 @@ TEST(ringbuffer, pop_front)
     ASSERT_EQ(rb.size(), 0);
 }
 
-TEST(ringbuffer, pop_back)
+TEST(RingBuffer, pop_back)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
     rb.push_back(1);
     rb.push_back(2);
     rb.push_back(3);
@@ -89,9 +89,9 @@ TEST(ringbuffer, pop_back)
     ASSERT_EQ(rb.size(), 0);
 }
 
-TEST(ringbuffer, push_back_wrap)
+TEST(RingBuffer, push_back_wrap)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
     rb.push_back(1);
     rb.push_back(2);
     rb.push_back(3);
@@ -115,9 +115,9 @@ TEST(ringbuffer, push_back_wrap)
     ASSERT_TRUE(rb.empty());
 }
 
-TEST(ringbuffer, push_front_wrap)
+TEST(RingBuffer, push_front_wrap)
 {
-    ringbuffer<int, 3> rb;
+    RingBuffer<int, 3> rb;
     rb.push_front(1);
     rb.push_front(2);
     rb.push_front(3);
