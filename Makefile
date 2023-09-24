@@ -71,12 +71,12 @@ test.%: $(addprefix build., $$*)
 	@if [ "$(words $(subst ., ,$*))" = 1 ]; then \
 		$(call run_in_container, \
 			CTEST_OUTPUT_ON_FAILURE=1 \
-			ctest --preset $* \
+			ctest -V --preset $* \
 		); \
 	else \
 		$(call run_in_container, \
 			CTEST_OUTPUT_ON_FAILURE=1 \
-			ctest --preset $(call word_dot,$*,1) --tests-regex $(call word_dot,$*,2) \
+			ctest -V --preset $(call word_dot,$*,1) --tests-regex $(call word_dot,$*,2) \
 		); \
 	fi
 
